@@ -11,6 +11,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
+        /* GIỮ NGUYÊN CSS NHƯ FILE GỐC - Đã có ở các tin nhắn trước */
+        /* Để tiết kiệm dung lượng, tôi giữ nguyên cấu trúc giao diện */
         *{margin:0;padding:0;box-sizing:border-box}
         body{background:#0a0a0f;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Segoe UI','Roboto',sans-serif;padding:16px;color:#fff}
         #loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;padding:20px;transition:opacity .5s}
@@ -129,7 +131,7 @@
 
 <script>
     // ============================================================
-    // FIREBASE CONFIG - GIỐNG ADMIN
+    // FIREBASE CONFIG - THAY BẰNG CONFIG CỦA BẠN
     // ============================================================
     const firebaseConfig = {
         apiKey: "AIzaSyCaLfm97d8btn_hNWSMgtKQC87vsDhdef4",
@@ -335,7 +337,15 @@
             localStorage.setItem('lockcenter_active_prem_id', matched.id);
             if (currentId) addIdToList(currentId);
             playSuccessSound();
-            ok.textContent = '✅ Đăng nhập PREM "' + (matched.name || '') + '" thành công!';
+            // Xác định loại key để hiển thị
+            let typeName = 'PREM';
+            if (matched.hours === 720) typeName = '⭐ 1 THÁNG';
+            else if (matched.hours === 8760) typeName = '⭐ 1 NĂM';
+            else if (matched.hours >= 876000) typeName = '⭐ VĨNH VIỄN ♾️';
+            else if (matched.hours === 72) typeName = '⭐ 72H';
+            else if (matched.hours === 48) typeName = '⭐ 48H';
+            else if (matched.hours === 24) typeName = '⭐ 24H';
+            ok.textContent = '✅ Đăng nhập ' + typeName + ' "' + (matched.name || '') + '" thành công!';
             setTimeout(() => enterMenu('prem', matched), 800);
             return;
         }
@@ -384,8 +394,16 @@
         const timerEl = document.getElementById('keyTimer');
         const menuBadge = document.getElementById('menuBadge');
         if (type === 'prem' || premData) {
-            const name = premData ? premData.name || '' : '';
-            badge.textContent = '⭐ PREM' + (name ? ' (' + name + ')' : '');
+            let typeName = '⭐ PREM';
+            if (premData) {
+                if (premData.hours === 720) typeName = '⭐ 1 THÁNG';
+                else if (premData.hours === 8760) typeName = '⭐ 1 NĂM';
+                else if (premData.hours >= 876000) typeName = '⭐ VĨNH VIỄN ♾️';
+                else if (premData.hours === 72) typeName = '⭐ 72H';
+                else if (premData.hours === 48) typeName = '⭐ 48H';
+                else if (premData.hours === 24) typeName = '⭐ 24H';
+            }
+            badge.textContent = typeName;
             badge.className = 'type-badge prem';
             timerEl.style.borderColor = '#886622';
             menuBadge.textContent = '⭐ PREM • FF';
@@ -565,7 +583,7 @@
             if (!audioCtx) { try { audioCtx = new(window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
             document.removeEventListener('click', initAudio);
         }, { once: true });
-        console.log('[LockCenter] v5.0 - Máy chủ KEY Firebase');
+        console.log('[LockCenter] v5.0 - 300 key PREM (24h,48h,72h,30D,1Y,FOREVER)');
         console.log('[LockCenter] Key FREE:', getTodayFreeKey());
         getPremList().then(list => console.log('[LockCenter] Số key PREM trên máy chủ:', list.length));
     };
