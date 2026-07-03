@@ -1,202 +1,200 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Admin Key">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a12' rx='20'/%3E%3Ctext x='50' y='72' font-size='55' text-anchor='middle' fill='%23ff8800' font-weight='bold'%3EA%3C/text%3E%3C/svg%3E">
-    <title>Admin Pro V3</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <style>
-        /* CSS giống như phiên bản trước, giữ nguyên */
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{background:#0a0a0f;font-family:'Segoe UI',sans-serif;padding:16px;color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:flex-start}
-        .admin-panel{max-width:650px;width:100%;background:linear-gradient(145deg,#12121a,#1a1a2e);border-radius:32px;padding:24px 20px 32px;border:1px solid #2a2a3e;box-shadow:0 20px 40px rgba(0,0,0,0.8);margin-top:10px}
-        .header{text-align:center;padding-bottom:16px;border-bottom:1px solid #2a2a3e;margin-bottom:20px}
-        .header h1{font-size:24px;font-weight:700;background:linear-gradient(90deg,#ff8800,#ffcc00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .header .sub{color:#666;font-size:12px;margin-top:2px}
-        .badge-pro{display:inline-block;background:linear-gradient(90deg,#ff4444,#ff8800);padding:2px 14px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;margin-top:4px}
-        .free-section{background:#0f0f18;border-radius:16px;padding:16px;border:1px solid #1f1f33;margin-bottom:20px}
-        .free-section .title{font-size:14px;font-weight:600;color:#00ff88;margin-bottom:10px}
-        .free-key-display{display:flex;justify-content:space-between;align-items:center;background:#0a0a12;padding:10px 16px;border-radius:12px;border:1px solid #1f1f33}
-        .free-key-display .key{font-family:'Courier New',monospace;font-size:20px;font-weight:700;color:#00ff88;letter-spacing:2px}
-        .free-key-display .copy-btn{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:4px 14px;border-radius:60px;cursor:pointer;font-size:12px;font-weight:600;transition:.3s}
-        .free-key-display .copy-btn:hover{background:rgba(0,255,136,0.3)}
-        .free-expiry{margin-top:6px;font-size:12px;color:#666;display:flex;justify-content:space-between}
-        .free-expiry .time{color:#00ff88;font-weight:600;font-family:'Courier New',monospace}
-        .tabs{display:flex;gap:8px;margin-bottom:16px}
-        .tabs .tab{flex:1;padding:10px;text-align:center;border-radius:16px;cursor:pointer;transition:.3s;font-weight:700;font-size:13px;border:1px solid #1f1f33;background:#0f0f18;color:#666}
-        .tabs .tab.active{border-color:#ff8800;background:rgba(255,136,0,0.15);color:#ff8800}
-        .tabs .tab .count-badge{background:rgba(255,136,0,0.2);color:#ff8800;border-radius:50%;padding:0 8px;font-size:11px;margin-left:4px}
-        .create-prem{background:#0f0f18;border-radius:16px;padding:16px;border:1px solid #1f1f33;margin-bottom:16px}
-        .create-prem .title{font-size:14px;font-weight:600;color:#b0b0d0;margin-bottom:10px}
-        .create-prem .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-        .create-prem .row input[type="text"]{flex:2;min-width:100px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 14px;color:#ff8800;font-size:14px;font-weight:600;outline:none;font-family:'Courier New',monospace}
-        .create-prem .row input[type="text"]:focus{border-color:#ff8800;box-shadow:0 0 20px rgba(255,136,0,0.15)}
-        .create-prem .row input[type="number"]{width:70px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 12px;color:#ff8800;font-size:14px;font-weight:600;outline:none;text-align:center;font-family:'Courier New',monospace}
-        .create-prem .row input[type="number"]:focus{border-color:#ff8800}
-        .create-prem .row label{color:#888;font-size:13px}
-        .create-prem .row .btn-gen{background:linear-gradient(90deg,#ff8800,#ffcc00);border:none;color:#0a0a0f;font-weight:700;padding:10px 16px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase;transition:.2s;white-space:nowrap}
-        .create-prem .row .btn-gen:hover{transform:scale(1.03)}
-        .create-prem .row .btn-create{background:linear-gradient(90deg,#ff6600,#ff8800);border:none;color:#fff;font-weight:700;padding:10px 18px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase;transition:.2s;white-space:nowrap}
-        .create-prem .row .btn-create:hover{transform:scale(1.03)}
-        .create-prem .row .btn-reset{background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;font-weight:700;padding:10px 14px;border-radius:60px;cursor:pointer;font-size:11px;text-transform:uppercase;transition:.2s;white-space:nowrap}
-        .create-prem .row .btn-reset:hover{transform:scale(1.03)}
-        .prem-list{background:#0a0a12;border-radius:16px;padding:12px;border:1px solid #1f1f33;max-height:350px;overflow-y:auto}
-        .prem-list::-webkit-scrollbar{width:4px}
-        .prem-list::-webkit-scrollbar-track{background:#0a0a12}
-        .prem-list::-webkit-scrollbar-thumb{background:#2a2a44;border-radius:10px}
-        .prem-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1a1a2e;font-size:13px}
-        .prem-item:last-child{border-bottom:none}
-        .prem-item .info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
-        .prem-item .info .name{color:#b0b0d0;font-weight:600}
-        .prem-item .info .key{font-family:'Courier New',monospace;color:#ff8800;font-weight:600;letter-spacing:1px;font-size:14px;word-break:break-all}
-        .prem-item .info .expiry{color:#666;font-size:11px}
-        .prem-item .info .expiry .valid{color:#00ff88}
-        .prem-item .info .expiry .expired{color:#ff4466}
-        .prem-item .info .expiry .time-left{font-weight:600;font-family:'Courier New',monospace}
-        .prem-item .actions{display:flex;gap:6px;flex-shrink:0;margin-left:8px}
-        .prem-item .actions .btn-copy{background:rgba(0,212,255,0.1);border:1px solid #2a2a44;color:#00d4ff;padding:4px 12px;border-radius:60px;cursor:pointer;font-size:11px;font-weight:600;transition:.3s}
-        .prem-item .actions .btn-copy:hover{background:rgba(0,212,255,0.2)}
-        .prem-item .actions .btn-delete{background:rgba(255,68,68,0.1);border:1px solid #662222;color:#ff4466;padding:4px 10px;border-radius:60px;cursor:pointer;font-size:11px;font-weight:600;transition:.3s}
-        .prem-item .actions .btn-delete:hover{background:rgba(255,68,68,0.2)}
-        .empty-state{text-align:center;color:#444;padding:20px;font-size:13px}
-        .footer{text-align:center;color:#444;font-size:10px;margin-top:16px}
-        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#00ff88;padding:12px 28px;border-radius:60px;font-size:14px;font-weight:600;border:1px solid #226622;box-shadow:0 10px 40px rgba(0,0,0,0.8);z-index:999;transition:.3s;backdrop-filter:blur(8px);max-width:90%;text-align:center}
-        .toast.error{border-color:#662222;color:#ff4466}
-        .toast.prem{border-color:#886622;color:#ff8800}
-        @media(max-width:460px){.admin-panel{padding:16px}.create-prem .row{flex-direction:column}.create-prem .row input[type="text"],.create-prem .row input[type="number"]{width:100%}.prem-item{flex-direction:column;gap:8px;align-items:stretch}.prem-item .actions{justify-content:flex-end}.free-section .free-key-display{flex-direction:column;gap:8px}.free-section .free-key-display .copy-btn{width:100%;text-align:center}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Admin Key">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a12' rx='20'/%3E%3Ctext x='50' y='72' font-size='55' text-anchor='middle' fill='%23ff8800' font-weight='bold'%3EA%3C/text%3E%3C/svg%3E">
+<title>Admin Pro V3</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;font-family:'Segoe UI',sans-serif;padding:16px;color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:flex-start}
+.admin-panel{max-width:650px;width:100%;background:linear-gradient(145deg,#12121a,#1a1a2e);border-radius:32px;padding:24px 20px 32px;border:1px solid #2a2a3e;box-shadow:0 20px 40px rgba(0,0,0,0.8);margin-top:10px}
+.header{text-align:center;padding-bottom:16px;border-bottom:1px solid #2a2a3e;margin-bottom:20px}
+.header h1{font-size:24px;font-weight:700;background:linear-gradient(90deg,#ff8800,#ffcc00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .sub{color:#666;font-size:12px;margin-top:2px}
+.badge-pro{display:inline-block;background:linear-gradient(90deg,#ff4444,#ff8800);padding:2px 14px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;margin-top:4px}
+.free-section{background:#0f0f18;border-radius:16px;padding:16px;border:1px solid #1f1f33;margin-bottom:20px}
+.free-section .title{font-size:14px;font-weight:600;color:#00ff88;margin-bottom:10px}
+.free-key-display{display:flex;justify-content:space-between;align-items:center;background:#0a0a12;padding:10px 16px;border-radius:12px;border:1px solid #1f1f33}
+.free-key-display .key{font-family:'Courier New',monospace;font-size:20px;font-weight:700;color:#00ff88;letter-spacing:2px}
+.free-key-display .copy-btn{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:4px 14px;border-radius:60px;cursor:pointer;font-size:12px;font-weight:600;transition:.3s}
+.free-key-display .copy-btn:hover{background:rgba(0,255,136,0.3)}
+.free-expiry{margin-top:6px;font-size:12px;color:#666;display:flex;justify-content:space-between}
+.free-expiry .time{color:#00ff88;font-weight:600;font-family:'Courier New',monospace}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tabs .tab{flex:1;padding:10px;text-align:center;border-radius:16px;cursor:pointer;transition:.3s;font-weight:700;font-size:13px;border:1px solid #1f1f33;background:#0f0f18;color:#666}
+.tabs .tab.active{border-color:#ff8800;background:rgba(255,136,0,0.15);color:#ff8800}
+.tabs .tab .count-badge{background:rgba(255,136,0,0.2);color:#ff8800;border-radius:50%;padding:0 8px;font-size:11px;margin-left:4px}
+.create-prem{background:#0f0f18;border-radius:16px;padding:16px;border:1px solid #1f1f33;margin-bottom:16px}
+.create-prem .title{font-size:14px;font-weight:600;color:#b0b0d0;margin-bottom:10px}
+.create-prem .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.create-prem .row input[type="text"]{flex:2;min-width:100px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 14px;color:#ff8800;font-size:14px;font-weight:600;outline:none;font-family:'Courier New',monospace}
+.create-prem .row input[type="text"]:focus{border-color:#ff8800;box-shadow:0 0 20px rgba(255,136,0,0.15)}
+.create-prem .row input[type="number"]{width:70px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 12px;color:#ff8800;font-size:14px;font-weight:600;outline:none;text-align:center;font-family:'Courier New',monospace}
+.create-prem .row input[type="number"]:focus{border-color:#ff8800}
+.create-prem .row label{color:#888;font-size:13px}
+.create-prem .row .btn-gen{background:linear-gradient(90deg,#ff8800,#ffcc00);border:none;color:#0a0a0f;font-weight:700;padding:10px 16px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase;transition:.2s;white-space:nowrap}
+.create-prem .row .btn-gen:hover{transform:scale(1.03)}
+.create-prem .row .btn-create{background:linear-gradient(90deg,#ff6600,#ff8800);border:none;color:#fff;font-weight:700;padding:10px 18px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase;transition:.2s;white-space:nowrap}
+.create-prem .row .btn-create:hover{transform:scale(1.03)}
+.create-prem .row .btn-reset{background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;font-weight:700;padding:10px 14px;border-radius:60px;cursor:pointer;font-size:11px;text-transform:uppercase;transition:.2s;white-space:nowrap}
+.create-prem .row .btn-reset:hover{transform:scale(1.03)}
+.prem-list{background:#0a0a12;border-radius:16px;padding:12px;border:1px solid #1f1f33;max-height:350px;overflow-y:auto}
+.prem-list::-webkit-scrollbar{width:4px}
+.prem-list::-webkit-scrollbar-track{background:#0a0a12}
+.prem-list::-webkit-scrollbar-thumb{background:#2a2a44;border-radius:10px}
+.prem-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1a1a2e;font-size:13px}
+.prem-item:last-child{border-bottom:none}
+.prem-item .info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.prem-item .info .name{color:#b0b0d0;font-weight:600}
+.prem-item .info .key{font-family:'Courier New',monospace;color:#ff8800;font-weight:600;letter-spacing:1px;font-size:14px;word-break:break-all}
+.prem-item .info .expiry{color:#666;font-size:11px}
+.prem-item .info .expiry .valid{color:#00ff88}
+.prem-item .info .expiry .expired{color:#ff4466}
+.prem-item .info .expiry .time-left{font-weight:600;font-family:'Courier New',monospace}
+.prem-item .actions{display:flex;gap:6px;flex-shrink:0;margin-left:8px}
+.prem-item .actions .btn-copy{background:rgba(0,212,255,0.1);border:1px solid #2a2a44;color:#00d4ff;padding:4px 12px;border-radius:60px;cursor:pointer;font-size:11px;font-weight:600;transition:.3s}
+.prem-item .actions .btn-copy:hover{background:rgba(0,212,255,0.2)}
+.prem-item .actions .btn-delete{background:rgba(255,68,68,0.1);border:1px solid #662222;color:#ff4466;padding:4px 10px;border-radius:60px;cursor:pointer;font-size:11px;font-weight:600;transition:.3s}
+.prem-item .actions .btn-delete:hover{background:rgba(255,68,68,0.2)}
+.empty-state{text-align:center;color:#444;padding:20px;font-size:13px}
+.footer{text-align:center;color:#444;font-size:10px;margin-top:16px}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#00ff88;padding:12px 28px;border-radius:60px;font-size:14px;font-weight:600;border:1px solid #226622;box-shadow:0 10px 40px rgba(0,0,0,0.8);z-index:999;transition:.3s;backdrop-filter:blur(8px);max-width:90%;text-align:center}
+.toast.error{border-color:#662222;color:#ff4466}
+.toast.prem{border-color:#886622;color:#ff8800}
+@media(max-width:460px){.admin-panel{padding:16px}.create-prem .row{flex-direction:column}.create-prem .row input[type="text"],.create-prem .row input[type="number"]{width:100%}.prem-item{flex-direction:column;gap:8px;align-items:stretch}.prem-item .actions{justify-content:flex-end}.free-section .free-key-display{flex-direction:column;gap:8px}.free-section .free-key-display .copy-btn{width:100%;text-align:center}}
+</style>
 </head>
 <body>
 <div class="admin-panel">
-    <div class="header"><h1>🔐 ADMIN PRO V3</h1><div class="sub">Quản lý KEY FREE + KEY PREM</div><div class="badge-pro">⚡ PREM MANAGER</div></div>
-    <div class="free-section"><div class="title">🆓 KEY FREE HÔM NAY</div><div class="free-key-display"><span class="key" id="freeKeyDisplay">------</span><button class="copy-btn" onclick="copyFreeKey()">📋 Sao chép</button></div><div class="free-expiry"><span>⏳ Hết hạn vào 00:00</span><span class="time" id="freeTimer">--:--:--</span></div></div>
-    <div class="tabs"><div class="tab active" id="tabList" onclick="switchTab('list')">📋 DANH SÁCH PREM <span class="count-badge" id="premCountBadge">0</span></div><div class="tab" id="tabCreate" onclick="switchTab('create')">➕ TẠO PREM</div></div>
-    <div id="panelList"><div class="prem-list" id="premListContainer"><div class="empty-state">Chưa có key PREM nào</div></div><div style="margin-top:8px;font-size:12px;color:#444;text-align:right;" id="premCount">Tổng: 0 key PREM</div></div>
-    <div id="panelCreate" style="display:none;">
-        <div class="create-prem"><div class="title">⭐ TẠO KEY PREM MỚI</div><div class="row"><input type="text" id="premName" placeholder="Tên người dùng..." maxlength="20"></div><div class="row" style="margin-top:8px;"><input type="text" id="premKeyInput" placeholder="Nhập key hoặc Random..." maxlength="30"><button class="btn-gen" onclick="generatePremKey()">🎲 Random</button></div><div class="row" style="margin-top:8px;"><label>⏳ Hết hạn sau:</label><input type="number" id="premHours" value="72" min="1" max="9999"><label>giờ</label><button class="btn-create" onclick="createPremKey()">✅ Tạo PREM</button><button class="btn-reset" onclick="clearForm()">↺ Xoá</button></div></div>
-        <div style="font-size:12px;color:#444;">⚡ Key PREM sẽ đồng bộ qua Firebase</div>
-    </div>
-    <div class="footer">Chỉ dành cho Admin • Firebase đồng bộ toàn cầu</div>
+<div class="header"><h1>🔐 ADMIN PRO V3</h1><div class="sub">Quản lý KEY FREE + KEY PREM</div><div class="badge-pro">⚡ PREM MANAGER</div></div>
+<div class="free-section"><div class="title">🆓 KEY FREE HÔM NAY</div><div class="free-key-display"><span class="key" id="freeKeyDisplay">------</span><button class="copy-btn" onclick="copyFreeKey()">📋 Sao chép</button></div><div class="free-expiry"><span>⏳ Hết hạn vào 00:00</span><span class="time" id="freeTimer">--:--:--</span></div></div>
+<div class="tabs"><div class="tab active" id="tabList" onclick="switchTab('list')">📋 DANH SÁCH PREM <span class="count-badge" id="premCountBadge">0</span></div><div class="tab" id="tabCreate" onclick="switchTab('create')">➕ TẠO PREM</div></div>
+<div id="panelList"><div class="prem-list" id="premListContainer"><div class="empty-state">Chưa có key PREM nào</div></div><div style="margin-top:8px;font-size:12px;color:#444;text-align:right;" id="premCount">Tổng: 0 key PREM</div></div>
+<div id="panelCreate" style="display:none;">
+<div class="create-prem"><div class="title">⭐ TẠO KEY PREM MỚI</div><div class="row"><input type="text" id="premName" placeholder="Tên người dùng..." maxlength="20"></div><div class="row" style="margin-top:8px;"><input type="text" id="premKeyInput" placeholder="Nhập key hoặc Random..." maxlength="30"><button class="btn-gen" onclick="generatePremKey()">🎲 Random</button></div><div class="row" style="margin-top:8px;"><label>⏳ Hết hạn sau:</label><input type="number" id="premHours" value="72" min="1" max="9999"><label>giờ</label><button class="btn-create" onclick="createPremKey()">✅ Tạo PREM</button><button class="btn-reset" onclick="clearForm()">↺ Xoá</button></div></div>
+<div style="font-size:12px;color:#444;">⚡ Key PREM sẽ đồng bộ qua Firebase</div>
+</div>
+<div class="footer">Chỉ dành cho Admin • Firebase đồng bộ toàn cầu</div>
 </div>
 <script>
-    // ============================================================
-    // 🔥 FIREBASE CONFIG - THAY BẰNG CONFIG CỦA BẠN (GIỐNG FILE TRÊN)
-    // ============================================================
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-        projectId: "YOUR_PROJECT",
-        storageBucket: "YOUR_PROJECT.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abcdef"
-    };
+// ============================================================
+// FIREBASE CONFIG - THAY BẰNG CONFIG CỦA BẠN
+// ============================================================
+const firebaseConfig = {
+    apiKey: "AIzaSyCaLfm97d8btn_hNWSMgtKQC87vsDhdef4",
+    authDomain: "lockcemter.firebaseapp.com",
+    projectId: "lockcemter",
+    storageBucket: "lockcemter.firebasestorage.app",
+    messagingSenderId: "473758173799",
+    appId: "1:473758173799:web:dfbc0820666dd59b81a2c2",
+    measurementId: "G-MHW35Y3ZBF"
+};
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-    // ============================================================
-    // HÀM FIREBASE (giống bên lockcenter)
-    // ============================================================
-    async function getPremList() {
-        const snapshot = await db.ref('premKeys').once('value');
-        const data = snapshot.val();
-        if (!data) return [];
-        const list = Object.keys(data).map(key => ({ ...data[key], id: key }));
-        const valid = list.filter(item => item.expiry > Date.now());
-        if (valid.length !== list.length) {
-            const expiredIds = list.filter(item => item.expiry <= Date.now()).map(item => item.id);
-            await Promise.all(expiredIds.map(id => db.ref('premKeys/' + id).remove()));
-        }
-        return valid;
+// ============================================================
+// HÀM FIREBASE
+// ============================================================
+async function getPremList() {
+    const snapshot = await db.ref('premKeys').once('value');
+    const data = snapshot.val();
+    if (!data) return [];
+    const list = Object.keys(data).map(key => ({ ...data[key], id: key }));
+    const valid = list.filter(item => item.expiry > Date.now());
+    if (valid.length !== list.length) {
+        const expiredIds = list.filter(item => item.expiry <= Date.now()).map(item => item.id);
+        await Promise.all(expiredIds.map(id => db.ref('premKeys/' + id).remove()));
     }
+    return valid;
+}
 
-    async function addPremKey(name, key, hours) {
-        const expiry = Date.now() + (hours * 60 * 60 * 1000);
-        const newRef = db.ref('premKeys').push();
-        await newRef.set({
-            name: name,
-            key: key,
-            expiry: expiry,
-            created: Date.now(),
-            hours: hours
-        });
-        return newRef.key;
-    }
+async function addPremKey(name, key, hours) {
+    const expiry = Date.now() + (hours * 60 * 60 * 1000);
+    const newRef = db.ref('premKeys').push();
+    await newRef.set({
+        name: name,
+        key: key,
+        expiry: expiry,
+        created: Date.now(),
+        hours: hours
+    });
+    return newRef.key;
+}
 
-    async function deletePremKey(id) {
-        await db.ref('premKeys/' + id).remove();
-    }
+async function deletePremKey(id) {
+    await db.ref('premKeys/' + id).remove();
+}
 
-    // ============================================================
-    // KEY FREE
-    // ============================================================
-    function generateDailyKey(date) {
-        const y = date.getFullYear(),
-            m = String(date.getMonth() + 1).padStart(2, '0'),
-            d = String(date.getDate()).padStart(2, '0'),
-            seed = parseInt(y + m + d);
-        let hash = 0,
-            s = String(seed);
-        for (let i = 0; i < s.length; i++) {
-            hash = ((hash << 5) - hash) + s.charCodeAt(i);
-            hash &= hash;
-        }
-        let key = Math.abs(hash).toString(36).toUpperCase();
-        while (key.length < 8) key = 'X' + key;
-        key = key.slice(0, 8) + String(date.getDate()).padStart(2, '0');
-        return key;
+// ============================================================
+// KEY FREE
+// ============================================================
+function generateDailyKey(date) {
+    const y = date.getFullYear(),
+        m = String(date.getMonth() + 1).padStart(2, '0'),
+        d = String(date.getDate()).padStart(2, '0'),
+        seed = parseInt(y + m + d);
+    let hash = 0,
+        s = String(seed);
+    for (let i = 0; i < s.length; i++) {
+        hash = ((hash << 5) - hash) + s.charCodeAt(i);
+        hash &= hash;
     }
-    function getTodayFreeKey() { return generateDailyKey(new Date()); }
-    function getFreeKeyExpiry() {
-        const n = new Date(),
-            t = new Date(n);
-        t.setDate(t.getDate() + 1);
-        t.setHours(0, 0, 0, 0);
-        return t.getTime();
-    }
-    function formatTime(ms) {
-        if (ms <= 0) return 'Đã hết hạn';
-        const t = Math.floor(ms / 1000),
-            h = String(Math.floor(t / 3600)).padStart(2, '0'),
-            m = String(Math.floor((t % 3600) / 60)).padStart(2, '0'),
-            s = String(t % 60).padStart(2, '0');
-        return h + ':' + m + ':' + s;
-    }
-    function updateFreeTimer() {
-        const rem = getFreeKeyExpiry() - Date.now();
-        const el = document.getElementById('freeTimer');
-        if (rem > 0) { el.textContent = formatTime(rem);
-            el.style.color = '#00ff88'; } else { el.textContent = 'Đã hết hạn';
-            el.style.color = '#ff4466'; }
-    }
+    let key = Math.abs(hash).toString(36).toUpperCase();
+    while (key.length < 8) key = 'X' + key;
+    key = key.slice(0, 8) + String(date.getDate()).padStart(2, '0');
+    return key;
+}
+function getTodayFreeKey() { return generateDailyKey(new Date()); }
+function getFreeKeyExpiry() {
+    const n = new Date(),
+        t = new Date(n);
+    t.setDate(t.getDate() + 1);
+    t.setHours(0, 0, 0, 0);
+    return t.getTime();
+}
+function formatTime(ms) {
+    if (ms <= 0) return 'Đã hết hạn';
+    const t = Math.floor(ms / 1000),
+        h = String(Math.floor(t / 3600)).padStart(2, '0'),
+        m = String(Math.floor((t % 3600) / 60)).padStart(2, '0'),
+        s = String(t % 60).padStart(2, '0');
+    return h + ':' + m + ':' + s;
+}
+function updateFreeTimer() {
+    const rem = getFreeKeyExpiry() - Date.now();
+    const el = document.getElementById('freeTimer');
+    if (rem > 0) { el.textContent = formatTime(rem);
+        el.style.color = '#00ff88'; } else { el.textContent = 'Đã hết hạn';
+        el.style.color = '#ff4466'; }
+}
 
-    // ============================================================
-    // ADMIN UI
-    // ============================================================
-    async function renderPremList() {
-        const list = await getPremList();
-        const container = document.getElementById('premListContainer');
-        const count = document.getElementById('premCount');
-        const badge = document.getElementById('premCountBadge');
-        badge.textContent = list.length;
-        count.textContent = 'Tổng: ' + list.length + ' key PREM';
-        if (!list.length) {
-            container.innerHTML = '<div class="empty-state">Chưa có key PREM nào</div>';
-            return;
-        }
-        container.innerHTML = list.map(item => {
-            const rem = item.expiry - Date.now();
-            const valid = rem > 0;
-            const timeStr = valid ? formatTime(rem) : 'Đã hết hạn';
-            const expiryDate = new Date(item.expiry).toLocaleString('vi-VN');
-            return `<div class="prem-item">
+// ============================================================
+// ADMIN UI
+// ============================================================
+async function renderPremList() {
+    const list = await getPremList();
+    const container = document.getElementById('premListContainer');
+    const count = document.getElementById('premCount');
+    const badge = document.getElementById('premCountBadge');
+    badge.textContent = list.length;
+    count.textContent = 'Tổng: ' + list.length + ' key PREM';
+    if (!list.length) {
+        container.innerHTML = '<div class="empty-state">Chưa có key PREM nào</div>';
+        return;
+    }
+    container.innerHTML = list.map(item => {
+        const rem = item.expiry - Date.now();
+        const valid = rem > 0;
+        const timeStr = valid ? formatTime(rem) : 'Đã hết hạn';
+        const expiryDate = new Date(item.expiry).toLocaleString('vi-VN');
+        return `<div class="prem-item">
                 <div class="info">
                     <span class="name">👤 ${item.name}</span>
                     <span class="key">${item.key}</span>
@@ -207,134 +205,132 @@
                     <button class="btn-delete" onclick="deletePremKey('${item.id}')">✕</button>
                 </div>
             </div>`;
-        }).join('');
-    }
+    }).join('');
+}
 
-    async function createPremKey() {
-        const name = document.getElementById('premName').value.trim() || 'Không tên';
-        let key = document.getElementById('premKeyInput').value.trim().toUpperCase();
-        if (!key) {
-            key = 'PREM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-            document.getElementById('premKeyInput').value = key;
-        }
-        const hours = parseInt(document.getElementById('premHours').value) || 72;
-        // Kiểm tra trùng (phía client không cần thiết nhưng vẫn kiểm tra)
-        const list = await getPremList();
-        if (list.some(item => item.key === key)) {
-            showToast('⚠️ Key đã tồn tại!', 'error');
-            return;
-        }
-        await addPremKey(name, key, hours);
-        await renderPremList();
-        showToast('✅ Đã tạo key PREM cho "' + name + '": ' + key, 'prem');
-        document.getElementById('premKeyInput').value = '';
-        document.getElementById('premName').value = '';
+async function createPremKey() {
+    const name = document.getElementById('premName').value.trim() || 'Không tên';
+    let key = document.getElementById('premKeyInput').value.trim().toUpperCase();
+    if (!key) {
+        key = 'PREM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+        document.getElementById('premKeyInput').value = key;
     }
-
-    async function deletePremKey(id) {
-        if (!confirm('Xoá key này?')) return;
-        await deletePremKey(id);
-        await renderPremList();
-        showToast('🗑️ Đã xoá key PREM', 'success');
+    const hours = parseInt(document.getElementById('premHours').value) || 72;
+    const list = await getPremList();
+    if (list.some(item => item.key === key)) {
+        showToast('⚠️ Key đã tồn tại!', 'error');
+        return;
     }
+    await addPremKey(name, key, hours);
+    await renderPremList();
+    showToast('✅ Đã tạo key PREM cho "' + name + '": ' + key, 'prem');
+    document.getElementById('premKeyInput').value = '';
+    document.getElementById('premName').value = '';
+}
 
-    function copyPremKey(key) {
-        copyToClipboard(key, '✅ Đã sao chép: ' + key);
-    }
+async function deletePremKey(id) {
+    if (!confirm('Xoá key này?')) return;
+    await deletePremKey(id);
+    await renderPremList();
+    showToast('🗑️ Đã xoá key PREM', 'success');
+}
 
-    function copyFreeKey() {
-        const key = getTodayFreeKey();
-        copyToClipboard(key, '✅ Đã sao chép key FREE: ' + key);
-    }
+function copyPremKey(key) {
+    copyToClipboard(key, '✅ Đã sao chép: ' + key);
+}
 
-    function copyToClipboard(text, msg) {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast(msg, 'success');
-            }).catch(() => fallback(text, msg));
-        } else {
-            fallback(text, msg);
-        }
-    }
+function copyFreeKey() {
+    const key = getTodayFreeKey();
+    copyToClipboard(key, '✅ Đã sao chép key FREE: ' + key);
+}
 
-    function fallback(text, msg) {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-            document.execCommand('copy');
+function copyToClipboard(text, msg) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
             showToast(msg, 'success');
-        } catch (e) {
-            showToast('⚠️ Không thể sao chép', 'error');
-        }
-        document.body.removeChild(ta);
+        }).catch(() => fallback(text, msg));
+    } else {
+        fallback(text, msg);
     }
+}
 
-    function generatePremKey() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let key = '';
-        for (let i = 0; i < 10; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
-        document.getElementById('premKeyInput').value = 'PREM-' + key;
-        showToast('🎲 Key random: PREM-' + key, 'prem');
+function fallback(text, msg) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        showToast(msg, 'success');
+    } catch (e) {
+        showToast('⚠️ Không thể sao chép', 'error');
     }
+    document.body.removeChild(ta);
+}
 
-    function clearForm() {
-        document.getElementById('premKeyInput').value = '';
-        document.getElementById('premName').value = '';
-        document.getElementById('premHours').value = '72';
-    }
+function generatePremKey() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let key = '';
+    for (let i = 0; i < 10; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
+    document.getElementById('premKeyInput').value = 'PREM-' + key;
+    showToast('🎲 Key random: PREM-' + key, 'prem');
+}
 
-    function switchTab(tab) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        if (tab === 'list') {
-            document.getElementById('tabList').classList.add('active');
-            document.getElementById('panelList').style.display = 'block';
-            document.getElementById('panelCreate').style.display = 'none';
-            renderPremList();
-        } else {
-            document.getElementById('tabCreate').classList.add('active');
-            document.getElementById('panelList').style.display = 'none';
-            document.getElementById('panelCreate').style.display = 'block';
-        }
-    }
+function clearForm() {
+    document.getElementById('premKeyInput').value = '';
+    document.getElementById('premName').value = '';
+    document.getElementById('premHours').value = '72';
+}
 
-    function showToast(msg, type) {
-        const old = document.querySelector('.toast');
-        if (old) old.remove();
-        const div = document.createElement('div');
-        div.className = 'toast' + (type === 'error' ? ' error' : type === 'prem' ? ' prem' : '');
-        div.textContent = msg;
-        document.body.appendChild(div);
-        setTimeout(() => {
-            div.style.opacity = '0';
-            setTimeout(() => div.remove(), 400);
-        }, 3000);
-    }
-
-    // ============================================================
-    // LOAD
-    // ============================================================
-    window.onload = function() {
-        document.getElementById('freeKeyDisplay').textContent = getTodayFreeKey();
-        updateFreeTimer();
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (tab === 'list') {
+        document.getElementById('tabList').classList.add('active');
+        document.getElementById('panelList').style.display = 'block';
+        document.getElementById('panelCreate').style.display = 'none';
         renderPremList();
-        setInterval(updateFreeTimer, 1000);
-        setInterval(renderPremList, 10000);
-        console.log('[Admin] Firebase Ready');
-        console.log('[Admin] Key FREE:', getTodayFreeKey());
-    };
+    } else {
+        document.getElementById('tabCreate').classList.add('active');
+        document.getElementById('panelList').style.display = 'none';
+        document.getElementById('panelCreate').style.display = 'block';
+    }
+}
 
-    // EXPOSE
-    window.switchTab = switchTab;
-    window.createPremKey = createPremKey;
-    window.generatePremKey = generatePremKey;
-    window.deletePremKey = deletePremKey;
-    window.copyPremKey = copyPremKey;
-    window.copyFreeKey = copyFreeKey;
-    window.clearForm = clearForm;
+function showToast(msg, type) {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+    const div = document.createElement('div');
+    div.className = 'toast' + (type === 'error' ? ' error' : type === 'prem' ? ' prem' : '');
+    div.textContent = msg;
+    document.body.appendChild(div);
+    setTimeout(() => {
+        div.style.opacity = '0';
+        setTimeout(() => div.remove(), 400);
+    }, 3000);
+}
+
+// ============================================================
+// LOAD
+// ============================================================
+window.onload = function() {
+    document.getElementById('freeKeyDisplay').textContent = getTodayFreeKey();
+    updateFreeTimer();
+    renderPremList();
+    setInterval(updateFreeTimer, 1000);
+    setInterval(renderPremList, 10000);
+    console.log('[Admin] Firebase Ready');
+    console.log('[Admin] Key FREE:', getTodayFreeKey());
+};
+
+window.switchTab = switchTab;
+window.createPremKey = createPremKey;
+window.generatePremKey = generatePremKey;
+window.deletePremKey = deletePremKey;
+window.copyPremKey = copyPremKey;
+window.copyFreeKey = copyFreeKey;
+window.clearForm = clearForm;
 </script>
 </body>
 </html>
