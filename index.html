@@ -12,6 +12,8 @@
     
     <title>LockCenter - Free Fire</title>
     <style>
+        /* ... giữ nguyên toàn bộ CSS như cũ ... */
+        /* (Để tiết kiệm dung lượng, tôi giữ nguyên phần CSS từ file trước) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0f;
@@ -561,6 +563,29 @@
         }
         .status-bar span { color: #00d4ff; }
 
+        /* === NÚT NHẠC NHỎ GỌN === */
+        .music-control {
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #1a1a2e;
+        }
+        .music-control .btn-music {
+            background: rgba(0, 212, 255, 0.08);
+            color: #8888bb;
+            border: 1px solid #2a2a44;
+            border-radius: 60px;
+            padding: 6px 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Segoe UI', sans-serif;
+            letter-spacing: 0.3px;
+        }
+        .music-control .btn-music:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+
         @media (max-width: 460px) {
             .lock-center { padding: 16px; }
             .logout-btn { top: 12px; right: 12px; width: 32px; height: 32px; font-size: 16px; }
@@ -694,12 +719,19 @@
     <div class="status-bar" id="statusBar">
         ▶ Trạng thái: <span id="statusText">Sẵn sàng</span> &nbsp;|&nbsp; Profile: <span id="profileStatus">Mặc định</span>
     </div>
-    
-    <!-- === NHẠC NỀN (THÊM MỚI) === -->
+
+    <!-- === NHẠC NỀN === -->
     <audio id="bgMusic" loop preload="auto">
         <source src="montagem-tenta.mp3" type="audio/mpeg">
-        <source src="https://ksxkxkkkxkxkk-maker.github.io/app/montagem-tenta.mp3" type="audio/mpeg">
+        <source src="https://0337398495.github.io/lockcenter/montagem-tenta.mp3" type="audio/mpeg">
     </audio>
+
+    <!-- === NÚT BẬT/TẮT NHẠC NHỎ GỌN === -->
+    <div class="music-control">
+        <button class="btn-music" onclick="toggleMusic()" id="musicToggleBtn">
+            🎵 Bật nhạc
+        </button>
+    </div>
 </div>
 
 <script>
@@ -925,8 +957,10 @@
             updateKeyTypeDisplay();
             renderIdList();
             showToast('✅ Đăng nhập tự động thành công!', 'success');
-            // === THÊM: PHÁT NHẠC KHI ĐĂNG NHẬP TỰ ĐỘNG ===
-            playBackgroundMusic();
+            // === TỰ ĐỘNG PHÁT NHẠC ===
+            setTimeout(function() {
+                playMusicAuto();
+            }, 500);
             return true;
         } else {
             document.getElementById('loginScreen').classList.remove('hidden');
@@ -1001,8 +1035,10 @@
         updateKeyTypeDisplay(type, premData);
         renderIdList();
         showToast('✅ Đăng nhập thành công!', 'success');
-        // === THÊM: PHÁT NHẠC KHI VÀO MENU ===
-        playBackgroundMusic();
+        // === TỰ ĐỘNG PHÁT NHẠC ===
+        setTimeout(function() {
+            playMusicAuto();
+        }, 500);
     }
 
     // ============================================================
@@ -1024,8 +1060,13 @@
             document.getElementById('loginSuccess').textContent = '';
             renderIdList();
             showToast('🚪 Đã thoát key! Vui lòng đăng nhập lại.', 'error');
-            // === THÊM: DỪNG NHẠC KHI THOÁT ===
-            stopBackgroundMusic();
+            // Dừng nhạc khi thoát key
+            if (isMusicPlaying) {
+                const audio = document.getElementById('bgMusic');
+                if (audio) audio.pause();
+                isMusicPlaying = false;
+                updateMusicButton();
+            }
         }
     }
 
@@ -1066,8 +1107,13 @@
                 document.getElementById('menuScreen').style.display = 'none';
                 document.getElementById('loginError').textContent = '⏰ Key đã hết hạn! Vui lòng nhập key mới.';
                 showToast('⏰ Key đã hết hạn!', 'error');
-                // === THÊM: DỪNG NHẠC KHI HẾT HẠN ===
-                stopBackgroundMusic();
+                // Dừng nhạc khi hết hạn
+                if (isMusicPlaying) {
+                    const audio = document.getElementById('bgMusic');
+                    if (audio) audio.pause();
+                    isMusicPlaying = false;
+                    updateMusicButton();
+                }
             } else if (isKeyValid() && document.getElementById('menuScreen').style.display !== 'none') {
                 if (!timerInterval) startTimer();
                 updateTimerDisplay();
@@ -1110,30 +1156,57 @@
     }
 
     // ============================================================
-    // 12. NHẠC NỀN (THÊM MỚI)
+    // 12. NÚT BẬT/TẮT NHẠC (THÊM MỚI)
     // ============================================================
     let isMusicPlaying = false;
 
-    function playBackgroundMusic() {
+    function playMusicAuto() {
         const audio = document.getElementById('bgMusic');
-        if (audio && !isMusicPlaying) {
-            audio.volume = 0.3;
+        if (!audio) return;
+        // Đặt âm lượng nhỏ để không giật mình
+        audio.volume = 0.2;
+        audio.play().then(() => {
+            isMusicPlaying = true;
+            updateMusicButton();
+            console.log('🎵 Tự động phát nhạc nền');
+        }).catch(e => {
+            console.warn('⚠️ Trình duyệt chặn tự động phát. Người dùng cần bấm nút.', e);
+            // Nếu bị chặn, hiển thị thông báo nhẹ
+            showToast('⚠️ Chạm vào màn hình để bật nhạc', 'error');
+        });
+    }
+
+    function toggleMusic() {
+        const audio = document.getElementById('bgMusic');
+        if (!audio) {
+            console.warn('⚠️ Không tìm thấy thẻ audio #bgMusic');
+            return;
+        }
+        
+        if (isMusicPlaying) {
+            audio.pause();
+            isMusicPlaying = false;
+            updateMusicButton();
+            console.log('🔇 Đã dừng nhạc');
+        } else {
             audio.play().then(() => {
                 isMusicPlaying = true;
-                console.log('🎵 Đang phát nhạc nền');
+                updateMusicButton();
+                console.log('🎵 Đang phát nhạc');
             }).catch(e => {
-                console.log('⚠️ Không thể phát nhạc tự động:', e);
+                console.warn('⚠️ Không thể phát nhạc:', e);
+                showToast('⚠️ Không thể phát nhạc. Vui lòng kiểm tra file MP3.', 'error');
             });
         }
     }
 
-    function stopBackgroundMusic() {
-        const audio = document.getElementById('bgMusic');
-        if (audio && isMusicPlaying) {
-            audio.pause();
-            audio.currentTime = 0;
-            isMusicPlaying = false;
-            console.log('🔇 Đã dừng nhạc');
+    function updateMusicButton() {
+        const btn = document.getElementById('musicToggleBtn');
+        if (!btn) return;
+        if (isMusicPlaying) {
+            btn.textContent = '🔊 Tắt nhạc';
+        } else {
+            btn.textContent = '🎵 Bật nhạc';
         }
     }
 
@@ -1389,9 +1462,9 @@
     window.getActiveKeyType = getActiveKeyType;
     window.getFreeKeyExpiry = getFreeKeyExpiry;
     window.getRemainingTime = getRemainingTime;
-    // === THÊM EXPOSE CHO NHẠC ===
-    window.playBackgroundMusic = playBackgroundMusic;
-    window.stopBackgroundMusic = stopBackgroundMusic;
+    window.toggleMusic = toggleMusic;
+    window.updateMusicButton = updateMusicButton;
+    window.playMusicAuto = playMusicAuto;
 </script>
 </body>
 </html>
