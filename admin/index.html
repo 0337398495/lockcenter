@@ -5,105 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Admin Pro">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a12' rx='20'/%3E%3Ctext x='50' y='72' font-size='55' text-anchor='middle' fill='%23ff8800' font-weight='bold'%3EA%3C/text%3E%3C/svg%3E">
-    <title>Admin Pro - Máy chủ KEY</title>
+    <meta name="apple-mobile-web-app-title" content="LockCenter">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a12' rx='20'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='%2300d4ff' font-weight='bold'%3E⚡%3C/text%3E%3C/svg%3E">
+    <title>LockCenter</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
+        /* GIỮ NGUYÊN CSS NHƯ FILE GỐC - Đã có ở các tin nhắn trước */
+        /* Để tiết kiệm dung lượng, tôi giữ nguyên cấu trúc giao diện */
         *{margin:0;padding:0;box-sizing:border-box}
-        body{background:#0a0a0f;font-family:'Segoe UI',sans-serif;padding:16px;color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:flex-start}
-        .admin-panel{max-width:650px;width:100%;background:linear-gradient(145deg,#12121a,#1a1a2e);border-radius:32px;padding:24px 20px 32px;border:1px solid #2a2a3e;box-shadow:0 20px 40px rgba(0,0,0,0.8);margin-top:10px}
-        .header{text-align:center;padding-bottom:16px;border-bottom:1px solid #2a2a3e;margin-bottom:20px}
-        .header h1{font-size:24px;font-weight:700;background:linear-gradient(90deg,#ff8800,#ffcc00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .header .sub{color:#666;font-size:12px;margin-top:2px}
-        .badge-pro{display:inline-block;background:linear-gradient(90deg,#ff4444,#ff8800);padding:2px 14px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;margin-top:4px}
-        .free-section{background:#0f0f18;border-radius:16px;padding:16px;border:1px solid #1f1f33;margin-bottom:20px}
-        .free-section .title{font-size:14px;font-weight:600;color:#00ff88;margin-bottom:10px}
-        .free-key-display{display:flex;justify-content:space-between;align-items:center;background:#0a0a12;padding:10px 16px;border-radius:12px;border:1px solid #1f1f33}
-        .free-key-display .key{font-family:'Courier New',monospace;font-size:20px;font-weight:700;color:#00ff88;letter-spacing:2px}
-        .free-key-display .copy-btn{background:rgba(0,255,136,0.15);border:1px solid #00ff88;color:#00ff88;padding:4px 14px;border-radius:60px;cursor:pointer;font-size:12px;font-weight:600;transition:.3s}
-        .free-key-display .copy-btn:hover{background:rgba(0,255,136,0.3)}
-        .free-expiry{margin-top:6px;font-size:12px;color:#666;display:flex;justify-content:space-between}
-        .free-expiry .time{color:#00ff88;font-weight:600;font-family:'Courier New',monospace}
-        .tabs{display:flex;gap:8px;margin-bottom:16px}
-        .tabs .tab{flex:1;padding:10px;text-align:center;border-radius:16px;cursor:pointer;transition:.3s;font-weight:700;font-size:13px;border:1px solid #1f1f33;background:#0f0f18;color:#666}
-        .tabs .tab.active{border-color:#ff8800;background:rgba(255,136,0,0.15);color:#ff8800}
-        .tabs .tab .count-badge{background:rgba(255,136,0,0.2);color:#ff8800;border-radius:50%;padding:0 8px;font-size:11px;margin-left:4px}
-        .create-prem{background:#0f0f18;border-radius:16px;padding:16px;border:1px solid #1f1f33;margin-bottom:16px}
-        .create-prem .title{font-size:14px;font-weight:600;color:#b0b0d0;margin-bottom:10px}
-        .create-prem .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-        .create-prem .row input[type="text"]{flex:2;min-width:100px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 14px;color:#ff8800;font-size:14px;font-weight:600;outline:none;font-family:'Courier New',monospace}
-        .create-prem .row input[type="text"]:focus{border-color:#ff8800;box-shadow:0 0 20px rgba(255,136,0,0.15)}
-        .create-prem .row input[type="number"]{width:70px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 12px;color:#ff8800;font-size:14px;font-weight:600;outline:none;text-align:center;font-family:'Courier New',monospace}
-        .create-prem .row input[type="number"]:focus{border-color:#ff8800}
-        .create-prem .row label{color:#888;font-size:13px}
-        .create-prem .row .btn-gen{background:linear-gradient(90deg,#ff8800,#ffcc00);border:none;color:#0a0a0f;font-weight:700;padding:10px 16px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase;transition:.2s;white-space:nowrap}
-        .create-prem .row .btn-gen:hover{transform:scale(1.03)}
-        .create-prem .row .btn-create{background:linear-gradient(90deg,#ff6600,#ff8800);border:none;color:#fff;font-weight:700;padding:10px 18px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase;transition:.2s;white-space:nowrap}
-        .create-prem .row .btn-create:hover{transform:scale(1.03)}
-        .create-prem .row .btn-reset{background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;font-weight:700;padding:10px 14px;border-radius:60px;cursor:pointer;font-size:11px;text-transform:uppercase;transition:.2s;white-space:nowrap}
-        .create-prem .row .btn-reset:hover{transform:scale(1.03)}
-        .prem-list{background:#0a0a12;border-radius:16px;padding:12px;border:1px solid #1f1f33;max-height:350px;overflow-y:auto}
-        .prem-list::-webkit-scrollbar{width:4px}
-        .prem-list::-webkit-scrollbar-track{background:#0a0a12}
-        .prem-list::-webkit-scrollbar-thumb{background:#2a2a44;border-radius:10px}
-        .prem-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1a1a2e;font-size:13px}
-        .prem-item:last-child{border-bottom:none}
-        .prem-item .info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
-        .prem-item .info .name{color:#b0b0d0;font-weight:600}
-        .prem-item .info .key{font-family:'Courier New',monospace;color:#ff8800;font-weight:600;letter-spacing:1px;font-size:14px;word-break:break-all}
-        .prem-item .info .expiry{color:#666;font-size:11px}
-        .prem-item .info .expiry .valid{color:#00ff88}
-        .prem-item .info .expiry .expired{color:#ff4466}
-        .prem-item .info .expiry .time-left{font-weight:600;font-family:'Courier New',monospace}
-        .prem-item .actions{display:flex;gap:6px;flex-shrink:0;margin-left:8px}
-        .prem-item .actions .btn-copy{background:rgba(0,212,255,0.1);border:1px solid #2a2a44;color:#00d4ff;padding:4px 12px;border-radius:60px;cursor:pointer;font-size:11px;font-weight:600;transition:.3s}
-        .prem-item .actions .btn-copy:hover{background:rgba(0,212,255,0.2)}
-        .prem-item .actions .btn-delete{background:rgba(255,68,68,0.1);border:1px solid #662222;color:#ff4466;padding:4px 10px;border-radius:60px;cursor:pointer;font-size:11px;font-weight:600;transition:.3s}
-        .prem-item .actions .btn-delete:hover{background:rgba(255,68,68,0.2)}
-        .empty-state{text-align:center;color:#444;padding:20px;font-size:13px}
-        .footer{text-align:center;color:#444;font-size:10px;margin-top:16px}
-        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#00ff88;padding:12px 28px;border-radius:60px;font-size:14px;font-weight:600;border:1px solid #226622;box-shadow:0 10px 40px rgba(0,0,0,0.8);z-index:999;transition:.3s;backdrop-filter:blur(8px);max-width:90%;text-align:center}
-        .toast.error{border-color:#662222;color:#ff4466}
-        .toast.prem{border-color:#886622;color:#ff8800}
-        @media(max-width:460px){.admin-panel{padding:16px}.create-prem .row{flex-direction:column}.create-prem .row input[type="text"],.create-prem .row input[type="number"]{width:100%}.prem-item{flex-direction:column;gap:8px;align-items:stretch}.prem-item .actions{justify-content:flex-end}.free-section .free-key-display{flex-direction:column;gap:8px}.free-section .free-key-display .copy-btn{width:100%;text-align:center}}
+        body{background:#0a0a0f;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Segoe UI','Roboto',sans-serif;padding:16px;color:#fff}
+        #loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;padding:20px;transition:opacity .5s}
+        #loginScreen.hidden{opacity:0;pointer-events:none}
+        .login-box{max-width:380px;width:100%;background:#0a0a12;border-radius:32px;padding:40px 28px;border:1px solid #1a1a2e;text-align:center}
+        .login-box h2{font-size:24px;font-weight:700;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+        .login-box .sub{color:#666;font-size:13px;margin-bottom:20px}
+        .login-box input{width:100%;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:14px 20px;color:#00d4ff;font-size:16px;font-weight:600;outline:none;text-align:center;margin-bottom:16px;font-family:'Courier New',monospace;letter-spacing:2px}
+        .login-box input:focus{border-color:#00aaff;box-shadow:0 0 30px rgba(0,180,255,0.1)}
+        .login-box .btn-login{width:100%;background:linear-gradient(90deg,#0044aa,#0088ff);border:none;color:#fff;font-weight:700;padding:14px;border-radius:60px;cursor:pointer;font-size:16px;text-transform:uppercase;transition:.2s;box-shadow:0 6px 20px rgba(0,100,255,0.25)}
+        .login-box .btn-login:hover{transform:scale(1.02)}
+        .login-error{color:#ff4466;font-size:13px;margin-top:12px;min-height:24px}
+        .login-success{color:#00ff88;font-size:13px;margin-top:12px;min-height:24px}
+        .date-info{color:#444;font-size:11px;margin-top:12px}
+        .toast-msg{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#00d4ff;padding:14px 28px;border-radius:60px;font-size:14px;font-weight:600;border:1px solid #2a2a50;box-shadow:0 10px 40px rgba(0,0,0,0.8);z-index:999;transition:.3s;backdrop-filter:blur(8px);max-width:90%;text-align:center}
+        .toast-msg.error{background:#1a0a0a;color:#ff4466;border-color:#662222}
+        .toast-msg.success{background:#0a1a0a;color:#00ff88;border-color:#226622}
+        .lock-center{max-width:420px;width:100%;background:linear-gradient(145deg,#12121a,#1a1a2e);border-radius:32px;padding:24px 20px 32px;border:1px solid #2a2a3e;position:relative}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #2a2a3e}
+        .header h1{font-size:20px;font-weight:700;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .header h1 small{font-size:10px;color:#666;-webkit-text-fill-color:#666;background:none;font-weight:400;margin-left:4px}
+        .logout-btn{position:absolute;top:16px;right:16px;background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff4466;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;font-weight:700}
+        .logout-btn:hover{background:rgba(255,68,68,0.3);transform:scale(1.1)}
+        .key-timer{background:#0f0f18;border-radius:16px;padding:12px 16px;margin-bottom:16px;border:1px solid #1f1f33;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#888}
+        .key-timer .time{color:#00ff88;font-weight:700;font-family:'Courier New',monospace;font-size:16px}
+        .key-timer .time.expired{color:#ff4466}
+        .key-timer .type-badge{font-size:10px;padding:2px 10px;border-radius:20px;font-weight:700}
+        .key-timer .type-badge.free{background:rgba(0,255,136,0.15);color:#00ff88;border:1px solid #00ff88}
+        .key-timer .type-badge.prem{background:rgba(255,136,0,0.15);color:#ff8800;border:1px solid #ff8800}
+        .activation-row{background:#0f0f18;border-radius:20px;padding:14px 16px;margin-bottom:16px;border:1px solid #1f1f33;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .activation-row label{font-size:14px;font-weight:600;color:#b0b0d0;white-space:nowrap}
+        .activation-row input{flex:1;min-width:80px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 14px;color:#00d4ff;font-size:15px;font-weight:600;outline:none;font-family:'Courier New',monospace}
+        .activation-row input:focus{border-color:#00aaff;box-shadow:0 0 20px rgba(0,180,255,0.15)}
+        .activation-row .btn-activate{background:linear-gradient(90deg,#00aa44,#00dd66);border:none;color:#fff;font-weight:700;padding:10px 16px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase}
+        .activation-row .btn-activate:hover{transform:scale(1.03);box-shadow:0 6px 24px rgba(0,200,80,0.35)}
+        .activation-row .btn-clear{background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;font-weight:700;padding:10px 14px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase}
+        .activation-row .btn-clear:hover{transform:scale(1.03);box-shadow:0 6px 24px rgba(200,0,50,0.35)}
+        .activation-row .activation-status{font-size:12px;color:#666;min-width:50px;text-align:right}
+        .activation-row .activation-status.active{color:#00ff88}
+        .id-list-section{background:#0f0f18;border-radius:20px;padding:14px 16px;margin-bottom:16px;border:1px solid #1f1f33}
+        .id-list-section .title{font-size:13px;font-weight:600;color:#b0b0d0;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+        .id-list-section .title .count{font-size:11px;color:#666;font-weight:400}
+        .id-list-container{display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow-y:auto;width:100%}
+        .id-item{display:flex;align-items:center;background:#0a0a12;border:1px solid #1f1f33;border-radius:60px;padding:4px 8px 4px 14px;gap:6px;font-size:12px;color:#00d4ff;font-family:'Courier New',monospace}
+        .id-item .id-text{max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .id-item .btn-delete-id{background:rgba(255,68,68,0.1);border:none;color:#ff4466;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:700}
+        .id-item .btn-delete-id:hover{background:rgba(255,68,68,0.3)}
+        .file-support-row{background:#0f0f18;border-radius:20px;padding:14px 16px;margin-bottom:16px;border:1px solid #1f1f33;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .file-support-row label{font-size:14px;font-weight:600;color:#b0b0d0;white-space:nowrap}
+        .file-support-row input[type="file"]{flex:1;min-width:80px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:8px 14px;color:#b0b0d0;font-size:12px;outline:none;cursor:pointer;font-family:'Segoe UI',sans-serif}
+        .file-support-row .btn-clear-file{background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;font-weight:700;padding:8px 14px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase}
+        .file-support-row .btn-clear-file:hover{transform:scale(1.03);box-shadow:0 6px 24px rgba(200,0,50,0.35)}
+        .file-support-row .file-status{font-size:12px;color:#666;min-width:50px;text-align:right}
+        .file-support-row .file-status.active{color:#00ff88}
+        .control-group{background:#0f0f18;border-radius:20px;padding:18px 16px;margin-bottom:16px;border:1px solid #1f1f33}
+        .control-label{display:flex;justify-content:space-between;font-size:14px;color:#b0b0d0;margin-bottom:8px}
+        .control-label .value{color:#00d4ff;font-weight:700;min-width:48px;text-align:right}
+        input[type="range"]{width:100%;height:6px;border-radius:4px;background:linear-gradient(90deg,#1f1f3a,#2a2a50);outline:none;margin:6px 0;-webkit-appearance:none;appearance:none}
+        input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#00d4ff,#0066cc);cursor:pointer;border:2px solid #0a0a12}
+        .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1a1a2e}
+        .toggle-row:last-child{border-bottom:none}
+        .toggle-row .label{font-size:15px;font-weight:500;color:#c0c0e0}
+        .toggle-row .label small{font-weight:300;color:#666;font-size:12px;margin-left:8px}
+        .toggle-switch{position:relative;width:48px;height:28px;background:#1f1f33;border-radius:30px;cursor:pointer;transition:.25s;border:1px solid #2f2f4a;flex-shrink:0}
+        .toggle-switch.active{background:linear-gradient(90deg,#0066cc,#00d4ff);border-color:#00aaff;box-shadow:0 0 16px rgba(0,180,255,0.3)}
+        .toggle-switch .knob{position:absolute;top:2px;left:2px;width:22px;height:22px;background:#d0d0ee;border-radius:50%;transition:.25s}
+        .toggle-switch.active .knob{left:22px;background:#fff}
+        .footer-actions{display:flex;gap:12px;margin-top:20px}
+        .btn{flex:1;padding:14px 10px;border:none;border-radius:60px;font-size:15px;font-weight:700;text-transform:uppercase;background:#1f1f33;color:#888;cursor:pointer;border:1px solid #2a2a44}
+        .btn-primary{background:linear-gradient(90deg,#0044aa,#0088ff);color:#fff;border:none;box-shadow:0 6px 20px rgba(0,100,255,0.25)}
+        .btn-primary:hover{transform:scale(1.02)}
+        .btn-danger{background:linear-gradient(90deg,#880022,#cc0044);color:#fff;border:none}
+        .btn-game{flex:1;padding:12px 8px;border:none;border-radius:60px;font-size:14px;font-weight:700;text-transform:uppercase;cursor:pointer;color:#fff;background:linear-gradient(135deg,#1a2a3a,#0d1b2a);border:1px solid #2a4a6a}
+        .btn-game-ff{border-color:#ff6a00;background:linear-gradient(135deg,#2a1a0a,#1a0e00)}
+        .btn-game-ffmax{border-color:#00aaff;background:linear-gradient(135deg,#0a1a2a,#000e1a)}
+        .game-launch-row{display:flex;gap:12px;margin-top:12px}
+        .status-bar{margin-top:16px;padding:10px 14px;background:#0a0a12;border-radius:14px;font-size:12px;color:#666;text-align:center;border:1px solid #1a1a2e;font-family:monospace}
+        .status-bar span{color:#00d4ff}
+        .music-control{text-align:center;margin-top:12px;padding-top:8px;border-top:1px solid #1a1a2e}
+        .music-control .btn-music{background:rgba(0,212,255,0.08);color:#888;border:1px solid #2a2a44;border-radius:60px;padding:6px 16px;font-size:12px;cursor:pointer;transition:.3s;font-family:'Segoe UI',sans-serif}
+        .music-control .btn-music:hover{background:rgba(0,212,255,0.2)}
+        @media(max-width:460px){.lock-center{padding:16px}.logout-btn{top:12px;right:12px;width:32px;height:32px;font-size:16px}.activation-row{flex-wrap:wrap}.activation-row input{min-width:100%}.file-support-row{flex-wrap:wrap}.file-support-row input[type="file"]{min-width:100%}.header h1{font-size:17px}.id-item .id-text{max-width:70px}}
     </style>
 </head>
 <body>
-<div class="admin-panel">
-    <div class="header">
-        <h1>🔐 MÁY CHỦ KEY</h1>
-        <div class="sub">Quản lý key cho tất cả người dùng</div>
-        <div class="badge-pro">⚡ SERVER SYNC</div>
+
+<div id="loginScreen">
+    <div class="login-box">
+        <h2>🔐 LOCK CENTER</h2>
+        <p class="sub">Nhập key để đăng nhập</p>
+        <div class="key-hint">🔑 Vui lòng nhập key do quản trị viên cung cấp</div>
+        <input type="text" id="loginKey" placeholder="Nhập key..." autofocus>
+        <button class="btn-login" onclick="handleLogin()">Đăng nhập</button>
+        <div class="login-error" id="loginError"></div>
+        <div class="login-success" id="loginSuccess"></div>
+        <div class="date-info" id="dateInfo"></div>
     </div>
-    <div class="free-section">
-        <div class="title">🆓 KEY FREE HÔM NAY</div>
-        <div class="free-key-display">
-            <span class="key" id="freeKeyDisplay">------</span>
-            <button class="copy-btn" onclick="copyFreeKey()">📋 Sao chép</button>
-        </div>
-        <div class="free-expiry"><span>⏳ Hết hạn vào 00:00</span><span class="time" id="freeTimer">--:--:--</span></div>
-    </div>
-    <div class="tabs">
-        <div class="tab active" id="tabList" onclick="switchTab('list')">📋 DANH SÁCH PREM <span class="count-badge" id="premCountBadge">0</span></div>
-        <div class="tab" id="tabCreate" onclick="switchTab('create')">➕ TẠO PREM</div>
-    </div>
-    <div id="panelList">
-        <div class="prem-list" id="premListContainer"><div class="empty-state">Chưa có key PREM nào</div></div>
-        <div style="margin-top:8px;font-size:12px;color:#444;text-align:right;" id="premCount">Tổng: 0 key PREM</div>
-    </div>
-    <div id="panelCreate" style="display:none;">
-        <div class="create-prem">
-            <div class="title">⭐ TẠO KEY PREM MỚI</div>
-            <div class="row"><input type="text" id="premName" placeholder="Tên người dùng..." maxlength="20"></div>
-            <div class="row" style="margin-top:8px;"><input type="text" id="premKeyInput" placeholder="Nhập key hoặc Random..." maxlength="30"><button class="btn-gen" onclick="generatePremKey()">🎲 Random</button></div>
-            <div class="row" style="margin-top:8px;"><label>⏳ Hết hạn sau:</label><input type="number" id="premHours" value="72" min="1" max="9999"><label>giờ</label><button class="btn-create" onclick="createPremKey()">✅ Tạo PREM</button><button class="btn-reset" onclick="clearForm()">↺ Xoá</button></div>
-        </div>
-        <div style="font-size:12px;color:#444;">⚡ Key PREM sẽ đồng bộ qua máy chủ Firebase</div>
-    </div>
-    <div class="footer">Chỉ dành cho Admin • Key được lưu trên máy chủ trung tâm</div>
 </div>
+
+<div class="lock-center" id="menuScreen" style="display:none;">
+    <div class="logout-btn" onclick="logoutKey()">✕</div>
+    <div class="header"><h1>⚡ LOCK CENTER <small>(by hthiet)</small></h1><span class="badge" id="menuBadge">v5.0 • FF</span></div>
+    <div class="key-timer"><span>⏳ Key còn hiệu lực</span><span class="time" id="timerDisplay">--:--:--</span><span class="type-badge free" id="keyTypeBadgeMenu">🆓 FREE</span></div>
+    <div class="activation-row"><label>🔑 ID</label><input type="text" id="activationId" placeholder="Nhập ID game..."><button class="btn-activate" onclick="activateId()">Kích hoạt</button><button class="btn-clear" onclick="clearId()">Xoá</button><span class="activation-status" id="activationStatus">⚪</span></div>
+    <div class="id-list-section"><div class="title"><span>📋 ID đã nhập</span><span class="count" id="idCount">0</span></div><div class="id-list-container" id="idListContainer"><div class="id-empty">Chưa có ID nào</div></div></div>
+    <div class="file-support-row"><label>📁 File</label><input type="file" id="supportFile"><button class="btn-clear-file" onclick="clearFile()">Xoá</button><span class="file-status" id="fileStatus">⚪</span></div>
+    <div class="control-group"><div class="control-label"><span>🎯 Độ nhạy con trỏ trượt</span><span class="value" id="sensitivityValue">100</span></div><input type="range" id="sensitivitySlider" min="100" max="4000" value="100" step="10"><div style="display:flex;justify-content:space-between;font-size:10px;color:#444;padding:0 4px;"><span>100</span><span>4000</span></div></div>
+    <div class="control-group"><div class="control-label"><span>⚡ Tốc độ cảm ứng</span><span class="value" id="touchSpeedValue">100</span></div><input type="range" id="touchSpeedSlider" min="100" max="4000" value="100" step="10"><div style="display:flex;justify-content:space-between;font-size:10px;color:#444;padding:0 4px;"><span>100</span><span>4000</span></div></div>
+    <div class="control-group" style="padding:6px 16px;"><div class="toggle-row"><span class="label">📳 Fix Rung <small>(chống giật)</small></span><div class="toggle-switch" id="toggleRung" onclick="toggleSwitch('toggleRung')"><div class="knob"></div></div></div><div class="toggle-row"><span class="label">🔄 Fix Lố <small>(ổn định FPS)</small></span><div class="toggle-switch" id="toggleLo" onclick="toggleSwitch('toggleLo')"><div class="knob"></div></div></div><div class="toggle-row"><span class="label">🎯 LockHead <small>(tự động headshot)</small></span><div class="toggle-switch" id="toggleLockhead" onclick="toggleSwitch('toggleLockhead')"><div class="knob"></div></div></div></div>
+    <div class="footer-actions"><button class="btn btn-primary" onclick="applySettings()">✔ Áp dụng</button><button class="btn btn-danger" onclick="resetSettings()">⟲ Reset</button></div>
+    <div class="game-launch-row"><button class="btn-game btn-game-ff" onclick="launchGame('freefire')">🔥 Free Fire</button><button class="btn-game btn-game-ffmax" onclick="launchGame('freefiremax')">⚡ Free Fire Max</button></div>
+    <div class="status-bar">▶ Trạng thái: <span id="statusText">Sẵn sàng</span> &nbsp;|&nbsp; Profile: <span id="profileStatus">Mặc định</span></div>
+    <audio id="bgMusic" loop preload="auto"><source src="montagem-tenta.mp3" type="audio/mpeg"><source src="https://0337398495.github.io/lockcenter/montagem-tenta.mp3" type="audio/mpeg"></audio>
+    <div class="music-control"><button class="btn-music" onclick="toggleMusic()" id="musicToggleBtn">🎵 Bật nhạc</button></div>
+</div>
+
 <script>
     // ============================================================
     // FIREBASE CONFIG - THAY BẰNG CONFIG CỦA BẠN
@@ -122,239 +147,461 @@
     const db = firebase.database();
 
     // ============================================================
-    // HÀM FIREBASE (MÁY CHỦ TRUNG TÂM)
+    // 1. KEY FREE
+    // ============================================================
+    function generateDailyKey(date) {
+        const y = date.getFullYear(), m = String(date.getMonth()+1).padStart(2,'0'), d = String(date.getDate()).padStart(2,'0'), seed = parseInt(y+m+d);
+        let hash = 0, s = String(seed);
+        for (let i = 0; i < s.length; i++) { hash = ((hash << 5) - hash) + s.charCodeAt(i); hash &= hash; }
+        let key = Math.abs(hash).toString(36).toUpperCase();
+        while (key.length < 8) key = 'X' + key;
+        key = key.slice(0, 8) + String(date.getDate()).padStart(2,'0');
+        return key;
+    }
+    function getTodayFreeKey() { return generateDailyKey(new Date()); }
+    function getFreeKeyExpiry() { const t=new Date(); t.setDate(t.getDate()+1); t.setHours(0,0,0,0); return t.getTime(); }
+
+    // ============================================================
+    // 2. LẤY DANH SÁCH KEY PREM TỪ MÁY CHỦ (FIREBASE)
     // ============================================================
     async function getPremList() {
         const snapshot = await db.ref('premKeys').once('value');
         const data = snapshot.val();
         if (!data) return [];
         const list = Object.keys(data).map(key => ({ ...data[key], id: key }));
-        const valid = list.filter(item => item.expiry > Date.now());
-        if (valid.length !== list.length) {
-            const expiredIds = list.filter(item => item.expiry <= Date.now()).map(item => item.id);
-            await Promise.all(expiredIds.map(id => db.ref('premKeys/' + id).remove()));
-        }
-        return valid;
+        return list.filter(item => item.expiry > Date.now());
     }
 
-    async function addPremKey(name, key, hours) {
-        const expiry = Date.now() + (hours * 60 * 60 * 1000);
-        const newRef = db.ref('premKeys').push();
-        await newRef.set({
-            name: name,
-            key: key,
-            expiry: expiry,
-            created: Date.now(),
-            hours: hours
-        });
-        return newRef.key;
-    }
+    let premListCache = [];
 
-    async function deletePremKey(id) {
-        await db.ref('premKeys/' + id).remove();
+    async function refreshPremList() {
+        premListCache = await getPremList();
     }
 
     // ============================================================
-    // KEY FREE
+    // 3. LẤY KEY ĐANG HOẠT ĐỘNG
     // ============================================================
-    function generateDailyKey(date) {
-        const y = date.getFullYear(),
-            m = String(date.getMonth() + 1).padStart(2, '0'),
-            d = String(date.getDate()).padStart(2, '0'),
-            seed = parseInt(y + m + d);
-        let hash = 0,
-            s = String(seed);
-        for (let i = 0; i < s.length; i++) {
-            hash = ((hash << 5) - hash) + s.charCodeAt(i);
-            hash &= hash;
+    async function getActiveKey() {
+        await refreshPremList();
+        const activePremId = localStorage.getItem('lockcenter_active_prem_id');
+        if (activePremId) {
+            const prem = premListCache.find(item => item.id === activePremId);
+            if (prem) return prem.key;
         }
-        let key = Math.abs(hash).toString(36).toUpperCase();
-        while (key.length < 8) key = 'X' + key;
-        key = key.slice(0, 8) + String(date.getDate()).padStart(2, '0');
-        return key;
+        return getTodayFreeKey();
     }
-    function getTodayFreeKey() { return generateDailyKey(new Date()); }
-    function getFreeKeyExpiry() {
-        const n = new Date(),
-            t = new Date(n);
-        t.setDate(t.getDate() + 1);
-        t.setHours(0, 0, 0, 0);
-        return t.getTime();
+
+    async function getActiveKeyType() {
+        await refreshPremList();
+        const activePremId = localStorage.getItem('lockcenter_active_prem_id');
+        if (activePremId && premListCache.some(item => item.id === activePremId)) return 'prem';
+        return 'free';
     }
+
+    async function getActiveKeyExpiry() {
+        await refreshPremList();
+        const activePremId = localStorage.getItem('lockcenter_active_prem_id');
+        if (activePremId) {
+            const prem = premListCache.find(item => item.id === activePremId);
+            if (prem) return prem.expiry;
+        }
+        return getFreeKeyExpiry();
+    }
+
+    async function isKeyValid() {
+        const savedKey = localStorage.getItem('lockcenter_saved_key');
+        if (!savedKey) return false;
+        const expiry = await getActiveKeyExpiry();
+        if (!expiry) return false;
+        const activeKey = await getActiveKey();
+        return savedKey === activeKey && Date.now() < expiry;
+    }
+
+    async function getRemainingTime() {
+        const expiry = await getActiveKeyExpiry();
+        return expiry ? Math.max(0, expiry - Date.now()) : 0;
+    }
+
     function formatTime(ms) {
-        if (ms <= 0) return 'Đã hết hạn';
-        const t = Math.floor(ms / 1000),
-            h = String(Math.floor(t / 3600)).padStart(2, '0'),
-            m = String(Math.floor((t % 3600) / 60)).padStart(2, '0'),
-            s = String(t % 60).padStart(2, '0');
+        if (ms <= 0) return '00:00:00';
+        const t = Math.floor(ms / 1000), h = String(Math.floor(t / 3600)).padStart(2,'0'), m = String(Math.floor((t % 3600) / 60)).padStart(2,'0'), s = String(t % 60).padStart(2,'0');
         return h + ':' + m + ':' + s;
     }
-    function updateFreeTimer() {
-        const rem = getFreeKeyExpiry() - Date.now();
-        const el = document.getElementById('freeTimer');
-        if (rem > 0) { el.textContent = formatTime(rem);
-            el.style.color = '#00ff88'; } else { el.textContent = 'Đã hết hạn';
-            el.style.color = '#ff4466'; }
+
+    // ============================================================
+    // 4. TIMER
+    // ============================================================
+    let timerInterval = null;
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        updateTimerDisplay();
+        timerInterval = setInterval(async function() {
+            const remaining = await getRemainingTime();
+            if (remaining <= 0) {
+                clearInterval(timerInterval); timerInterval = null;
+                localStorage.removeItem('lockcenter_saved_key');
+                localStorage.removeItem('lockcenter_login_time');
+                localStorage.removeItem('lockcenter_active_prem_id');
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('menuScreen').style.display = 'none';
+                document.getElementById('loginError').textContent = '⏰ Key đã hết hạn! Vui lòng nhập key mới.';
+                showToast('⏰ Key đã hết hạn!', 'error');
+                return;
+            }
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        getRemainingTime().then(remaining => {
+            document.getElementById('timerDisplay').textContent = formatTime(remaining);
+        });
     }
 
     // ============================================================
-    // ADMIN UI
+    // 5. QUẢN LÝ ID
     // ============================================================
-    async function renderPremList() {
-        const list = await getPremList();
-        const container = document.getElementById('premListContainer');
-        const count = document.getElementById('premCount');
-        const badge = document.getElementById('premCountBadge');
-        badge.textContent = list.length;
-        count.textContent = 'Tổng: ' + list.length + ' key PREM';
-        if (!list.length) {
-            container.innerHTML = '<div class="empty-state">Chưa có key PREM nào</div>';
+    function getSavedIds() { try { const s = localStorage.getItem('lockcenter_saved_ids'); return s ? JSON.parse(s) : []; } catch(e) { return []; } }
+    function saveIds(ids) { localStorage.setItem('lockcenter_saved_ids', JSON.stringify(ids)); }
+    function addIdToList(id) { if (!id) return; const ids = getSavedIds(); if (!ids.includes(id.trim())) { ids.push(id.trim()); saveIds(ids); renderIdList(); } }
+    function deleteIdFromList(id) { let ids = getSavedIds(); ids = ids.filter(i => i !== id); saveIds(ids); renderIdList(); }
+    function renderIdList() {
+        const container = document.getElementById('idListContainer');
+        const ids = getSavedIds();
+        document.getElementById('idCount').textContent = ids.length;
+        if (!ids.length) { container.innerHTML = '<div class="id-empty">Chưa có ID nào</div>'; return; }
+        container.innerHTML = ids.map(id => `<div class="id-item"><span class="id-text">${id}</span><button class="btn-delete-id" onclick="deleteIdFromList('${id}')">✕</button></div>`).join('');
+    }
+
+    // ============================================================
+    // 6. CHECK AUTO LOGIN
+    // ============================================================
+    async function checkAndAutoLogin() {
+        const activeKey = await getActiveKey();
+        const savedKey = localStorage.getItem('lockcenter_saved_key');
+        if (savedKey && savedKey !== activeKey) {
+            localStorage.removeItem('lockcenter_saved_key');
+            localStorage.removeItem('lockcenter_login_time');
+            localStorage.removeItem('lockcenter_active_prem_id');
+        }
+        const valid = await isKeyValid();
+        if (valid) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('menuScreen').style.display = 'block';
+            resetToDefault();
+            startTimer();
+            const type = await getActiveKeyType();
+            updateKeyTypeDisplay(type);
+            renderIdList();
+            showToast('✅ Đăng nhập tự động thành công!', 'success');
+            setTimeout(() => playMusicAuto(), 500);
+            return true;
+        } else {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('menuScreen').style.display = 'none';
+            localStorage.removeItem('lockcenter_saved_key');
+            localStorage.removeItem('lockcenter_login_time');
+            localStorage.removeItem('lockcenter_active_prem_id');
+            return false;
+        }
+    }
+
+    // ============================================================
+    // 7. LOGIN
+    // ============================================================
+    async function handleLogin() {
+        const input = document.getElementById('loginKey'), err = document.getElementById('loginError'), ok = document.getElementById('loginSuccess');
+        const userKey = input.value.trim().toUpperCase();
+        err.textContent = ok.textContent = '';
+        const idInput = document.getElementById('activationId');
+        const currentId = idInput.value.trim();
+
+        const freeKey = getTodayFreeKey();
+        if (userKey === freeKey) {
+            localStorage.setItem('lockcenter_saved_key', freeKey);
+            localStorage.setItem('lockcenter_login_time', String(Date.now()));
+            localStorage.removeItem('lockcenter_active_prem_id');
+            if (currentId) addIdToList(currentId);
+            playSuccessSound();
+            ok.textContent = '✅ Đăng nhập FREE thành công!';
+            setTimeout(() => enterMenu('free'), 800);
             return;
         }
-        container.innerHTML = list.map(item => {
-            const rem = item.expiry - Date.now();
-            const valid = rem > 0;
-            const timeStr = valid ? formatTime(rem) : 'Đã hết hạn';
-            const expiryDate = new Date(item.expiry).toLocaleString('vi-VN');
-            return `<div class="prem-item">
-                <div class="info">
-                    <span class="name">👤 ${item.name}</span>
-                    <span class="key">${item.key}</span>
-                    <span class="expiry">⏳ Còn: <span class="${valid?'valid':'expired'} time-left">${timeStr}</span> &nbsp;|&nbsp; Hết: ${expiryDate}</span>
-                </div>
-                <div class="actions">
-                    <button class="btn-copy" onclick="copyPremKey('${item.key}')">📋</button>
-                    <button class="btn-delete" onclick="deletePremKey('${item.id}')">✕</button>
-                </div>
-            </div>`;
-        }).join('');
-    }
 
-    async function createPremKey() {
-        const name = document.getElementById('premName').value.trim() || 'Không tên';
-        let key = document.getElementById('premKeyInput').value.trim().toUpperCase();
-        if (!key) {
-            key = 'PREM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-            document.getElementById('premKeyInput').value = key;
-        }
-        const hours = parseInt(document.getElementById('premHours').value) || 72;
-        const list = await getPremList();
-        if (list.some(item => item.key === key)) {
-            showToast('⚠️ Key đã tồn tại!', 'error');
+        await refreshPremList();
+        const matched = premListCache.find(item => item.key === userKey);
+        if (matched) {
+            localStorage.setItem('lockcenter_saved_key', matched.key);
+            localStorage.setItem('lockcenter_login_time', String(Date.now()));
+            localStorage.setItem('lockcenter_active_prem_id', matched.id);
+            if (currentId) addIdToList(currentId);
+            playSuccessSound();
+            // Xác định loại key để hiển thị
+            let typeName = 'PREM';
+            if (matched.hours === 720) typeName = '⭐ 1 THÁNG';
+            else if (matched.hours === 8760) typeName = '⭐ 1 NĂM';
+            else if (matched.hours >= 876000) typeName = '⭐ VĨNH VIỄN ♾️';
+            else if (matched.hours === 72) typeName = '⭐ 72H';
+            else if (matched.hours === 48) typeName = '⭐ 48H';
+            else if (matched.hours === 24) typeName = '⭐ 24H';
+            ok.textContent = '✅ Đăng nhập ' + typeName + ' "' + (matched.name || '') + '" thành công!';
+            setTimeout(() => enterMenu('prem', matched), 800);
             return;
         }
-        await addPremKey(name, key, hours);
-        await renderPremList();
-        showToast('✅ Đã tạo key PREM cho "' + name + '": ' + key, 'prem');
-        document.getElementById('premKeyInput').value = '';
-        document.getElementById('premName').value = '';
-        console.log('[Máy chủ] Key PREM đã tạo:', key);
-        console.log('[Máy chủ] Gửi key này cho người dùng');
+
+        playErrorSound();
+        err.textContent = '❌ Sai key!';
+        input.value = ''; input.focus();
+        showToast('❌ Sai key!', 'error');
     }
 
-    async function deletePremKey(id) {
-        if (!confirm('Xoá key này?')) return;
-        await deletePremKey(id);
-        await renderPremList();
-        showToast('🗑️ Đã xoá key PREM', 'success');
+    function enterMenu(type, premData) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('menuScreen').style.display = 'block';
+        resetToDefault();
+        startTimer();
+        updateKeyTypeDisplay(type, premData);
+        renderIdList();
+        showToast('✅ Đăng nhập thành công!', 'success');
+        setTimeout(() => playMusicAuto(), 500);
     }
 
-    function copyPremKey(key) {
-        copyToClipboard(key, '✅ Đã sao chép: ' + key);
+    // ============================================================
+    // 8. LOGOUT
+    // ============================================================
+    function logoutKey() {
+        if (confirm('Thoát key?')) {
+            localStorage.removeItem('lockcenter_saved_key');
+            localStorage.removeItem('lockcenter_login_time');
+            localStorage.removeItem('lockcenter_active_prem_id');
+            if (timerInterval) clearInterval(timerInterval); timerInterval = null;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('menuScreen').style.display = 'none';
+            document.getElementById('loginKey').value = '';
+            document.getElementById('loginKey').focus();
+            renderIdList();
+            showToast('Đã thoát key', 'error');
+            if (isMusicPlaying) { const audio = document.getElementById('bgMusic'); if (audio) audio.pause(); isMusicPlaying = false; updateMusicButton(); }
+        }
     }
 
-    function copyFreeKey() {
-        const key = getTodayFreeKey();
-        copyToClipboard(key, '✅ Đã sao chép key FREE: ' + key);
-    }
-
-    function copyToClipboard(text, msg) {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast(msg, 'success');
-            }).catch(() => fallback(text, msg));
+    // ============================================================
+    // 9. DISPLAY TYPE
+    // ============================================================
+    function updateKeyTypeDisplay(type, premData) {
+        const badge = document.getElementById('keyTypeBadgeMenu');
+        const timerEl = document.getElementById('keyTimer');
+        const menuBadge = document.getElementById('menuBadge');
+        if (type === 'prem' || premData) {
+            let typeName = '⭐ PREM';
+            if (premData) {
+                if (premData.hours === 720) typeName = '⭐ 1 THÁNG';
+                else if (premData.hours === 8760) typeName = '⭐ 1 NĂM';
+                else if (premData.hours >= 876000) typeName = '⭐ VĨNH VIỄN ♾️';
+                else if (premData.hours === 72) typeName = '⭐ 72H';
+                else if (premData.hours === 48) typeName = '⭐ 48H';
+                else if (premData.hours === 24) typeName = '⭐ 24H';
+            }
+            badge.textContent = typeName;
+            badge.className = 'type-badge prem';
+            timerEl.style.borderColor = '#886622';
+            menuBadge.textContent = '⭐ PREM • FF';
         } else {
-            fallback(text, msg);
+            badge.textContent = '🆓 FREE';
+            badge.className = 'type-badge free';
+            timerEl.style.borderColor = '#1f1f33';
+            menuBadge.textContent = 'v5.0 • FF';
         }
     }
 
-    function fallback(text, msg) {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-            document.execCommand('copy');
-            showToast(msg, 'success');
-        } catch (e) {
-            showToast('⚠️ Không thể sao chép', 'error');
-        }
-        document.body.removeChild(ta);
+    // ============================================================
+    // 10. AUDIO
+    // ============================================================
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    function playBeep(freq, dur, vol) { try { if (!audioCtx) audioCtx = new AudioCtx(); const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.type = 'sine'; o.frequency.value = freq; g.gain.value = vol; g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur/1000); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur/1000); } catch(e) {} }
+    function playErrorSound() { playBeep(300,150,0.2); setTimeout(()=>playBeep(250,120,0.18),160); setTimeout(()=>playBeep(200,100,0.16),300); }
+    function playSuccessSound() { playBeep(1000,60,0.12); setTimeout(()=>playBeep(1400,60,0.14),100); setTimeout(()=>playBeep(1800,70,0.16),200); }
+
+    // ============================================================
+    // 11. MUSIC
+    // ============================================================
+    let isMusicPlaying = false;
+    let musicStarted = false;
+
+    function playMusicAuto() {
+        const audio = document.getElementById('bgMusic');
+        if (!audio || musicStarted) return;
+        audio.volume = 0.2;
+        audio.play().then(() => { isMusicPlaying = true; musicStarted = true; updateMusicButton(); }).catch(e => { console.warn('⚠️ Safari chặn tự động phát', e); });
     }
 
-    function generatePremKey() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let key = '';
-        for (let i = 0; i < 10; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
-        document.getElementById('premKeyInput').value = 'PREM-' + key;
-        showToast('🎲 Key random: PREM-' + key, 'prem');
+    function toggleMusic() {
+        const audio = document.getElementById('bgMusic');
+        if (!audio) return;
+        if (isMusicPlaying) { audio.pause(); isMusicPlaying = false; updateMusicButton(); }
+        else { audio.play().then(() => { isMusicPlaying = true; musicStarted = true; updateMusicButton(); }).catch(e => showToast('⚠️ Không thể phát nhạc', 'error')); }
     }
 
-    function clearForm() {
-        document.getElementById('premKeyInput').value = '';
-        document.getElementById('premName').value = '';
-        document.getElementById('premHours').value = '72';
+    function updateMusicButton() { const btn = document.getElementById('musicToggleBtn'); if (!btn) return; btn.textContent = isMusicPlaying ? '🔊 Tắt nhạc' : '🎵 Bật nhạc'; }
+
+    // ============================================================
+    // 12. CORE FUNCTIONS
+    // ============================================================
+    function resetToDefault() {
+        document.getElementById('sensitivitySlider').value = 100; document.getElementById('sensitivityValue').textContent = 100;
+        document.getElementById('touchSpeedSlider').value = 100; document.getElementById('touchSpeedValue').textContent = 100;
+        document.getElementById('toggleRung').classList.remove('active');
+        document.getElementById('toggleLo').classList.remove('active');
+        document.getElementById('toggleLockhead').classList.remove('active');
+        document.getElementById('statusText').textContent = '📂 Mặc định (100)';
+        document.getElementById('profileStatus').textContent = 'Mặc định';
     }
 
-    function switchTab(tab) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        if (tab === 'list') {
-            document.getElementById('tabList').classList.add('active');
-            document.getElementById('panelList').style.display = 'block';
-            document.getElementById('panelCreate').style.display = 'none';
-            renderPremList();
+    const sensSlider = document.getElementById('sensitivitySlider'), sensVal = document.getElementById('sensitivityValue');
+    const touchSlider = document.getElementById('touchSpeedSlider'), touchVal = document.getElementById('touchSpeedValue');
+    sensSlider.addEventListener('input', () => sensVal.textContent = sensSlider.value);
+    touchSlider.addEventListener('input', () => touchVal.textContent = touchSlider.value);
+
+    function clearId() {
+        const id = document.getElementById('activationId').value.trim();
+        if (id) { let ids = getSavedIds(); ids = ids.filter(i => i !== id); saveIds(ids); renderIdList(); }
+        document.getElementById('activationId').value = '';
+        localStorage.removeItem('lockcenter_activation_id');
+        document.getElementById('activationStatus').textContent = '⚪';
+        document.getElementById('activationStatus').className = 'activation-status';
+        document.getElementById('statusText').textContent = '🗑️ Đã xoá ID';
+        showToast('Đã xoá ID', 'success');
+    }
+
+    function clearFile() {
+        document.getElementById('supportFile').value = '';
+        document.getElementById('fileStatus').textContent = '⚪';
+        document.getElementById('fileStatus').className = 'file-status';
+        showToast('Đã xoá file', 'success');
+    }
+
+    document.getElementById('supportFile').addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            document.getElementById('fileStatus').textContent = '✅ ' + this.files[0].name;
+            document.getElementById('fileStatus').className = 'file-status active';
+            showToast('📁 Đã tải file', 'success');
+            playSuccessSound();
         } else {
-            document.getElementById('tabCreate').classList.add('active');
-            document.getElementById('panelList').style.display = 'none';
-            document.getElementById('panelCreate').style.display = 'block';
+            document.getElementById('fileStatus').textContent = '⚪';
+            document.getElementById('fileStatus').className = 'file-status';
         }
+    });
+
+    function activateId() {
+        const id = document.getElementById('activationId').value.trim();
+        if (!id) { showToast('⚠️ Vui lòng nhập ID!', 'error'); return; }
+        addIdToList(id);
+        playSuccessSound();
+        localStorage.setItem('lockcenter_activation_id', id);
+        document.getElementById('activationStatus').textContent = '✅';
+        document.getElementById('activationStatus').className = 'activation-status active';
+        document.getElementById('statusText').textContent = '🔑 Đã kích hoạt ID: ' + id;
+        showToast('✅ Kích hoạt ID thành công', 'success');
+    }
+
+    function toggleSwitch(id) {
+        const el = document.getElementById(id);
+        el.classList.toggle('active');
+        const isActive = el.classList.contains('active');
+        if (isActive) playBeep(1400,70,0.12); else playBeep(800,80,0.12);
+        document.getElementById('statusText').textContent = id.replace('toggle','') + ' → ' + (isActive ? 'BẬT' : 'TẮT');
+        showToast('✅ Đã kích hoạt', 'success');
+    }
+
+    function applySettings() {
+        const sens = sensSlider.value, touch = touchSlider.value;
+        const rung = document.getElementById('toggleRung').classList.contains('active') ? 'ON' : 'OFF';
+        const lo = document.getElementById('toggleLo').classList.contains('active') ? 'ON' : 'OFF';
+        const lock = document.getElementById('toggleLockhead').classList.contains('active') ? 'ON' : 'OFF';
+        localStorage.setItem('lockcenter_config', JSON.stringify({ sensitivity: parseInt(sens), touchSpeed: parseInt(touch), fixRung: rung, fixLo: lo, lockHead: lock }));
+        document.getElementById('statusText').textContent = '✅ Đã áp dụng!';
+        document.getElementById('profileStatus').textContent = 'S:'+sens+' T:'+touch+' R:'+rung+' L:'+lo+' H:'+lock;
+        playSuccessSound();
+        showToast('✅ Đã áp dụng', 'success');
+    }
+
+    function resetSettings() {
+        sensSlider.value = 100; sensVal.textContent = 100;
+        touchSlider.value = 100; touchVal.textContent = 100;
+        document.getElementById('toggleRung').classList.remove('active');
+        document.getElementById('toggleLo').classList.remove('active');
+        document.getElementById('toggleLockhead').classList.remove('active');
+        localStorage.removeItem('lockcenter_config');
+        document.getElementById('statusText').textContent = '🔄 Reset về 100';
+        document.getElementById('profileStatus').textContent = 'Mặc định';
+        showToast('🔄 Reset thành công', 'success');
+    }
+
+    function launchGame(version) {
+        const gameName = version === 'freefire' ? 'Free Fire' : 'Free Fire Max';
+        const scheme = version === 'freefire' ? 'freefire://' : 'freefiremax://';
+        const storeUrl = version === 'freefire' ? 'https://play.google.com/store/apps/details?id=com.dts.freefireth' : 'https://play.google.com/store/apps/details?id=com.dts.freefiremax';
+        document.getElementById('statusText').textContent = '🚀 Đang mở ' + gameName + '...';
+        playBeep(800,50,0.1); setTimeout(()=>playBeep(1100,50,0.12),100);
+        try { window.location.href = scheme; setTimeout(() => { if (document.visibilityState === 'visible') { window.open(storeUrl, '_blank'); } }, 2000); showToast('🚀 Đang mở ' + gameName, 'success'); } catch(e) { window.open(storeUrl, '_blank'); }
     }
 
     function showToast(msg, type) {
-        const old = document.querySelector('.toast');
+        const old = document.querySelector('.toast-msg');
         if (old) old.remove();
         const div = document.createElement('div');
-        div.className = 'toast' + (type === 'error' ? ' error' : type === 'prem' ? ' prem' : '');
+        div.className = 'toast-msg' + (type ? ' ' + type : '');
         div.textContent = msg;
         document.body.appendChild(div);
-        setTimeout(() => {
-            div.style.opacity = '0';
-            setTimeout(() => div.remove(), 400);
-        }, 3000);
+        setTimeout(() => { div.style.opacity = '0'; setTimeout(() => div.remove(), 400); }, 2500);
+    }
+
+    function loadSavedConfig() {
+        const savedId = localStorage.getItem('lockcenter_activation_id');
+        if (savedId) { document.getElementById('activationId').value = savedId; document.getElementById('activationStatus').textContent = '✅'; document.getElementById('activationStatus').className = 'activation-status active'; }
+        const saved = localStorage.getItem('lockcenter_config');
+        if (saved) { try { const cfg = JSON.parse(saved); if (cfg.sensitivity) { sensSlider.value = cfg.sensitivity; sensVal.textContent = cfg.sensitivity; } if (cfg.touchSpeed) { touchSlider.value = cfg.touchSpeed; touchVal.textContent = cfg.touchSpeed; } if (cfg.fixRung === 'ON') document.getElementById('toggleRung').classList.add('active'); if (cfg.fixLo === 'ON') document.getElementById('toggleLo').classList.add('active'); if (cfg.lockHead === 'ON') document.getElementById('toggleLockhead').classList.add('active'); document.getElementById('statusText').textContent = '📂 Đã tải cấu hình'; } catch(e) {} }
     }
 
     // ============================================================
-    // LOAD
+    // 13. INIT
     // ============================================================
     window.onload = function() {
-        document.getElementById('freeKeyDisplay').textContent = getTodayFreeKey();
-        updateFreeTimer();
-        renderPremList();
-        setInterval(updateFreeTimer, 1000);
-        setInterval(renderPremList, 10000);
-        console.log('[Máy chủ KEY] Firebase đã sẵn sàng');
-        console.log('[Máy chủ KEY] Key FREE:', getTodayFreeKey());
+        loadSavedConfig();
+        renderIdList();
+        document.getElementById('dateInfo').textContent = '📅 ' + new Date().toLocaleDateString('vi-VN');
+        checkAndAutoLogin().then(loggedIn => {
+            if (!loggedIn) {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('menuScreen').style.display = 'none';
+                document.getElementById('loginKey').focus();
+            }
+        });
+        document.addEventListener('click', function initAudio() {
+            if (!audioCtx) { try { audioCtx = new(window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+            document.removeEventListener('click', initAudio);
+        }, { once: true });
+        console.log('[LockCenter] v5.0 - 300 key PREM (24h,48h,72h,30D,1Y,FOREVER)');
+        console.log('[LockCenter] Key FREE:', getTodayFreeKey());
+        getPremList().then(list => console.log('[LockCenter] Số key PREM trên máy chủ:', list.length));
     };
 
-    window.switchTab = switchTab;
-    window.createPremKey = createPremKey;
-    window.generatePremKey = generatePremKey;
-    window.deletePremKey = deletePremKey;
-    window.copyPremKey = copyPremKey;
-    window.copyFreeKey = copyFreeKey;
-    window.clearForm = clearForm;
+    // ============================================================
+    // 14. EXPOSE
+    // ============================================================
+    window.handleLogin = handleLogin;
+    window.logoutKey = logoutKey;
+    window.activateId = activateId;
+    window.clearId = clearId;
+    window.clearFile = clearFile;
+    window.toggleSwitch = toggleSwitch;
+    window.applySettings = applySettings;
+    window.resetSettings = resetSettings;
+    window.launchGame = launchGame;
+    window.deleteIdFromList = deleteIdFromList;
+    window.toggleMusic = toggleMusic;
 </script>
 </body>
 </html>
