@@ -12,8 +12,6 @@
     
     <title>LockCenter - Free Fire</title>
     <style>
-        /* ... giữ nguyên toàn bộ CSS như cũ ... */
-        /* (Để tiết kiệm dung lượng, tôi giữ nguyên phần CSS từ file trước) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0f;
@@ -563,7 +561,6 @@
         }
         .status-bar span { color: #00d4ff; }
 
-        /* === NÚT NHẠC NHỎ GỌN === */
         .music-control {
             text-align: center;
             margin-top: 12px;
@@ -586,6 +583,23 @@
             background: rgba(0, 212, 255, 0.2);
         }
 
+        /* Overlay vô hình để bắt touch đầu tiên (cho iOS) */
+        #touchOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9998;
+            background: transparent;
+            display: none;
+            pointer-events: none;
+        }
+        #touchOverlay.active {
+            display: block;
+            pointer-events: auto;
+        }
+
         @media (max-width: 460px) {
             .lock-center { padding: 16px; }
             .logout-btn { top: 12px; right: 12px; width: 32px; height: 32px; font-size: 16px; }
@@ -599,6 +613,9 @@
     </style>
 </head>
 <body>
+
+<!-- OVERLAY VÔ HÌNH ĐỂ BẮT SỰ KIỆN TOUCH ĐẦU TIÊN -->
+<div id="touchOverlay" class="active"></div>
 
 <!-- MÀN HÌNH ĐEN ĐĂNG NHẬP -->
 <div id="loginScreen">
@@ -721,7 +738,7 @@
     </div>
 
     <!-- === NHẠC NỀN === -->
-    <audio id="bgMusic" loop preload="auto">
+    <audio id="bgMusic" loop preload="auto" crossorigin="anonymous">
         <source src="montagem-tenta.mp3" type="audio/mpeg">
         <source src="https://0337398495.github.io/lockcenter/montagem-tenta.mp3" type="audio/mpeg">
     </audio>
@@ -1039,6 +1056,8 @@
         setTimeout(function() {
             playMusicAuto();
         }, 500);
+        // Ẩn overlay sau khi đã vào menu
+        document.getElementById('touchOverlay').classList.remove('active');
     }
 
     // ============================================================
@@ -1067,6 +1086,8 @@
                 isMusicPlaying = false;
                 updateMusicButton();
             }
+            // Bật lại overlay cho lần đăng nhập sau
+            document.getElementById('touchOverlay').classList.add('active');
         }
     }
 
@@ -1114,6 +1135,8 @@
                     isMusicPlaying = false;
                     updateMusicButton();
                 }
+                // Bật lại overlay
+                document.getElementById('touchOverlay').classList.add('active');
             } else if (isKeyValid() && document.getElementById('menuScreen').style.display !== 'none') {
                 if (!timerInterval) startTimer();
                 updateTimerDisplay();
@@ -1156,32 +1179,56 @@
     }
 
     // ============================================================
-    // 12. NÚT BẬT/TẮT NHẠC (THÊM MỚI)
+    // 12. NÚT BẬT/TẮT NHẠC (TỐI ƯU CHO iOS)
     // ============================================================
     let isMusicPlaying = false;
+    let musicStarted = false;
 
     function playMusicAuto() {
         const audio = document.getElementById('bgMusic');
-        if (!audio) return;
-        // Đặt âm lượng nhỏ để không giật mình
+        if (!audio || musicStarted) return;
+        
+        // Đặt âm lượng nhỏ
         audio.volume = 0.2;
+        
+        // Thử phát tự động
         audio.play().then(() => {
             isMusicPlaying = true;
+            musicStarted = true;
             updateMusicButton();
-            console.log('🎵 Tự động phát nhạc nền');
+            console.log('🎵 Tự động phát nhạc thành công');
+            // Tắt overlay sau khi phát thành công
+            document.getElementById('touchOverlay').classList.remove('active');
         }).catch(e => {
-            console.warn('⚠️ Trình duyệt chặn tự động phát. Người dùng cần bấm nút.', e);
-            // Nếu bị chặn, hiển thị thông báo nhẹ
-            showToast('⚠️ Chạm vào màn hình để bật nhạc', 'error');
+            console.warn('⚠️ Safari chặn tự động phát. Đợi người dùng chạm màn hình.', e);
+            // Bật overlay để bắt sự kiện touch đầu tiên
+            document.getElementById('touchOverlay').classList.add('active');
+            // Hiển thị thông báo nhẹ
+            showToast('🎵 Chạm vào màn hình để bật nhạc', 'prem');
         });
     }
 
+    // Bắt sự kiện touch đầu tiên trên overlay (cho iOS)
+    document.getElementById('touchOverlay').addEventListener('touchstart', function() {
+        const audio = document.getElementById('bgMusic');
+        if (audio && !musicStarted) {
+            audio.play().then(() => {
+                isMusicPlaying = true;
+                musicStarted = true;
+                updateMusicButton();
+                console.log('🎵 Phát nhạc sau tương tác đầu tiên');
+                // Tắt overlay
+                document.getElementById('touchOverlay').classList.remove('active');
+                showToast('🎵 Đang phát nhạc nền', 'success');
+            }).catch(e => {
+                console.warn('⚠️ Vẫn chưa phát được:', e);
+            });
+        }
+    }, { passive: true });
+
     function toggleMusic() {
         const audio = document.getElementById('bgMusic');
-        if (!audio) {
-            console.warn('⚠️ Không tìm thấy thẻ audio #bgMusic');
-            return;
-        }
+        if (!audio) return;
         
         if (isMusicPlaying) {
             audio.pause();
@@ -1191,8 +1238,11 @@
         } else {
             audio.play().then(() => {
                 isMusicPlaying = true;
+                musicStarted = true;
                 updateMusicButton();
                 console.log('🎵 Đang phát nhạc');
+                // Tắt overlay khi người dùng bật nhạc thủ công
+                document.getElementById('touchOverlay').classList.remove('active');
             }).catch(e => {
                 console.warn('⚠️ Không thể phát nhạc:', e);
                 showToast('⚠️ Không thể phát nhạc. Vui lòng kiểm tra file MP3.', 'error');
@@ -1428,6 +1478,8 @@
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('menuScreen').style.display = 'none';
             document.getElementById('loginKey').focus();
+            // Bật overlay để bắt touch nếu cần
+            document.getElementById('touchOverlay').classList.add('active');
         }
         
         document.addEventListener('click', function initAudio() {
