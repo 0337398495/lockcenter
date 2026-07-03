@@ -1,672 +1,652 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="LockCenter">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a12' rx='20'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='%2300d4ff' font-weight='bold'%3E⚡%3C/text%3E%3C/svg%3E">
-    <title>LockCenter</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <style>
-        /* CSS giống như phiên bản trước, tôi giữ nguyên để gọn */
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{background:#0a0a0f;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Segoe UI',sans-serif;padding:16px;color:#fff}
-        #loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;padding:20px;transition:opacity .5s}
-        #loginScreen.hidden{opacity:0;pointer-events:none}
-        .login-box{max-width:380px;width:100%;background:#0a0a12;border-radius:32px;padding:40px 28px;border:1px solid #1a1a2e;text-align:center}
-        .login-box h2{font-size:24px;font-weight:700;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
-        .login-box .sub{color:#666;font-size:13px;margin-bottom:20px}
-        .login-box input{width:100%;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:14px 20px;color:#00d4ff;font-size:16px;font-weight:600;outline:none;text-align:center;margin-bottom:16px;font-family:'Courier New',monospace;letter-spacing:2px}
-        .login-box input:focus{border-color:#00aaff;box-shadow:0 0 30px rgba(0,180,255,0.1)}
-        .login-box .btn-login{width:100%;background:linear-gradient(90deg,#0044aa,#0088ff);border:none;color:#fff;font-weight:700;padding:14px;border-radius:60px;cursor:pointer;font-size:16px;text-transform:uppercase;transition:.2s;box-shadow:0 6px 20px rgba(0,100,255,0.25)}
-        .login-box .btn-login:hover{transform:scale(1.02)}
-        .login-error{color:#ff4466;font-size:13px;margin-top:12px;min-height:24px}
-        .login-success{color:#00ff88;font-size:13px;margin-top:12px;min-height:24px}
-        .date-info{color:#444;font-size:11px;margin-top:12px}
-        .lock-center{max-width:420px;width:100%;background:linear-gradient(145deg,#12121a,#1a1a2e);border-radius:32px;padding:24px 20px 32px;border:1px solid #2a2a3e;position:relative}
-        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #2a2a3e}
-        .header h1{font-size:20px;font-weight:700;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .header h1 small{font-size:10px;color:#666;-webkit-text-fill-color:#666;background:none;font-weight:400;margin-left:4px}
-        .logout-btn{position:absolute;top:16px;right:16px;background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff4466;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;font-weight:700}
-        .logout-btn:hover{background:rgba(255,68,68,0.3);transform:scale(1.1)}
-        .key-timer{background:#0f0f18;border-radius:16px;padding:12px 16px;margin-bottom:16px;border:1px solid #1f1f33;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#888}
-        .key-timer .time{color:#00ff88;font-weight:700;font-family:'Courier New',monospace;font-size:16px}
-        .key-timer .type-badge{font-size:10px;padding:2px 10px;border-radius:20px;font-weight:700}
-        .key-timer .type-badge.free{background:rgba(0,255,136,0.15);color:#00ff88;border:1px solid #00ff88}
-        .key-timer .type-badge.prem{background:rgba(255,136,0,0.15);color:#ff8800;border:1px solid #ff8800}
-        .activation-row,.file-support-row,.id-list-section{background:#0f0f18;border-radius:20px;padding:14px 16px;margin-bottom:16px;border:1px solid #1f1f33;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-        .activation-row label,.file-support-row label{font-size:14px;font-weight:600;color:#b0b0d0;white-space:nowrap}
-        .activation-row input,.file-support-row input[type="file"]{flex:1;min-width:80px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 14px;color:#00d4ff;font-size:15px;font-weight:600;outline:none;font-family:'Courier New',monospace}
-        .btn-activate{background:linear-gradient(90deg,#00aa44,#00dd66);border:none;color:#fff;font-weight:700;padding:10px 16px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase}
-        .btn-clear{background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;font-weight:700;padding:10px 14px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase}
-        .id-list-container{display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow-y:auto;width:100%}
-        .id-item{display:flex;align-items:center;background:#0a0a12;border:1px solid #1f1f33;border-radius:60px;padding:4px 8px 4px 14px;gap:6px;font-size:12px;color:#00d4ff;font-family:'Courier New',monospace}
-        .id-item .btn-delete-id{background:rgba(255,68,68,0.1);border:none;color:#ff4466;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:700}
-        .id-item .btn-delete-id:hover{background:rgba(255,68,68,0.3)}
-        .control-group{background:#0f0f18;border-radius:20px;padding:18px 16px;margin-bottom:16px;border:1px solid #1f1f33}
-        .control-label{display:flex;justify-content:space-between;font-size:14px;color:#b0b0d0;margin-bottom:8px}
-        .control-label .value{color:#00d4ff;font-weight:700;min-width:48px;text-align:right}
-        input[type="range"]{width:100%;height:6px;border-radius:4px;background:linear-gradient(90deg,#1f1f3a,#2a2a50);outline:none;margin:6px 0;-webkit-appearance:none;appearance:none}
-        input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#00d4ff,#0066cc);cursor:pointer;border:2px solid #0a0a12}
-        .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1a1a2e}
-        .toggle-row:last-child{border-bottom:none}
-        .toggle-row .label{font-size:15px;font-weight:500;color:#c0c0e0}
-        .toggle-switch{position:relative;width:48px;height:28px;background:#1f1f33;border-radius:30px;cursor:pointer;transition:.25s;border:1px solid #2f2f4a;flex-shrink:0}
-        .toggle-switch.active{background:linear-gradient(90deg,#0066cc,#00d4ff);border-color:#00aaff;box-shadow:0 0 16px rgba(0,180,255,0.3)}
-        .toggle-switch .knob{position:absolute;top:2px;left:2px;width:22px;height:22px;background:#d0d0ee;border-radius:50%;transition:.25s}
-        .toggle-switch.active .knob{left:22px;background:#fff}
-        .footer-actions{display:flex;gap:12px;margin-top:20px}
-        .btn{flex:1;padding:14px 10px;border:none;border-radius:60px;font-size:15px;font-weight:700;text-transform:uppercase;background:#1f1f33;color:#888;cursor:pointer;border:1px solid #2a2a44}
-        .btn-primary{background:linear-gradient(90deg,#0044aa,#0088ff);color:#fff;border:none;box-shadow:0 6px 20px rgba(0,100,255,0.25)}
-        .btn-primary:hover{transform:scale(1.02)}
-        .btn-danger{background:linear-gradient(90deg,#880022,#cc0044);color:#fff;border:none}
-        .btn-game{flex:1;padding:12px 8px;border:none;border-radius:60px;font-size:14px;font-weight:700;text-transform:uppercase;cursor:pointer;color:#fff;background:linear-gradient(135deg,#1a2a3a,#0d1b2a);border:1px solid #2a4a6a}
-        .btn-game-ff{border-color:#ff6a00;background:linear-gradient(135deg,#2a1a0a,#1a0e00)}
-        .btn-game-ffmax{border-color:#00aaff;background:linear-gradient(135deg,#0a1a2a,#000e1a)}
-        .game-launch-row{display:flex;gap:12px;margin-top:12px}
-        .status-bar{margin-top:16px;padding:10px 14px;background:#0a0a12;border-radius:14px;font-size:12px;color:#666;text-align:center;border:1px solid #1a1a2e;font-family:monospace}
-        .status-bar span{color:#00d4ff}
-        .toast-msg{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#00d4ff;padding:14px 28px;border-radius:60px;font-size:14px;font-weight:600;border:1px solid #2a2a50;box-shadow:0 10px 40px rgba(0,0,0,0.8);z-index:999;transition:.3s;backdrop-filter:blur(8px);max-width:90%;text-align:center}
-        .toast-msg.error{background:#1a0a0a;color:#ff4466;border-color:#662222}
-        .toast-msg.success{background:#0a1a0a;color:#00ff88;border-color:#226622}
-        @media(max-width:460px){.lock-center{padding:16px}.activation-row input{min-width:100%}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LockCenter">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a12' rx='20'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='%2300d4ff' font-weight='bold'%3E⚡%3C/text%3E%3C/svg%3E">
+<title>LockCenter</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Segoe UI',sans-serif;padding:16px;color:#fff}
+#loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;padding:20px;transition:opacity .5s}
+#loginScreen.hidden{opacity:0;pointer-events:none}
+.login-box{max-width:380px;width:100%;background:#0a0a12;border-radius:32px;padding:40px 28px;border:1px solid #1a1a2e;text-align:center}
+.login-box h2{font-size:24px;font-weight:700;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.login-box .sub{color:#666;font-size:13px;margin-bottom:20px}
+.login-box input{width:100%;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:14px 20px;color:#00d4ff;font-size:16px;font-weight:600;outline:none;text-align:center;margin-bottom:16px;font-family:'Courier New',monospace;letter-spacing:2px}
+.login-box input:focus{border-color:#00aaff;box-shadow:0 0 30px rgba(0,180,255,0.1)}
+.login-box .btn-login{width:100%;background:linear-gradient(90deg,#0044aa,#0088ff);border:none;color:#fff;font-weight:700;padding:14px;border-radius:60px;cursor:pointer;font-size:16px;text-transform:uppercase;transition:.2s;box-shadow:0 6px 20px rgba(0,100,255,0.25)}
+.login-box .btn-login:hover{transform:scale(1.02)}
+.login-error{color:#ff4466;font-size:13px;margin-top:12px;min-height:24px}
+.login-success{color:#00ff88;font-size:13px;margin-top:12px;min-height:24px}
+.date-info{color:#444;font-size:11px;margin-top:12px}
+.lock-center{max-width:420px;width:100%;background:linear-gradient(145deg,#12121a,#1a1a2e);border-radius:32px;padding:24px 20px 32px;border:1px solid #2a2a3e;position:relative}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #2a2a3e}
+.header h1{font-size:20px;font-weight:700;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header h1 small{font-size:10px;color:#666;-webkit-text-fill-color:#666;background:none;font-weight:400;margin-left:4px}
+.logout-btn{position:absolute;top:16px;right:16px;background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff4466;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;font-weight:700}
+.logout-btn:hover{background:rgba(255,68,68,0.3);transform:scale(1.1)}
+.key-timer{background:#0f0f18;border-radius:16px;padding:12px 16px;margin-bottom:16px;border:1px solid #1f1f33;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#888}
+.key-timer .time{color:#00ff88;font-weight:700;font-family:'Courier New',monospace;font-size:16px}
+.key-timer .type-badge{font-size:10px;padding:2px 10px;border-radius:20px;font-weight:700}
+.key-timer .type-badge.free{background:rgba(0,255,136,0.15);color:#00ff88;border:1px solid #00ff88}
+.key-timer .type-badge.prem{background:rgba(255,136,0,0.15);color:#ff8800;border:1px solid #ff8800}
+.activation-row,.file-support-row,.id-list-section{background:#0f0f18;border-radius:20px;padding:14px 16px;margin-bottom:16px;border:1px solid #1f1f33;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.activation-row label,.file-support-row label{font-size:14px;font-weight:600;color:#b0b0d0;white-space:nowrap}
+.activation-row input,.file-support-row input[type="file"]{flex:1;min-width:80px;background:#0a0a12;border:1px solid #2a2a44;border-radius:60px;padding:10px 14px;color:#00d4ff;font-size:15px;font-weight:600;outline:none;font-family:'Courier New',monospace}
+.btn-activate{background:linear-gradient(90deg,#00aa44,#00dd66);border:none;color:#fff;font-weight:700;padding:10px 16px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase}
+.btn-clear{background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;font-weight:700;padding:10px 14px;border-radius:60px;cursor:pointer;font-size:12px;text-transform:uppercase}
+.id-list-container{display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow-y:auto;width:100%}
+.id-item{display:flex;align-items:center;background:#0a0a12;border:1px solid #1f1f33;border-radius:60px;padding:4px 8px 4px 14px;gap:6px;font-size:12px;color:#00d4ff;font-family:'Courier New',monospace}
+.id-item .btn-delete-id{background:rgba(255,68,68,0.1);border:none;color:#ff4466;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:700}
+.id-item .btn-delete-id:hover{background:rgba(255,68,68,0.3)}
+.control-group{background:#0f0f18;border-radius:20px;padding:18px 16px;margin-bottom:16px;border:1px solid #1f1f33}
+.control-label{display:flex;justify-content:space-between;font-size:14px;color:#b0b0d0;margin-bottom:8px}
+.control-label .value{color:#00d4ff;font-weight:700;min-width:48px;text-align:right}
+input[type="range"]{width:100%;height:6px;border-radius:4px;background:linear-gradient(90deg,#1f1f3a,#2a2a50);outline:none;margin:6px 0;-webkit-appearance:none;appearance:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#00d4ff,#0066cc);cursor:pointer;border:2px solid #0a0a12}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1a1a2e}
+.toggle-row:last-child{border-bottom:none}
+.toggle-row .label{font-size:15px;font-weight:500;color:#c0c0e0}
+.toggle-switch{position:relative;width:48px;height:28px;background:#1f1f33;border-radius:30px;cursor:pointer;transition:.25s;border:1px solid #2f2f4a;flex-shrink:0}
+.toggle-switch.active{background:linear-gradient(90deg,#0066cc,#00d4ff);border-color:#00aaff;box-shadow:0 0 16px rgba(0,180,255,0.3)}
+.toggle-switch .knob{position:absolute;top:2px;left:2px;width:22px;height:22px;background:#d0d0ee;border-radius:50%;transition:.25s}
+.toggle-switch.active .knob{left:22px;background:#fff}
+.footer-actions{display:flex;gap:12px;margin-top:20px}
+.btn{flex:1;padding:14px 10px;border:none;border-radius:60px;font-size:15px;font-weight:700;text-transform:uppercase;background:#1f1f33;color:#888;cursor:pointer;border:1px solid #2a2a44}
+.btn-primary{background:linear-gradient(90deg,#0044aa,#0088ff);color:#fff;border:none;box-shadow:0 6px 20px rgba(0,100,255,0.25)}
+.btn-primary:hover{transform:scale(1.02)}
+.btn-danger{background:linear-gradient(90deg,#880022,#cc0044);color:#fff;border:none}
+.btn-game{flex:1;padding:12px 8px;border:none;border-radius:60px;font-size:14px;font-weight:700;text-transform:uppercase;cursor:pointer;color:#fff;background:linear-gradient(135deg,#1a2a3a,#0d1b2a);border:1px solid #2a4a6a}
+.btn-game-ff{border-color:#ff6a00;background:linear-gradient(135deg,#2a1a0a,#1a0e00)}
+.btn-game-ffmax{border-color:#00aaff;background:linear-gradient(135deg,#0a1a2a,#000e1a)}
+.game-launch-row{display:flex;gap:12px;margin-top:12px}
+.status-bar{margin-top:16px;padding:10px 14px;background:#0a0a12;border-radius:14px;font-size:12px;color:#666;text-align:center;border:1px solid #1a1a2e;font-family:monospace}
+.status-bar span{color:#00d4ff}
+.toast-msg{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#00d4ff;padding:14px 28px;border-radius:60px;font-size:14px;font-weight:600;border:1px solid #2a2a50;box-shadow:0 10px 40px rgba(0,0,0,0.8);z-index:999;transition:.3s;backdrop-filter:blur(8px);max-width:90%;text-align:center}
+.toast-msg.error{background:#1a0a0a;color:#ff4466;border-color:#662222}
+.toast-msg.success{background:#0a1a0a;color:#00ff88;border-color:#226622}
+@media(max-width:460px){.lock-center{padding:16px}.activation-row input{min-width:100%}}
+</style>
 </head>
 <body>
 <div id="loginScreen">
-    <div class="login-box">
-        <h2>🔐 LOCK CENTER</h2>
-        <p class="sub">Nhập key để đăng nhập</p>
-        <input type="text" id="loginKey" placeholder="Nhập key..." autofocus>
-        <button class="btn-login" onclick="handleLogin()">Đăng nhập</button>
-        <div class="login-error" id="loginError"></div>
-        <div class="login-success" id="loginSuccess"></div>
-        <div class="date-info" id="dateInfo"></div>
-    </div>
+<div class="login-box">
+<h2>🔐 LOCK CENTER</h2>
+<p class="sub">Nhập key để đăng nhập</p>
+<input type="text" id="loginKey" placeholder="Nhập key..." autofocus>
+<button class="btn-login" onclick="handleLogin()">Đăng nhập</button>
+<div class="login-error" id="loginError"></div>
+<div class="login-success" id="loginSuccess"></div>
+<div class="date-info" id="dateInfo"></div>
+</div>
 </div>
 <div class="lock-center" id="menuScreen" style="display:none;">
-    <div class="logout-btn" onclick="logoutKey()" title="Thoát key">✕</div>
-    <div class="header"><h1>⚡ LOCK CENTER <small>(by hthiet)</small></h1><span class="badge" id="menuBadge">v4.3 • FF</span></div>
-    <div class="key-timer"><span>⏳ Key còn hiệu lực</span><span class="time" id="timerDisplay">--:--:--</span><span class="type-badge free" id="keyTypeBadgeMenu">🆓 FREE</span></div>
-    <div class="activation-row"><label>🔑 ID</label><input type="text" id="activationId" placeholder="Nhập ID game..."><button class="btn-activate" onclick="activateId()">Kích hoạt</button><button class="btn-clear" onclick="clearId()">Xoá</button><span class="activation-status" id="activationStatus">⚪</span></div>
-    <div class="id-list-section"><div class="title" style="display:flex;justify-content:space-between;width:100%;"><span>📋 ID đã nhập</span><span class="count" id="idCount">0</span></div><div class="id-list-container" id="idListContainer"><div class="id-empty">Chưa có ID nào</div></div></div>
-    <div class="file-support-row"><label>📁 File</label><input type="file" id="supportFile" accept=".txt,.json,.cfg,.ini"><button class="btn-clear-file" onclick="clearFile()" style="background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;padding:8px 14px;border-radius:60px;cursor:pointer;">Xoá</button><span class="file-status" id="fileStatus">⚪</span></div>
-    <div class="control-group"><div class="control-label"><span>🎯 Độ nhạy con trỏ trượt</span><span class="value" id="sensitivityValue">100</span></div><input type="range" id="sensitivitySlider" min="100" max="4000" value="100" step="10"><div style="display:flex;justify-content:space-between;font-size:10px;color:#444;padding:0 4px;"><span>100</span><span>4000</span></div></div>
-    <div class="control-group"><div class="control-label"><span>⚡ Tốc độ cảm ứng</span><span class="value" id="touchSpeedValue">100</span></div><input type="range" id="touchSpeedSlider" min="100" max="4000" value="100" step="10"><div style="display:flex;justify-content:space-between;font-size:10px;color:#444;padding:0 4px;"><span>100</span><span>4000</span></div></div>
-    <div class="control-group" style="padding:6px 16px;"><div class="toggle-row"><span class="label">📳 Fix Rung <small>(chống giật)</small></span><div class="toggle-switch" id="toggleRung" onclick="toggleSwitch('toggleRung')"><div class="knob"></div></div></div><div class="toggle-row"><span class="label">🔄 Fix Lố <small>(ổn định FPS)</small></span><div class="toggle-switch" id="toggleLo" onclick="toggleSwitch('toggleLo')"><div class="knob"></div></div></div><div class="toggle-row"><span class="label">🎯 LockHead <small>(tự động headshot)</small></span><div class="toggle-switch" id="toggleLockhead" onclick="toggleSwitch('toggleLockhead')"><div class="knob"></div></div></div></div>
-    <div class="footer-actions"><button class="btn btn-primary" onclick="applySettings()">✔ Áp dụng</button><button class="btn btn-danger" onclick="resetSettings()">⟲ Reset</button></div>
-    <div class="game-launch-row"><button class="btn-game btn-game-ff" onclick="launchGame('freefire')"><span class="icon">🔥</span> Free Fire</button><button class="btn-game btn-game-ffmax" onclick="launchGame('freefiremax')"><span class="icon">⚡</span> Free Fire Max</button></div>
-    <div class="status-bar">▶ Trạng thái: <span id="statusText">Sẵn sàng</span> &nbsp;|&nbsp; Profile: <span id="profileStatus">Mặc định</span></div>
+<div class="logout-btn" onclick="logoutKey()" title="Thoát key">✕</div>
+<div class="header"><h1>⚡ LOCK CENTER <small>(by hthiet)</small></h1><span class="badge" id="menuBadge">v4.3 • FF</span></div>
+<div class="key-timer"><span>⏳ Key còn hiệu lực</span><span class="time" id="timerDisplay">--:--:--</span><span class="type-badge free" id="keyTypeBadgeMenu">🆓 FREE</span></div>
+<div class="activation-row"><label>🔑 ID</label><input type="text" id="activationId" placeholder="Nhập ID game..."><button class="btn-activate" onclick="activateId()">Kích hoạt</button><button class="btn-clear" onclick="clearId()">Xoá</button><span class="activation-status" id="activationStatus">⚪</span></div>
+<div class="id-list-section"><div class="title" style="display:flex;justify-content:space-between;width:100%;"><span>📋 ID đã nhập</span><span class="count" id="idCount">0</span></div><div class="id-list-container" id="idListContainer"><div class="id-empty">Chưa có ID nào</div></div></div>
+<div class="file-support-row"><label>📁 File</label><input type="file" id="supportFile" accept=".txt,.json,.cfg,.ini"><button class="btn-clear-file" onclick="clearFile()" style="background:linear-gradient(90deg,#cc0044,#ff2266);border:none;color:#fff;padding:8px 14px;border-radius:60px;cursor:pointer;">Xoá</button><span class="file-status" id="fileStatus">⚪</span></div>
+<div class="control-group"><div class="control-label"><span>🎯 Độ nhạy con trỏ trượt</span><span class="value" id="sensitivityValue">100</span></div><input type="range" id="sensitivitySlider" min="100" max="4000" value="100" step="10"><div style="display:flex;justify-content:space-between;font-size:10px;color:#444;padding:0 4px;"><span>100</span><span>4000</span></div></div>
+<div class="control-group"><div class="control-label"><span>⚡ Tốc độ cảm ứng</span><span class="value" id="touchSpeedValue">100</span></div><input type="range" id="touchSpeedSlider" min="100" max="4000" value="100" step="10"><div style="display:flex;justify-content:space-between;font-size:10px;color:#444;padding:0 4px;"><span>100</span><span>4000</span></div></div>
+<div class="control-group" style="padding:6px 16px;"><div class="toggle-row"><span class="label">📳 Fix Rung <small>(chống giật)</small></span><div class="toggle-switch" id="toggleRung" onclick="toggleSwitch('toggleRung')"><div class="knob"></div></div></div><div class="toggle-row"><span class="label">🔄 Fix Lố <small>(ổn định FPS)</small></span><div class="toggle-switch" id="toggleLo" onclick="toggleSwitch('toggleLo')"><div class="knob"></div></div></div><div class="toggle-row"><span class="label">🎯 LockHead <small>(tự động headshot)</small></span><div class="toggle-switch" id="toggleLockhead" onclick="toggleSwitch('toggleLockhead')"><div class="knob"></div></div></div></div>
+<div class="footer-actions"><button class="btn btn-primary" onclick="applySettings()">✔ Áp dụng</button><button class="btn btn-danger" onclick="resetSettings()">⟲ Reset</button></div>
+<div class="game-launch-row"><button class="btn-game btn-game-ff" onclick="launchGame('freefire')"><span class="icon">🔥</span> Free Fire</button><button class="btn-game btn-game-ffmax" onclick="launchGame('freefiremax')"><span class="icon">⚡</span> Free Fire Max</button></div>
+<div class="status-bar">▶ Trạng thái: <span id="statusText">Sẵn sàng</span> &nbsp;|&nbsp; Profile: <span id="profileStatus">Mặc định</span></div>
 </div>
 <script>
-    // ============================================================
-    // 🔥 FIREBASE CONFIG - THAY BẰNG CONFIG CỦA BẠN
-    // ============================================================
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-        projectId: "YOUR_PROJECT",
-        storageBucket: "YOUR_PROJECT.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abcdef"
-    };
+// ============================================================
+// FIREBASE CONFIG - THAY BẰNG CONFIG CỦA BẠN
+// ============================================================
+const firebaseConfig = {
+    apiKey: "AIzaSyCaLfm97d8btn_hNWSMgtKQC87vsDhdef4",
+    authDomain: "lockcemter.firebaseapp.com",
+    projectId: "lockcemter",
+    storageBucket: "lockcemter.firebasestorage.app",
+    messagingSenderId: "473758173799",
+    appId: "1:473758173799:web:dfbc0820666dd59b81a2c2",
+    measurementId: "G-MHW35Y3ZBF"
+};
 
-    // Khởi tạo Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-    // ============================================================
-    // CÁC HÀM FIREBASE
-    // ============================================================
-    // Lấy danh sách PREM từ Firebase
-    async function getPremList() {
-        const snapshot = await db.ref('premKeys').once('value');
-        const data = snapshot.val();
-        if (!data) return [];
-        // Chuyển object thành array
-        const list = Object.keys(data).map(key => ({ ...data[key], id: key }));
-        // Lọc key còn hiệu lực
-        const valid = list.filter(item => item.expiry > Date.now());
-        // Nếu có key hết hạn, xóa khỏi Firebase
-        if (valid.length !== list.length) {
-            const expiredIds = list.filter(item => item.expiry <= Date.now()).map(item => item.id);
-            await Promise.all(expiredIds.map(id => db.ref('premKeys/' + id).remove()));
-        }
-        return valid;
+// ============================================================
+// HÀM FIREBASE
+// ============================================================
+async function getPremList() {
+    const snapshot = await db.ref('premKeys').once('value');
+    const data = snapshot.val();
+    if (!data) return [];
+    const list = Object.keys(data).map(key => ({ ...data[key], id: key }));
+    const valid = list.filter(item => item.expiry > Date.now());
+    if (valid.length !== list.length) {
+        const expiredIds = list.filter(item => item.expiry <= Date.now()).map(item => item.id);
+        await Promise.all(expiredIds.map(id => db.ref('premKeys/' + id).remove()));
+    }
+    return valid;
+}
+
+async function addPremKey(name, key, hours) {
+    const expiry = Date.now() + (hours * 60 * 60 * 1000);
+    const newRef = db.ref('premKeys').push();
+    await newRef.set({
+        name: name,
+        key: key,
+        expiry: expiry,
+        created: Date.now(),
+        hours: hours
+    });
+    return newRef.key;
+}
+
+async function deletePremKey(id) {
+    await db.ref('premKeys/' + id).remove();
+}
+
+async function getSavedIds() {
+    const snapshot = await db.ref('savedIds').once('value');
+    const data = snapshot.val();
+    return data ? Object.values(data) : [];
+}
+
+async function addIdToFirebase(id) {
+    if (!id) return;
+    const ids = await getSavedIds();
+    if (!ids.includes(id.trim())) {
+        const newRef = db.ref('savedIds').push();
+        await newRef.set(id.trim());
+    }
+}
+
+async function deleteIdFromFirebase(id) {
+    const snapshot = await db.ref('savedIds').once('value');
+    const data = snapshot.val();
+    if (!data) return;
+    const key = Object.keys(data).find(k => data[k] === id);
+    if (key) await db.ref('savedIds/' + key).remove();
+}
+
+// ============================================================
+// KEY FREE
+// ============================================================
+function generateDailyKey(date) {
+    const y = date.getFullYear(),
+        m = String(date.getMonth() + 1).padStart(2, '0'),
+        d = String(date.getDate()).padStart(2, '0'),
+        seed = parseInt(y + m + d);
+    let hash = 0,
+        s = String(seed);
+    for (let i = 0; i < s.length; i++) {
+        hash = ((hash << 5) - hash) + s.charCodeAt(i);
+        hash &= hash;
+    }
+    let key = Math.abs(hash).toString(36).toUpperCase();
+    while (key.length < 8) key = 'X' + key;
+    key = key.slice(0, 8) + String(date.getDate()).padStart(2, '0');
+    return key;
+}
+
+function getTodayFreeKey() { return generateDailyKey(new Date()); }
+function getFreeKeyExpiry() {
+    const n = new Date(),
+        t = new Date(n);
+    t.setDate(t.getDate() + 1);
+    t.setHours(0, 0, 0, 0);
+    return t.getTime();
+}
+
+// ============================================================
+// LOGIC KEY HIỆN TẠI
+// ============================================================
+let premListCache = [];
+let idsCache = [];
+
+async function refreshPremList() { premListCache = await getPremList(); }
+async function refreshIds() { idsCache = await getSavedIds(); }
+
+async function getActiveKey() {
+    await refreshPremList();
+    const prem = premListCache.find(item => item.id === localStorage.getItem('lockcenter_active_prem_id'));
+    if (prem) return prem.key;
+    return getTodayFreeKey();
+}
+
+async function getActiveKeyType() {
+    await refreshPremList();
+    const id = localStorage.getItem('lockcenter_active_prem_id');
+    if (id && premListCache.some(item => item.id === id)) return 'prem';
+    return 'free';
+}
+
+async function getActiveKeyExpiry() {
+    await refreshPremList();
+    const id = localStorage.getItem('lockcenter_active_prem_id');
+    if (id) {
+        const prem = premListCache.find(item => item.id === id);
+        if (prem) return prem.expiry;
+    }
+    return getFreeKeyExpiry();
+}
+
+async function isKeyValid() {
+    const savedKey = localStorage.getItem('lockcenter_saved_key');
+    if (!savedKey) return false;
+    const expiry = await getActiveKeyExpiry();
+    if (!expiry) return false;
+    const activeKey = await getActiveKey();
+    return savedKey === activeKey && Date.now() < expiry;
+}
+
+async function getRemaining() {
+    const expiry = await getActiveKeyExpiry();
+    return expiry ? Math.max(0, expiry - Date.now()) : 0;
+}
+
+// ============================================================
+// RENDER ID
+// ============================================================
+async function renderIdList() {
+    await refreshIds();
+    const container = document.getElementById('idListContainer');
+    const countEl = document.getElementById('idCount');
+    countEl.textContent = idsCache.length;
+    if (!idsCache.length) {
+        container.innerHTML = '<div class="id-empty">Chưa có ID nào</div>';
+        return;
+    }
+    container.innerHTML = idsCache.map(id =>
+        `<div class="id-item"><span class="id-text">${id}</span><button class="btn-delete-id" onclick="deleteId('${id}')">✕</button></div>`
+    ).join('');
+}
+
+async function addId(id) {
+    if (!id) return;
+    await addIdToFirebase(id);
+    await renderIdList();
+}
+
+async function deleteId(id) {
+    await deleteIdFromFirebase(id);
+    await renderIdList();
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+async function handleLogin() {
+    const input = document.getElementById('loginKey'),
+        err = document.getElementById('loginError'),
+        ok = document.getElementById('loginSuccess');
+    const userKey = input.value.trim().toUpperCase();
+    err.textContent = ok.textContent = '';
+
+    const free = getTodayFreeKey();
+    if (userKey === free) {
+        localStorage.setItem('lockcenter_saved_key', free);
+        localStorage.setItem('lockcenter_login_time', String(Date.now()));
+        localStorage.removeItem('lockcenter_active_prem_id');
+        const id = document.getElementById('activationId').value.trim();
+        if (id) await addId(id);
+        playSuccess();
+        ok.textContent = '✅ Đăng nhập FREE thành công!';
+        setTimeout(() => { showMenu('free'); }, 600);
+        return;
     }
 
-    // Thêm key PREM mới
-    async function addPremKey(name, key, hours) {
-        const expiry = Date.now() + (hours * 60 * 60 * 1000);
-        const newRef = db.ref('premKeys').push();
-        await newRef.set({
-            name: name,
-            key: key,
-            expiry: expiry,
-            created: Date.now(),
-            hours: hours
-        });
-        return newRef.key;
+    await refreshPremList();
+    const matched = premListCache.find(item => item.key === userKey);
+    if (matched) {
+        localStorage.setItem('lockcenter_saved_key', matched.key);
+        localStorage.setItem('lockcenter_login_time', String(Date.now()));
+        localStorage.setItem('lockcenter_active_prem_id', matched.id);
+        const id = document.getElementById('activationId').value.trim();
+        if (id) await addId(id);
+        playSuccess();
+        ok.textContent = '✅ Đăng nhập PREM thành công!';
+        setTimeout(() => { showMenu('prem', matched); }, 600);
+        return;
     }
 
-    // Xóa key PREM
-    async function deletePremKey(id) {
-        await db.ref('premKeys/' + id).remove();
-    }
+    playError();
+    err.textContent = '❌ Sai key!';
+    input.value = '';
+    input.focus();
+    showToast('❌ Sai key!', 'error');
+}
 
-    // Lấy danh sách ID đã nhập
-    async function getSavedIds() {
-        const snapshot = await db.ref('savedIds').once('value');
-        const data = snapshot.val();
-        return data ? Object.values(data) : [];
-    }
+function showMenu(type, premData) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('menuScreen').style.display = 'block';
+    resetDefaults();
+    startTimer();
+    updateType(type, premData);
+    renderIdList();
+    showToast('✅ Đăng nhập thành công!', 'success');
+}
 
-    // Thêm ID mới
-    async function addIdToFirebase(id) {
-        if (!id) return;
-        const ids = await getSavedIds();
-        if (!ids.includes(id.trim())) {
-            const newRef = db.ref('savedIds').push();
-            await newRef.set(id.trim());
-        }
-    }
-
-    // Xóa ID
-    async function deleteIdFromFirebase(id) {
-        const snapshot = await db.ref('savedIds').once('value');
-        const data = snapshot.val();
-        if (!data) return;
-        const key = Object.keys(data).find(k => data[k] === id);
-        if (key) await db.ref('savedIds/' + key).remove();
-    }
-
-    // ============================================================
-    // KEY FREE (không đổi)
-    // ============================================================
-    function generateDailyKey(date) {
-        const y = date.getFullYear(),
-            m = String(date.getMonth() + 1).padStart(2, '0'),
-            d = String(date.getDate()).padStart(2, '0'),
-            seed = parseInt(y + m + d);
-        let hash = 0,
-            s = String(seed);
-        for (let i = 0; i < s.length; i++) {
-            hash = ((hash << 5) - hash) + s.charCodeAt(i);
-            hash &= hash;
-        }
-        let key = Math.abs(hash).toString(36).toUpperCase();
-        while (key.length < 8) key = 'X' + key;
-        key = key.slice(0, 8) + String(date.getDate()).padStart(2, '0');
-        return key;
-    }
-
-    function getTodayFreeKey() { return generateDailyKey(new Date()); }
-    function getFreeKeyExpiry() {
-        const n = new Date(),
-            t = new Date(n);
-        t.setDate(t.getDate() + 1);
-        t.setHours(0, 0, 0, 0);
-        return t.getTime();
-    }
-
-    // ============================================================
-    // LOGIC KEY HIỆN TẠI (dùng Firebase)
-    // ============================================================
-    let premListCache = [];
-    let idsCache = [];
-
-    async function refreshPremList() {
-        premListCache = await getPremList();
-    }
-
-    async function refreshIds() {
-        idsCache = await getSavedIds();
-    }
-
-    async function getActiveKey() {
-        await refreshPremList();
-        const prem = premListCache.find(item => item.id === localStorage.getItem('lockcenter_active_prem_id'));
-        if (prem) return prem.key;
-        return getTodayFreeKey();
-    }
-
-    async function getActiveKeyType() {
-        await refreshPremList();
-        const id = localStorage.getItem('lockcenter_active_prem_id');
-        if (id && premListCache.some(item => item.id === id)) return 'prem';
-        return 'free';
-    }
-
-    async function getActiveKeyExpiry() {
-        await refreshPremList();
-        const id = localStorage.getItem('lockcenter_active_prem_id');
-        if (id) {
-            const prem = premListCache.find(item => item.id === id);
-            if (prem) return prem.expiry;
-        }
-        return getFreeKeyExpiry();
-    }
-
-    async function isKeyValid() {
-        const savedKey = localStorage.getItem('lockcenter_saved_key');
-        if (!savedKey) return false;
-        const expiry = await getActiveKeyExpiry();
-        if (!expiry) return false;
-        const activeKey = await getActiveKey();
-        return savedKey === activeKey && Date.now() < expiry;
-    }
-
-    async function getRemaining() {
-        const expiry = await getActiveKeyExpiry();
-        return expiry ? Math.max(0, expiry - Date.now()) : 0;
-    }
-
-    // ============================================================
-    // RENDER ID
-    // ============================================================
-    async function renderIdList() {
-        await refreshIds();
-        const container = document.getElementById('idListContainer');
-        const countEl = document.getElementById('idCount');
-        countEl.textContent = idsCache.length;
-        if (!idsCache.length) {
-            container.innerHTML = '<div class="id-empty">Chưa có ID nào</div>';
-            return;
-        }
-        container.innerHTML = idsCache.map(id =>
-            `<div class="id-item"><span class="id-text">${id}</span><button class="btn-delete-id" onclick="deleteId('${id}')">✕</button></div>`
-        ).join('');
-    }
-
-    async function addId(id) {
-        if (!id) return;
-        await addIdToFirebase(id);
+async function logoutKey() {
+    if (confirm('Thoát key?')) {
+        localStorage.removeItem('lockcenter_saved_key');
+        localStorage.removeItem('lockcenter_login_time');
+        localStorage.removeItem('lockcenter_active_prem_id');
+        if (timer) clearInterval(timer);
+        timer = null;
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('menuScreen').style.display = 'none';
+        document.getElementById('loginKey').value = '';
+        document.getElementById('loginError').textContent = '';
+        document.getElementById('loginSuccess').textContent = '';
         await renderIdList();
+        showToast('Đã thoát key', 'error');
     }
+}
 
-    async function deleteId(id) {
-        await deleteIdFromFirebase(id);
-        await renderIdList();
+function updateType(type, premData) {
+    const badge = document.getElementById('keyTypeBadgeMenu');
+    const timerEl = document.getElementById('keyTimer');
+    const menuBadge = document.getElementById('menuBadge');
+    if (type === 'prem' || premData) {
+        const name = premData ? premData.name || '' : '';
+        badge.textContent = '⭐ PREM' + (name ? ' (' + name + ')' : '');
+        badge.className = 'type-badge prem';
+        timerEl.style.borderColor = '#886622';
+        menuBadge.textContent = '⭐ PREM • FF';
+    } else {
+        badge.textContent = '🆓 FREE';
+        badge.className = 'type-badge free';
+        timerEl.style.borderColor = '#1f1f33';
+        menuBadge.textContent = 'v4.3 • FF';
     }
+}
 
-    // ============================================================
-    // LOGIN
-    // ============================================================
-    async function handleLogin() {
-        const input = document.getElementById('loginKey'),
-            err = document.getElementById('loginError'),
-            ok = document.getElementById('loginSuccess');
-        const userKey = input.value.trim().toUpperCase();
-        err.textContent = ok.textContent = '';
+// ============================================================
+// TIMER
+// ============================================================
+let timer = null;
 
-        // Kiểm tra FREE
-        const free = getTodayFreeKey();
-        if (userKey === free) {
-            localStorage.setItem('lockcenter_saved_key', free);
-            localStorage.setItem('lockcenter_login_time', String(Date.now()));
-            localStorage.removeItem('lockcenter_active_prem_id');
-            const id = document.getElementById('activationId').value.trim();
-            if (id) await addId(id);
-            playSuccess();
-            ok.textContent = '✅ Đăng nhập FREE thành công!';
-            setTimeout(() => { showMenu('free'); }, 600);
-            return;
-        }
-
-        // Kiểm tra PREM
-        await refreshPremList();
-        const matched = premListCache.find(item => item.key === userKey);
-        if (matched) {
-            localStorage.setItem('lockcenter_saved_key', matched.key);
-            localStorage.setItem('lockcenter_login_time', String(Date.now()));
-            localStorage.setItem('lockcenter_active_prem_id', matched.id);
-            const id = document.getElementById('activationId').value.trim();
-            if (id) await addId(id);
-            playSuccess();
-            ok.textContent = '✅ Đăng nhập PREM thành công!';
-            setTimeout(() => { showMenu('prem', matched); }, 600);
-            return;
-        }
-
-        playError();
-        err.textContent = '❌ Sai key!';
-        input.value = '';
-        input.focus();
-        showToast('❌ Sai key!', 'error');
-    }
-
-    function showMenu(type, premData) {
-        document.getElementById('loginScreen').classList.add('hidden');
-        document.getElementById('menuScreen').style.display = 'block';
-        resetDefaults();
-        startTimer();
-        updateType(type, premData);
-        renderIdList();
-        showToast('✅ Đăng nhập thành công!', 'success');
-    }
-
-    async function logoutKey() {
-        if (confirm('Thoát key?')) {
+function startTimer() {
+    if (timer) clearInterval(timer);
+    updateTimer();
+    timer = setInterval(async () => {
+        const rem = await getRemaining();
+        if (rem <= 0) {
+            clearInterval(timer);
+            timer = null;
             localStorage.removeItem('lockcenter_saved_key');
             localStorage.removeItem('lockcenter_login_time');
             localStorage.removeItem('lockcenter_active_prem_id');
-            if (timer) clearInterval(timer);
-            timer = null;
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('menuScreen').style.display = 'none';
-            document.getElementById('loginKey').value = '';
-            document.getElementById('loginError').textContent = '';
-            document.getElementById('loginSuccess').textContent = '';
-            await renderIdList();
-            showToast('Đã thoát key', 'error');
+            document.getElementById('loginError').textContent = '⏰ Key đã hết hạn!';
+            showToast('⏰ Key hết hạn!', 'error');
+            return;
         }
-    }
-
-    function updateType(type, premData) {
-        const badge = document.getElementById('keyTypeBadgeMenu');
-        const timerEl = document.getElementById('keyTimer');
-        const menuBadge = document.getElementById('menuBadge');
-        if (type === 'prem' || premData) {
-            const name = premData ? premData.name || '' : '';
-            badge.textContent = '⭐ PREM' + (name ? ' (' + name + ')' : '');
-            badge.className = 'type-badge prem';
-            timerEl.style.borderColor = '#886622';
-            menuBadge.textContent = '⭐ PREM • FF';
-        } else {
-            badge.textContent = '🆓 FREE';
-            badge.className = 'type-badge free';
-            timerEl.style.borderColor = '#1f1f33';
-            menuBadge.textContent = 'v4.3 • FF';
-        }
-    }
-
-    // ============================================================
-    // TIMER
-    // ============================================================
-    let timer = null;
-
-    function startTimer() {
-        if (timer) clearInterval(timer);
         updateTimer();
-        timer = setInterval(async () => {
-            const rem = await getRemaining();
-            if (rem <= 0) {
-                clearInterval(timer);
-                timer = null;
-                localStorage.removeItem('lockcenter_saved_key');
-                localStorage.removeItem('lockcenter_login_time');
-                localStorage.removeItem('lockcenter_active_prem_id');
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('loginError').textContent = '⏰ Key đã hết hạn!';
-                showToast('⏰ Key hết hạn!', 'error');
-                return;
-            }
-            updateTimer();
-        }, 1000);
-    }
+    }, 1000);
+}
 
-    function updateTimer() {
-        const el = document.getElementById('timerDisplay');
-        getRemaining().then(rem => {
-            el.textContent = fmt(rem);
-            el.className = rem > 0 ? 'time' : 'time expired';
-        });
-    }
+function updateTimer() {
+    const el = document.getElementById('timerDisplay');
+    getRemaining().then(rem => {
+        el.textContent = fmt(rem);
+        el.className = rem > 0 ? 'time' : 'time expired';
+    });
+}
 
-    function fmt(ms) {
-        if (ms <= 0) return '00:00:00';
-        const t = Math.floor(ms / 1000),
-            h = String(Math.floor(t / 3600)).padStart(2, '0'),
-            m = String(Math.floor((t % 3600) / 60)).padStart(2, '0'),
-            s = String(t % 60).padStart(2, '0');
-        return h + ':' + m + ':' + s;
-    }
+function fmt(ms) {
+    if (ms <= 0) return '00:00:00';
+    const t = Math.floor(ms / 1000),
+        h = String(Math.floor(t / 3600)).padStart(2, '0'),
+        m = String(Math.floor((t % 3600) / 60)).padStart(2, '0'),
+        s = String(t % 60).padStart(2, '0');
+    return h + ':' + m + ':' + s;
+}
 
-    // ============================================================
-    // AUDIO & UI
-    // ============================================================
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    let audioCtx = null;
+// ============================================================
+// AUDIO & UI
+// ============================================================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
 
-    function playBeep(freq, dur, vol) {
-        try {
-            if (!audioCtx) audioCtx = new AudioCtx();
-            const o = audioCtx.createOscillator(),
-                g = audioCtx.createGain();
-            o.type = 'sine';
-            o.frequency.value = freq;
-            g.gain.value = vol;
-            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur / 1000);
-            o.connect(g);
-            g.connect(audioCtx.destination);
-            o.start();
-            o.stop(audioCtx.currentTime + dur / 1000);
-        } catch (e) {}
-    }
+function playBeep(freq, dur, vol) {
+    try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        const o = audioCtx.createOscillator(),
+            g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        g.gain.value = vol;
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur / 1000);
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        o.start();
+        o.stop(audioCtx.currentTime + dur / 1000);
+    } catch (e) {}
+}
 
-    function playError() {
-        playBeep(300, 150, 0.2);
-        setTimeout(() => playBeep(250, 120, 0.18), 160);
-        setTimeout(() => playBeep(200, 100, 0.16), 300);
-    }
+function playError() {
+    playBeep(300, 150, 0.2);
+    setTimeout(() => playBeep(250, 120, 0.18), 160);
+    setTimeout(() => playBeep(200, 100, 0.16), 300);
+}
 
-    function playSuccess() {
-        playBeep(1000, 60, 0.12);
-        setTimeout(() => playBeep(1400, 60, 0.14), 100);
-        setTimeout(() => playBeep(1800, 70, 0.16), 200);
-    }
+function playSuccess() {
+    playBeep(1000, 60, 0.12);
+    setTimeout(() => playBeep(1400, 60, 0.14), 100);
+    setTimeout(() => playBeep(1800, 70, 0.16), 200);
+}
 
-    function resetDefaults() {
-        document.getElementById('sensitivitySlider').value = 100;
-        document.getElementById('sensitivityValue').textContent = 100;
-        document.getElementById('touchSpeedSlider').value = 100;
-        document.getElementById('touchSpeedValue').textContent = 100;
-        document.getElementById('toggleRung').classList.remove('active');
-        document.getElementById('toggleLo').classList.remove('active');
-        document.getElementById('toggleLockhead').classList.remove('active');
-        document.getElementById('statusText').textContent = '📂 Mặc định (100)';
-        document.getElementById('profileStatus').textContent = 'Mặc định';
-    }
+function resetDefaults() {
+    document.getElementById('sensitivitySlider').value = 100;
+    document.getElementById('sensitivityValue').textContent = 100;
+    document.getElementById('touchSpeedSlider').value = 100;
+    document.getElementById('touchSpeedValue').textContent = 100;
+    document.getElementById('toggleRung').classList.remove('active');
+    document.getElementById('toggleLo').classList.remove('active');
+    document.getElementById('toggleLockhead').classList.remove('active');
+    document.getElementById('statusText').textContent = '📂 Mặc định (100)';
+    document.getElementById('profileStatus').textContent = 'Mặc định';
+}
 
-    const sensSlider = document.getElementById('sensitivitySlider'),
-        sensVal = document.getElementById('sensitivityValue');
-    const touchSlider = document.getElementById('touchSpeedSlider'),
-        touchVal = document.getElementById('touchSpeedValue');
-    sensSlider.addEventListener('input', () => sensVal.textContent = sensSlider.value);
-    touchSlider.addEventListener('input', () => touchVal.textContent = touchSlider.value);
+const sensSlider = document.getElementById('sensitivitySlider'),
+    sensVal = document.getElementById('sensitivityValue');
+const touchSlider = document.getElementById('touchSpeedSlider'),
+    touchVal = document.getElementById('touchSpeedValue');
+sensSlider.addEventListener('input', () => sensVal.textContent = sensSlider.value);
+touchSlider.addEventListener('input', () => touchVal.textContent = touchSlider.value);
 
-    async function clearId() {
-        const id = document.getElementById('activationId').value.trim();
-        if (id) await deleteId(id);
-        document.getElementById('activationId').value = '';
-        localStorage.removeItem('lockcenter_activation_id');
-        document.getElementById('activationStatus').textContent = '⚪';
-        document.getElementById('activationStatus').className = 'activation-status';
-        document.getElementById('statusText').textContent = '🗑️ Đã xoá ID';
-        showToast('Đã xoá ID', 'success');
-    }
+async function clearId() {
+    const id = document.getElementById('activationId').value.trim();
+    if (id) await deleteId(id);
+    document.getElementById('activationId').value = '';
+    localStorage.removeItem('lockcenter_activation_id');
+    document.getElementById('activationStatus').textContent = '⚪';
+    document.getElementById('activationStatus').className = 'activation-status';
+    document.getElementById('statusText').textContent = '🗑️ Đã xoá ID';
+    showToast('Đã xoá ID', 'success');
+}
 
-    function clearFile() {
-        document.getElementById('supportFile').value = '';
+function clearFile() {
+    document.getElementById('supportFile').value = '';
+    document.getElementById('fileStatus').textContent = '⚪';
+    document.getElementById('fileStatus').className = 'file-status';
+    showToast('Đã xoá file', 'success');
+}
+
+document.getElementById('supportFile').addEventListener('change', function() {
+    if (this.files && this.files.length > 0) {
+        document.getElementById('fileStatus').textContent = '✅ ' + this.files[0].name;
+        document.getElementById('fileStatus').className = 'file-status active';
+        showToast('Đã tải file', 'success');
+        playSuccess();
+    } else {
         document.getElementById('fileStatus').textContent = '⚪';
         document.getElementById('fileStatus').className = 'file-status';
-        showToast('Đã xoá file', 'success');
     }
+});
 
-    document.getElementById('supportFile').addEventListener('change', function() {
-        if (this.files && this.files.length > 0) {
-            document.getElementById('fileStatus').textContent = '✅ ' + this.files[0].name;
-            document.getElementById('fileStatus').className = 'file-status active';
-            showToast('Đã tải file', 'success');
-            playSuccess();
+async function activateId() {
+    const id = document.getElementById('activationId').value.trim();
+    if (!id) { showToast('⚠️ Vui lòng nhập ID!', 'error'); return; }
+    await addId(id);
+    playSuccess();
+    localStorage.setItem('lockcenter_activation_id', id);
+    document.getElementById('activationStatus').textContent = '✅';
+    document.getElementById('activationStatus').className = 'activation-status active';
+    document.getElementById('statusText').textContent = '🔑 Đã kích hoạt ID: ' + id;
+    showToast('✅ Kích hoạt ID thành công', 'success');
+}
+
+function toggleSwitch(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('active');
+    const isActive = el.classList.contains('active');
+    if (isActive) playBeep(1400, 70, 0.12);
+    else playBeep(800, 80, 0.12);
+    const name = id.replace('toggle', '');
+    document.getElementById('statusText').textContent = name + ' → ' + (isActive ? 'BẬT' : 'TẮT');
+    showToast('✅ Đã kích hoạt ' + name, 'success');
+}
+
+function applySettings() {
+    const sens = sensSlider.value,
+        touch = touchSlider.value,
+        rung = document.getElementById('toggleRung').classList.contains('active') ? 'ON' : 'OFF';
+    const lo = document.getElementById('toggleLo').classList.contains('active') ? 'ON' : 'OFF';
+    const lock = document.getElementById('toggleLockhead').classList.contains('active') ? 'ON' : 'OFF';
+    localStorage.setItem('lockcenter_config', JSON.stringify({
+        sensitivity: parseInt(sens),
+        touchSpeed: parseInt(touch),
+        fixRung: rung,
+        fixLo: lo,
+        lockHead: lock
+    }));
+    document.getElementById('statusText').textContent = '✅ Đã áp dụng!';
+    document.getElementById('profileStatus').textContent = 'S:' + sens + ' T:' + touch + ' R:' + rung + ' L:' + lo + ' H:' + lock;
+    playSuccess();
+    showToast('✅ Đã áp dụng', 'success');
+}
+
+function resetSettings() {
+    sensSlider.value = 100;
+    sensVal.textContent = 100;
+    touchSlider.value = 100;
+    touchVal.textContent = 100;
+    document.getElementById('toggleRung').classList.remove('active');
+    document.getElementById('toggleLo').classList.remove('active');
+    document.getElementById('toggleLockhead').classList.remove('active');
+    localStorage.removeItem('lockcenter_config');
+    document.getElementById('statusText').textContent = '🔄 Reset về 100';
+    document.getElementById('profileStatus').textContent = 'Mặc định';
+    showToast('🔄 Reset thành công', 'success');
+}
+
+function launchGame(version) {
+    const gameName = version === 'freefire' ? 'Free Fire' : 'Free Fire Max';
+    const scheme = version === 'freefire' ? 'freefire://' : 'freefiremax://';
+    const storeUrl = version === 'freefire' ? 'https://play.google.com/store/apps/details?id=com.dts.freefireth' : 'https://play.google.com/store/apps/details?id=com.dts.freefiremax';
+    document.getElementById('statusText').textContent = '🚀 Đang mở ' + gameName + '...';
+    playBeep(800, 50, 0.1);
+    setTimeout(() => playBeep(1100, 50, 0.12), 100);
+    try {
+        window.location.href = scheme;
+        setTimeout(() => {
+            if (document.visibilityState === 'visible') {
+                window.open(storeUrl, '_blank');
+                document.getElementById('statusText').textContent = '📲 Chuyển đến cửa hàng';
+            }
+        }, 2000);
+        showToast('🚀 Đang mở ' + gameName, 'success');
+    } catch (e) {
+        window.open(storeUrl, '_blank');
+    }
+}
+
+function showToast(msg, type) {
+    const old = document.querySelector('.toast-msg');
+    if (old) old.remove();
+    const div = document.createElement('div');
+    div.className = 'toast-msg' + (type ? ' ' + type : '');
+    div.textContent = msg;
+    document.body.appendChild(div);
+    setTimeout(() => {
+        div.style.opacity = '0';
+        setTimeout(() => div.remove(), 400);
+    }, 2500);
+}
+
+// ============================================================
+// LOAD
+// ============================================================
+window.onload = function() {
+    const savedId = localStorage.getItem('lockcenter_activation_id');
+    if (savedId) {
+        document.getElementById('activationId').value = savedId;
+        document.getElementById('activationStatus').textContent = '✅';
+        document.getElementById('activationStatus').className = 'activation-status active';
+        document.getElementById('profileStatus').textContent = 'ID: ' + savedId;
+    }
+    const saved = localStorage.getItem('lockcenter_config');
+    if (saved) {
+        try {
+            const cfg = JSON.parse(saved);
+            if (cfg.sensitivity) { sensSlider.value = cfg.sensitivity;
+                sensVal.textContent = cfg.sensitivity; }
+            if (cfg.touchSpeed) { touchSlider.value = cfg.touchSpeed;
+                touchVal.textContent = cfg.touchSpeed; }
+            if (cfg.fixRung === 'ON') document.getElementById('toggleRung').classList.add('active');
+            if (cfg.fixLo === 'ON') document.getElementById('toggleLo').classList.add('active');
+            if (cfg.lockHead === 'ON') document.getElementById('toggleLockhead').classList.add('active');
+            document.getElementById('statusText').textContent = '📂 Đã tải cấu hình';
+        } catch (e) {}
+    }
+    renderIdList();
+    document.getElementById('dateInfo').textContent = '📅 ' + new Date().toLocaleDateString('vi-VN');
+
+    isKeyValid().then(valid => {
+        if (valid) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('menuScreen').style.display = 'block';
+            resetDefaults();
+            startTimer();
+            getActiveKeyType().then(type => updateType(type));
+            renderIdList();
+            showToast('✅ Đăng nhập tự động', 'success');
         } else {
-            document.getElementById('fileStatus').textContent = '⚪';
-            document.getElementById('fileStatus').className = 'file-status';
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('menuScreen').style.display = 'none';
+            document.getElementById('loginKey').focus();
         }
     });
 
-    async function activateId() {
-        const id = document.getElementById('activationId').value.trim();
-        if (!id) { showToast('⚠️ Vui lòng nhập ID!', 'error'); return; }
-        await addId(id);
-        playSuccess();
-        localStorage.setItem('lockcenter_activation_id', id);
-        document.getElementById('activationStatus').textContent = '✅';
-        document.getElementById('activationStatus').className = 'activation-status active';
-        document.getElementById('statusText').textContent = '🔑 Đã kích hoạt ID: ' + id;
-        showToast('✅ Kích hoạt ID thành công', 'success');
-    }
-
-    function toggleSwitch(id) {
-        const el = document.getElementById(id);
-        el.classList.toggle('active');
-        const isActive = el.classList.contains('active');
-        if (isActive) playBeep(1400, 70, 0.12);
-        else playBeep(800, 80, 0.12);
-        const name = id.replace('toggle', '');
-        document.getElementById('statusText').textContent = name + ' → ' + (isActive ? 'BẬT' : 'TẮT');
-        showToast('✅ Đã kích hoạt ' + name, 'success');
-    }
-
-    function applySettings() {
-        const sens = sensSlider.value,
-            touch = touchSlider.value,
-            rung = document.getElementById('toggleRung').classList.contains('active') ? 'ON' : 'OFF';
-        const lo = document.getElementById('toggleLo').classList.contains('active') ? 'ON' : 'OFF';
-        const lock = document.getElementById('toggleLockhead').classList.contains('active') ? 'ON' : 'OFF';
-        localStorage.setItem('lockcenter_config', JSON.stringify({
-            sensitivity: parseInt(sens),
-            touchSpeed: parseInt(touch),
-            fixRung: rung,
-            fixLo: lo,
-            lockHead: lock
-        }));
-        document.getElementById('statusText').textContent = '✅ Đã áp dụng!';
-        document.getElementById('profileStatus').textContent = 'S:' + sens + ' T:' + touch + ' R:' + rung + ' L:' + lo + ' H:' + lock;
-        playSuccess();
-        showToast('✅ Đã áp dụng', 'success');
-    }
-
-    function resetSettings() {
-        sensSlider.value = 100;
-        sensVal.textContent = 100;
-        touchSlider.value = 100;
-        touchVal.textContent = 100;
-        document.getElementById('toggleRung').classList.remove('active');
-        document.getElementById('toggleLo').classList.remove('active');
-        document.getElementById('toggleLockhead').classList.remove('active');
-        localStorage.removeItem('lockcenter_config');
-        document.getElementById('statusText').textContent = '🔄 Reset về 100';
-        document.getElementById('profileStatus').textContent = 'Mặc định';
-        showToast('🔄 Reset thành công', 'success');
-    }
-
-    function launchGame(version) {
-        const gameName = version === 'freefire' ? 'Free Fire' : 'Free Fire Max';
-        const scheme = version === 'freefire' ? 'freefire://' : 'freefiremax://';
-        const storeUrl = version === 'freefire' ? 'https://play.google.com/store/apps/details?id=com.dts.freefireth' : 'https://play.google.com/store/apps/details?id=com.dts.freefiremax';
-        document.getElementById('statusText').textContent = '🚀 Đang mở ' + gameName + '...';
-        playBeep(800, 50, 0.1);
-        setTimeout(() => playBeep(1100, 50, 0.12), 100);
-        try {
-            window.location.href = scheme;
-            setTimeout(() => {
-                if (document.visibilityState === 'visible') {
-                    window.open(storeUrl, '_blank');
-                    document.getElementById('statusText').textContent = '📲 Chuyển đến cửa hàng';
-                }
-            }, 2000);
-            showToast('🚀 Đang mở ' + gameName, 'success');
-        } catch (e) {
-            window.open(storeUrl, '_blank');
+    document.addEventListener('click', function init() {
+        if (!audioCtx) {
+            try { audioCtx = new(window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
         }
-    }
+        document.removeEventListener('click', init);
+    }, { once: true });
 
-    function showToast(msg, type) {
-        const old = document.querySelector('.toast-msg');
-        if (old) old.remove();
-        const div = document.createElement('div');
-        div.className = 'toast-msg' + (type ? ' ' + type : '');
-        div.textContent = msg;
-        document.body.appendChild(div);
-        setTimeout(() => {
-            div.style.opacity = '0';
-            setTimeout(() => div.remove(), 400);
-        }, 2500);
-    }
+    console.log('[LockCenter] Firebase Ready');
+    console.log('[LockCenter] Key FREE:', getTodayFreeKey());
+};
 
-    // ============================================================
-    // LOAD
-    // ============================================================
-    window.onload = function() {
-        const savedId = localStorage.getItem('lockcenter_activation_id');
-        if (savedId) {
-            document.getElementById('activationId').value = savedId;
-            document.getElementById('activationStatus').textContent = '✅';
-            document.getElementById('activationStatus').className = 'activation-status active';
-            document.getElementById('profileStatus').textContent = 'ID: ' + savedId;
-        }
-        const saved = localStorage.getItem('lockcenter_config');
-        if (saved) {
-            try {
-                const cfg = JSON.parse(saved);
-                if (cfg.sensitivity) { sensSlider.value = cfg.sensitivity;
-                    sensVal.textContent = cfg.sensitivity; }
-                if (cfg.touchSpeed) { touchSlider.value = cfg.touchSpeed;
-                    touchVal.textContent = cfg.touchSpeed; }
-                if (cfg.fixRung === 'ON') document.getElementById('toggleRung').classList.add('active');
-                if (cfg.fixLo === 'ON') document.getElementById('toggleLo').classList.add('active');
-                if (cfg.lockHead === 'ON') document.getElementById('toggleLockhead').classList.add('active');
-                document.getElementById('statusText').textContent = '📂 Đã tải cấu hình';
-            } catch (e) {}
-        }
-        renderIdList();
-        document.getElementById('dateInfo').textContent = '📅 ' + new Date().toLocaleDateString('vi-VN');
-
-        isKeyValid().then(valid => {
-            if (valid) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('menuScreen').style.display = 'block';
-                resetDefaults();
-                startTimer();
-                getActiveKeyType().then(type => updateType(type));
-                renderIdList();
-                showToast('✅ Đăng nhập tự động', 'success');
-            } else {
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('loginKey').focus();
-            }
-        });
-
-        document.addEventListener('click', function init() {
-            if (!audioCtx) {
-                try { audioCtx = new(window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
-            }
-            document.removeEventListener('click', init);
-        }, { once: true });
-
-        console.log('[LockCenter] Firebase Ready');
-        console.log('[LockCenter] Key FREE:', getTodayFreeKey());
-    };
-
-    // Hàm global
-    window.handleLogin = handleLogin;
-    window.logoutKey = logoutKey;
-    window.activateId = activateId;
-    window.clearId = clearId;
-    window.clearFile = clearFile;
-    window.toggleSwitch = toggleSwitch;
-    window.applySettings = applySettings;
-    window.resetSettings = resetSettings;
-    window.launchGame = launchGame;
-    window.deleteId = deleteId;
+window.handleLogin = handleLogin;
+window.logoutKey = logoutKey;
+window.activateId = activateId;
+window.clearId = clearId;
+window.clearFile = clearFile;
+window.toggleSwitch = toggleSwitch;
+window.applySettings = applySettings;
+window.resetSettings = resetSettings;
+window.launchGame = launchGame;
+window.deleteId = deleteId;
 </script>
 </body>
 </html>
