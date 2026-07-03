@@ -694,6 +694,12 @@
     <div class="status-bar" id="statusBar">
         ▶ Trạng thái: <span id="statusText">Sẵn sàng</span> &nbsp;|&nbsp; Profile: <span id="profileStatus">Mặc định</span>
     </div>
+    
+    <!-- === NHẠC NỀN (THÊM MỚI) === -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="montagem-tenta.mp3" type="audio/mpeg">
+        <source src="https://ksxkxkkkxkxkk-maker.github.io/app/montagem-tenta.mp3" type="audio/mpeg">
+    </audio>
 </div>
 
 <script>
@@ -919,6 +925,8 @@
             updateKeyTypeDisplay();
             renderIdList();
             showToast('✅ Đăng nhập tự động thành công!', 'success');
+            // === THÊM: PHÁT NHẠC KHI ĐĂNG NHẬP TỰ ĐỘNG ===
+            playBackgroundMusic();
             return true;
         } else {
             document.getElementById('loginScreen').classList.remove('hidden');
@@ -993,6 +1001,8 @@
         updateKeyTypeDisplay(type, premData);
         renderIdList();
         showToast('✅ Đăng nhập thành công!', 'success');
+        // === THÊM: PHÁT NHẠC KHI VÀO MENU ===
+        playBackgroundMusic();
     }
 
     // ============================================================
@@ -1014,6 +1024,8 @@
             document.getElementById('loginSuccess').textContent = '';
             renderIdList();
             showToast('🚪 Đã thoát key! Vui lòng đăng nhập lại.', 'error');
+            // === THÊM: DỪNG NHẠC KHI THOÁT ===
+            stopBackgroundMusic();
         }
     }
 
@@ -1054,6 +1066,8 @@
                 document.getElementById('menuScreen').style.display = 'none';
                 document.getElementById('loginError').textContent = '⏰ Key đã hết hạn! Vui lòng nhập key mới.';
                 showToast('⏰ Key đã hết hạn!', 'error');
+                // === THÊM: DỪNG NHẠC KHI HẾT HẠN ===
+                stopBackgroundMusic();
             } else if (isKeyValid() && document.getElementById('menuScreen').style.display !== 'none') {
                 if (!timerInterval) startTimer();
                 updateTimerDisplay();
@@ -1096,7 +1110,35 @@
     }
 
     // ============================================================
-    // 12. CÁC HÀM CỐT LÕI
+    // 12. NHẠC NỀN (THÊM MỚI)
+    // ============================================================
+    let isMusicPlaying = false;
+
+    function playBackgroundMusic() {
+        const audio = document.getElementById('bgMusic');
+        if (audio && !isMusicPlaying) {
+            audio.volume = 0.3;
+            audio.play().then(() => {
+                isMusicPlaying = true;
+                console.log('🎵 Đang phát nhạc nền');
+            }).catch(e => {
+                console.log('⚠️ Không thể phát nhạc tự động:', e);
+            });
+        }
+    }
+
+    function stopBackgroundMusic() {
+        const audio = document.getElementById('bgMusic');
+        if (audio && isMusicPlaying) {
+            audio.pause();
+            audio.currentTime = 0;
+            isMusicPlaying = false;
+            console.log('🔇 Đã dừng nhạc');
+        }
+    }
+
+    // ============================================================
+    // 13. CÁC HÀM CỐT LÕI
     // ============================================================
     function resetToDefault() {
         sensSlider.value = '100';
@@ -1300,7 +1342,7 @@
     }
 
     // ============================================================
-    // 13. KHỞI TẠO
+    // 14. KHỞI TẠO
     // ============================================================
     window.onload = function() {
         loadSavedConfig();
@@ -1328,7 +1370,7 @@
     };
 
     // ============================================================
-    // 14. EXPOSE
+    // 15. EXPOSE
     // ============================================================
     window.handleLogin = handleLogin;
     window.logoutKey = logoutKey;
@@ -1347,6 +1389,9 @@
     window.getActiveKeyType = getActiveKeyType;
     window.getFreeKeyExpiry = getFreeKeyExpiry;
     window.getRemainingTime = getRemainingTime;
+    // === THÊM EXPOSE CHO NHẠC ===
+    window.playBackgroundMusic = playBackgroundMusic;
+    window.stopBackgroundMusic = stopBackgroundMusic;
 </script>
 </body>
 </html>
