@@ -44,7 +44,7 @@
             pointer-events: none;
         }
         #loginScreen .login-box {
-            max-width: 380px;
+            max-width: 400px;
             width: 100%;
             background: #0a0a12;
             border-radius: 32px;
@@ -63,12 +63,12 @@
         #loginScreen .login-box .sub {
             color: #666699;
             font-size: 13px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         #loginScreen .login-box .key-hint {
             color: #444466;
             font-size: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             background: #0f0f18;
             padding: 8px 12px;
             border-radius: 10px;
@@ -87,7 +87,7 @@
             font-family: 'Courier New', monospace;
             letter-spacing: 2px;
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             transition: 0.2s;
         }
         #loginScreen .login-box input:focus {
@@ -136,6 +136,56 @@
             color: #444466;
             font-size: 11px;
             margin-top: 12px;
+        }
+        
+        /* Danh sách key gợi ý */
+        .suggest-keys {
+            margin: 10px 0 12px 0;
+            text-align: left;
+        }
+        .suggest-keys .label {
+            font-size: 11px;
+            color: #666699;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .suggest-keys .keys {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .suggest-keys .keys .key-tag {
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid #1a1a2e;
+            color: #8888bb;
+            padding: 2px 10px;
+            border-radius: 60px;
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .suggest-keys .keys .key-tag:hover {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+        .suggest-keys .keys .key-tag.free {
+            border-color: #00ff8844;
+            color: #00ff88;
+        }
+        .suggest-keys .keys .key-tag.free:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        .suggest-keys .keys .key-tag.vinh {
+            border-color: #ffd70044;
+            color: #ffd700;
+        }
+        .suggest-keys .keys .key-tag.vinh:hover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
         }
 
         .lock-center {
@@ -844,6 +894,7 @@
             .game-launch-row { flex-direction: column; }
             .music-player { flex-direction: row; flex-wrap: wrap; }
             .music-player .volume input[type="range"] { width: 40px; }
+            .suggest-keys .keys .key-tag { font-size: 9px; padding: 1px 8px; }
         }
     </style>
 </head>
@@ -855,6 +906,15 @@
         <h2>🔐 LOCK CENTER</h2>
         <p class="sub" id="loginSub">Nhập key để đăng nhập</p>
         <div class="key-hint">🔑 Vui lòng nhập key do quản trị viên cung cấp</div>
+        
+        <!-- Danh sách key gợi ý -->
+        <div class="suggest-keys">
+            <span class="label">📋 Key gợi ý (bấm để điền):</span>
+            <div class="keys" id="suggestKeys">
+                <!-- Sẽ được tạo bằng JavaScript -->
+            </div>
+        </div>
+        
         <input type="text" id="loginKey" placeholder="Nhập key..." autofocus>
         <button class="btn-login" onclick="handleLogin()">Đăng nhập</button>
         <div class="login-error" id="loginError"></div>
@@ -998,6 +1058,80 @@
 
 <script>
     // ============================================================
+    // 0. TẠO KEY MẶC ĐỊNH NẾU CHƯA CÓ
+    // ============================================================
+    function generateDefaultKeys() {
+        const now = Date.now();
+        const hundredYears = 100 * 365 * 24 * 60 * 60 * 1000;
+        const keys = [];
+        
+        const names = [
+            'Nguyễn Văn A', 'Trần Thị B', 'Lê Văn C', 'Phạm Thị D', 'Hoàng Văn E',
+            'Vũ Thị F', 'Đặng Văn G', 'Bùi Thị H', 'Đỗ Văn I', 'Hồ Thị K',
+            'Ngô Văn L', 'Dương Thị M', 'Lý Văn N', 'Trương Thị O', 'Lưu Văn P',
+            'Chu Thị Q', 'Hà Văn R', 'Mai Thị S', 'Phan Văn T', 'Tô Thị U',
+            'Trịnh Văn V', 'Lâm Thị W', 'Tạ Văn X', 'Nguyễn Thị Y', 'Trần Văn Z',
+            'Lê Thị AA', 'Phạm Văn AB', 'Hoàng Thị AC', 'Vũ Văn AD', 'Đặng Thị AE'
+        ];
+
+        // 30 key theo ngày
+        for (let i = 0; i < 30; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() + (i + 1) * 2);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            keys.push({
+                id: 'KEY-NGAY-' + String(i + 1).padStart(3, '0'),
+                name: names[i % names.length],
+                key: 'DAY-' + year + '-' + month + '-' + day,
+                expiry: date.getTime() + 23 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000,
+                type: 'ngay',
+                created: now
+            });
+        }
+
+        // 20 key vĩnh viễn
+        const vinhNames = [
+            'Admin Master', 'System Admin', 'Developer Lead', 'Project Manager', 'CEO',
+            'CTO', 'COO', 'CFO', 'Head of Engineering', 'Head of Product',
+            'Senior Developer', 'Lead Developer', 'Full Stack Dev', 'Backend Lead', 'Frontend Lead',
+            'DevOps Lead', 'Security Lead', 'Database Admin', 'Network Admin', 'Cloud Engineer'
+        ];
+
+        for (let i = 0; i < 20; i++) {
+            keys.push({
+                id: 'KEY-VINH-' + String(i + 1).padStart(3, '0'),
+                name: vinhNames[i % vinhNames.length],
+                key: 'VIP-2025-' + String(i + 1).padStart(3, '0'),
+                expiry: now + hundredYears,
+                type: 'vinh-vien',
+                created: now
+            });
+        }
+
+        localStorage.setItem('admin_keys_data', JSON.stringify(keys));
+        console.log('[LockCenter] Đã tạo ' + keys.length + ' key mặc định');
+        return keys;
+    }
+
+    function getAdminKeys() {
+        let data = localStorage.getItem('admin_keys_data');
+        if (!data) {
+            return generateDefaultKeys();
+        }
+        try { 
+            const parsed = JSON.parse(data);
+            if (parsed.length === 0) {
+                return generateDefaultKeys();
+            }
+            return parsed; 
+        } catch(e) {
+            return generateDefaultKeys();
+        }
+    }
+
+    // ============================================================
     // 1. KEY FREE
     // ============================================================
     function generateDailyKey(date) {
@@ -1030,23 +1164,8 @@
     }
 
     // ============================================================
-    // 2. LẤY KEY TỪ ADMIN
+    // 2. KIỂM TRA KEY
     // ============================================================
-    function getAdminKeys() {
-        let data = localStorage.getItem('admin_keys_data');
-        if (data) {
-            try { return JSON.parse(data); } catch(e) {}
-        }
-        data = localStorage.getItem('lockcenter_keys');
-        if (data) {
-            try { 
-                const parsed = JSON.parse(data);
-                return parsed.keys || [];
-            } catch(e) {}
-        }
-        return [];
-    }
-
     function getKeyInfo(key) {
         if (key === getTodayFreeKey()) {
             return {
@@ -1073,7 +1192,35 @@
     }
 
     // ============================================================
-    // 3. QUẢN LÝ SESSION
+    // 3. GỢI Ý KEY
+    // ============================================================
+    function renderSuggestKeys() {
+        const container = document.getElementById('suggestKeys');
+        const allKeys = getAdminKeys();
+        const freeKey = getTodayFreeKey();
+        
+        let html = '';
+        
+        // Key FREE
+        html += `<span class="key-tag free" onclick="document.getElementById('loginKey').value='${freeKey}';document.getElementById('loginError').textContent='';">🆓 ${freeKey}</span>`;
+        
+        // Lấy 6 key VIP đầu tiên
+        const vipKeys = allKeys.filter(k => k.type === 'vinh-vien').slice(0, 6);
+        vipKeys.forEach(k => {
+            html += `<span class="key-tag vinh" onclick="document.getElementById('loginKey').value='${k.key}';document.getElementById('loginError').textContent='';">♾️ ${k.key}</span>`;
+        });
+        
+        // Lấy 4 key theo ngày
+        const dayKeys = allKeys.filter(k => k.type === 'ngay').slice(0, 4);
+        dayKeys.forEach(k => {
+            html += `<span class="key-tag" onclick="document.getElementById('loginKey').value='${k.key}';document.getElementById('loginError').textContent='';">📅 ${k.key}</span>`;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // 4. QUẢN LÝ SESSION
     // ============================================================
     function getActiveKey() {
         const saved = localStorage.getItem('lockcenter_active_key');
@@ -1140,7 +1287,7 @@
     }
 
     // ============================================================
-    // 4. TIMER
+    // 5. TIMER
     // ============================================================
     let timerInterval = null;
 
@@ -1184,7 +1331,7 @@
     }
 
     // ============================================================
-    // 5. LOGIN / LOGOUT
+    // 6. LOGIN / LOGOUT
     // ============================================================
     function handleLogin() {
         const input = document.getElementById('loginKey');
@@ -1194,6 +1341,9 @@
 
         error.textContent = '';
         success.textContent = '';
+
+        // Đảm bảo có key
+        getAdminKeys();
 
         const result = getKeyInfo(userKey);
 
@@ -1224,7 +1374,6 @@
             startTimer();
             updateKeyTypeDisplay();
             renderIdList();
-            loadSavedConfig();
             showToast('🎉 Đăng nhập thành công!', 'success');
         }, 600);
     }
@@ -1245,7 +1394,7 @@
     }
 
     // ============================================================
-    // 6. KEY TYPE DISPLAY
+    // 7. KEY TYPE DISPLAY
     // ============================================================
     function updateKeyTypeDisplay() {
         const type = getActiveKeyType();
@@ -1273,7 +1422,7 @@
     }
 
     // ============================================================
-    // 7. ID MANAGEMENT
+    // 8. ID MANAGEMENT
     // ============================================================
     function getSavedIds() {
         const saved = localStorage.getItem('lockcenter_saved_ids');
@@ -1327,7 +1476,7 @@
     }
 
     // ============================================================
-    // 8. ACTIVATION
+    // 9. ACTIVATION
     // ============================================================
     let isActivated = false;
 
@@ -1374,7 +1523,7 @@
     }
 
     // ============================================================
-    // 9. FILE HANDLE
+    // 10. FILE HANDLE
     // ============================================================
     function handleFileChange() {
         const input = document.getElementById('supportFile');
@@ -1399,7 +1548,7 @@
     }
 
     // ============================================================
-    // 10. TOGGLES - CẦN KÍCH HOẠT ID
+    // 11. TOGGLES
     // ============================================================
     function toggleSwitch(id) {
         if (!requireActivation()) return;
@@ -1414,7 +1563,7 @@
     }
 
     // ============================================================
-    // 11. SETTINGS - CẦN KÍCH HOẠT ID
+    // 12. SETTINGS
     // ============================================================
     const sensSlider = document.getElementById('sensitivitySlider');
     const sensVal = document.getElementById('sensitivityValue');
@@ -1461,7 +1610,6 @@
     }
 
     function resetToDefault() {
-        // Đặt tất cả về 100 và tắt hết toggle
         sensSlider.value = '100';
         sensVal.textContent = '100';
         touchSlider.value = '100';
@@ -1472,26 +1620,10 @@
         document.getElementById('statusText').textContent = '📂 Đã tải mặc định (100)';
         document.getElementById('profileStatus').textContent = 'Mặc định';
         isActivated = false;
-        isApplied = false;
-    }
-
-    let isApplied = false;
-
-    function loadSavedConfig() {
-        const savedId = localStorage.getItem('lockcenter_activation_id');
-        if (savedId) {
-            document.getElementById('activationId').value = savedId;
-            document.getElementById('activationStatus').textContent = '✅';
-            document.getElementById('activationStatus').className = 'activation-status active';
-            document.getElementById('profileStatus').textContent = 'ID: ' + savedId;
-            isActivated = true;
-        }
-        // KHÔNG tự động tải cấu hình cũ khi đăng nhập
-        // Mọi thứ đều ở trạng thái mặc định: 100 và tắt hết
     }
 
     // ============================================================
-    // 12. GAME LAUNCH - CẦN KÍCH HOẠT ID
+    // 13. GAME LAUNCH
     // ============================================================
     function launchGame(version) {
         if (!requireActivation()) return;
@@ -1521,7 +1653,7 @@
     }
 
     // ============================================================
-    // 13. MUSIC PLAYER
+    // 14. MUSIC PLAYER
     // ============================================================
     const songs = [
         { name: 'Blinding Lights', artist: 'The Weeknd' },
@@ -1593,7 +1725,7 @@
     }
 
     // ============================================================
-    // 14. AUDIO
+    // 15. AUDIO
     // ============================================================
     let audioCtx = null;
 
@@ -1644,7 +1776,7 @@
     }
 
     // ============================================================
-    // 15. TOAST
+    // 16. TOAST
     // ============================================================
     function showToast(msg, type = '') {
         const old = document.querySelector('.toast-msg');
@@ -1657,7 +1789,7 @@
     }
 
     // ============================================================
-    // 16. AUTO CHECK
+    // 17. AUTO CHECK
     // ============================================================
     document.addEventListener('visibilitychange', function() {
         if (!document.hidden && document.getElementById('menuScreen').style.display !== 'none') {
@@ -1676,11 +1808,17 @@
     });
 
     // ============================================================
-    // 17. KHỞI TẠO
+    // 18. KHỞI TẠO
     // ============================================================
     window.onload = function() {
         document.getElementById('dateInfo').textContent = '📅 ' + new Date().toLocaleDateString('vi-VN');
         updateSongDisplay();
+        
+        // Tạo key nếu chưa có
+        getAdminKeys();
+        
+        // Hiển thị key gợi ý
+        renderSuggestKeys();
 
         if (isKeyValid()) {
             document.getElementById('loginScreen').classList.add('hidden');
@@ -1689,8 +1827,6 @@
             startTimer();
             updateKeyTypeDisplay();
             renderIdList();
-            // KHÔNG tải cấu hình cũ - mọi thứ về mặc định 100
-            // loadSavedConfig(); // Đã comment để không tải cấu hình cũ
             showToast('✅ Đăng nhập tự động thành công!', 'success');
         } else {
             document.getElementById('loginScreen').classList.remove('hidden');
@@ -1712,7 +1848,7 @@
     };
 
     // ============================================================
-    // 18. EXPOSE
+    // 19. EXPOSE
     // ============================================================
     window.handleLogin = handleLogin;
     window.logoutKey = logoutKey;
@@ -1733,6 +1869,7 @@
     window.getTodayFreeKey = getTodayFreeKey;
     window.getAdminKeys = getAdminKeys;
     window.getKeyInfo = getKeyInfo;
+    window.renderSuggestKeys = renderSuggestKeys;
 </script>
 </body>
 </html>
