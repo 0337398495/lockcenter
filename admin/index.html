@@ -2,335 +2,227 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="LockCenter">
-    
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a12' rx='20'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='%2300d4ff' font-weight='bold'%3E⚡%3C/text%3E%3C/svg%3E">
-    
-    <title>LockCenter - Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LockCenter - Quản lý KEY</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             background: #0a0a0f;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             font-family: 'Segoe UI', 'Roboto', sans-serif;
             padding: 16px;
             color: #fff;
-        }
-        
-        #loginScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            flex-direction: column;
-            padding: 20px;
-            transition: opacity 0.5s ease;
+            align-items: flex-start;
         }
-        #loginScreen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #loginScreen .login-box {
-            max-width: 380px;
-            width: 100%;
-            background: #0a0a12;
-            border-radius: 32px;
-            padding: 40px 28px;
-            border: 1px solid #1a1a2e;
-            text-align: center;
-        }
-        #loginScreen .login-box h2 {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
-        }
-        #loginScreen .login-box .sub {
-            color: #666699;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        #loginScreen .login-box .key-hint {
-            color: #444466;
-            font-size: 12px;
-            margin-bottom: 16px;
-            background: #0f0f18;
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: 1px dashed #1f1f33;
-        }
-        #loginScreen .login-box input {
-            width: 100%;
-            background: #0a0a12;
-            border: 1px solid #2a2a44;
-            border-radius: 60px;
-            padding: 14px 20px;
-            color: #00d4ff;
-            font-size: 16px;
-            font-weight: 600;
-            outline: none;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
-            text-align: center;
-            margin-bottom: 16px;
-            transition: 0.2s;
-        }
-        #loginScreen .login-box input:focus {
-            border-color: #00aaff;
-            box-shadow: 0 0 30px rgba(0, 180, 255, 0.1);
-        }
-        #loginScreen .login-box input::placeholder {
-            color: #333355;
-            font-weight: 400;
-            font-family: 'Segoe UI', sans-serif;
-            letter-spacing: 0;
-        }
-        #loginScreen .login-box .btn-login {
-            width: 100%;
-            background: linear-gradient(90deg, #0044aa, #0088ff);
-            border: none;
-            color: #fff;
-            font-weight: 700;
-            padding: 14px;
-            border-radius: 60px;
-            cursor: pointer;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.2s;
-            box-shadow: 0 6px 20px rgba(0, 100, 255, 0.25);
-        }
-        #loginScreen .login-box .btn-login:hover {
-            transform: scale(1.02);
-        }
-        #loginScreen .login-box .login-error {
-            color: #ff4466;
-            font-size: 13px;
-            margin-top: 12px;
-            min-height: 24px;
-            font-weight: 500;
-        }
-        #loginScreen .login-box .login-success {
-            color: #00ff88;
-            font-size: 13px;
-            margin-top: 12px;
-            min-height: 24px;
-            font-weight: 500;
-        }
-        #loginScreen .login-box .date-info {
-            color: #444466;
-            font-size: 11px;
-            margin-top: 12px;
-        }
-
-        .lock-center {
-            max-width: 480px;
+        .lockcenter-panel {
+            max-width: 780px;
             width: 100%;
             background: linear-gradient(145deg, #12121a, #1a1a2e);
             border-radius: 32px;
-            padding: 20px 16px 28px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
+            padding: 24px 20px 32px;
             border: 1px solid #2a2a3e;
-            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            margin-top: 10px;
         }
-
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            text-align: center;
+            padding-bottom: 16px;
             border-bottom: 1px solid #2a2a3e;
+            margin-bottom: 20px;
         }
         .header h1 {
-            font-size: 20px;
+            font-size: 26px;
             font-weight: 700;
-            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .header h1 small {
-            font-size: 10px;
+        .header .sub {
             color: #666699;
-            -webkit-text-fill-color: #666699;
-            background: none;
-            font-weight: 400;
+            font-size: 12px;
+            margin-top: 2px;
         }
-        .header .badge {
-            background: #1f1f33;
-            padding: 3px 10px;
+        .header .badge-pro {
+            display: inline-block;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            padding: 2px 14px;
             border-radius: 20px;
-            font-size: 10px;
-            color: #8888bb;
-            border: 1px solid #2f2f4a;
-        }
-        .logout-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(255, 68, 68, 0.15);
-            border: 1px solid rgba(255, 68, 68, 0.3);
-            color: #ff4466;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            z-index: 10;
-        }
-        .logout-btn:hover {
-            background: rgba(255, 68, 68, 0.3);
-            transform: scale(1.1);
-        }
-        .logout-btn .tooltip {
-            position: absolute;
-            top: 44px;
-            right: 0;
-            background: #1a0a0a;
-            color: #ff4466;
             font-size: 11px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid #662222;
-            white-space: nowrap;
-            opacity: 0;
-            transition: 0.3s;
-            pointer-events: none;
+            font-weight: 700;
+            color: #0a0a0f;
+            margin-top: 4px;
+            -webkit-text-fill-color: #0a0a0f;
         }
-        .logout-btn:hover .tooltip {
-            opacity: 1;
+        .sync-status {
+            text-align: center;
+            font-size: 11px;
+            color: #00ff88;
+            margin-top: 6px;
+        }
+        .sync-status .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 1;
+            }
         }
 
-        .key-timer {
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stats .stat-item {
+            background: #0f0f18;
+            border: 1px solid #1f1f33;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stats .stat-item .number {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .stats .stat-item .number.free {
+            color: #00ff88;
+        }
+        .stats .stat-item .number.ngay {
+            color: #00d4ff;
+        }
+        .stats .stat-item .number.vinh {
+            color: #ffd700;
+        }
+        .stats .stat-item .number.total {
+            color: #ff8800;
+        }
+        .stats .stat-item .label {
+            font-size: 10px;
+            color: #666699;
+            margin-top: 4px;
+        }
+
+        .free-section {
             background: #0f0f18;
             border-radius: 16px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
+            padding: 16px;
             border: 1px solid #1f1f33;
+            margin-bottom: 20px;
+        }
+        .free-section .title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+        .free-section .free-key-display {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
-            color: #8888bb;
-            flex-wrap: wrap;
-            gap: 6px;
+            background: #0a0a12;
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid #1f1f33;
         }
-        .key-timer .time {
-            color: #00ff88;
-            font-weight: 700;
+        .free-section .free-key-display .key {
             font-family: 'Courier New', monospace;
-            font-size: 16px;
-        }
-        .key-timer .time.expired {
-            color: #ff4466;
-        }
-        .key-timer .type-badge {
-            font-size: 10px;
-            padding: 2px 10px;
-            border-radius: 20px;
+            font-size: 20px;
             font-weight: 700;
-        }
-        .key-timer .type-badge.free {
-            background: rgba(0, 255, 136, 0.15);
             color: #00ff88;
+            letter-spacing: 2px;
+        }
+        .free-section .free-key-display .copy-btn {
+            background: rgba(0, 255, 136, 0.15);
             border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 4px 14px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.3s;
         }
-        .key-timer .type-badge.prem {
-            background: rgba(255, 136, 0, 0.15);
-            color: #ff8800;
-            border: 1px solid #ff8800;
+        .free-section .free-key-display .copy-btn:hover {
+            background: rgba(0, 255, 136, 0.3);
         }
-        .key-timer .type-badge.vinh-vien {
-            background: rgba(255, 215, 0, 0.15);
-            color: #ffd700;
-            border: 1px solid #ffd700;
+        .free-section .free-expiry {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #666699;
+            display: flex;
+            justify-content: space-between;
+        }
+        .free-section .free-expiry .time {
+            color: #00ff88;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
         }
 
-        .activation-row {
-            background: #0f0f18;
-            border-radius: 20px;
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            border: 1px solid #1f1f33;
+        .search-box {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
         }
-        .activation-row label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #b0b0d0;
-            white-space: nowrap;
-        }
-        .activation-row input {
+        .search-box input {
             flex: 1;
-            min-width: 80px;
             background: #0a0a12;
             border: 1px solid #2a2a44;
             border-radius: 60px;
-            padding: 10px 14px;
-            color: #00d4ff;
-            font-size: 15px;
-            font-weight: 600;
-            outline: none;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
-            transition: 0.2s;
-        }
-        .activation-row input:focus {
-            border-color: #00aaff;
-            box-shadow: 0 0 20px rgba(0, 180, 255, 0.15);
-        }
-        .activation-row input::placeholder {
-            color: #444466;
-            font-weight: 400;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        .activation-row .btn-activate {
-            background: linear-gradient(90deg, #00aa44, #00dd66);
-            border: none;
-            color: #fff;
-            font-weight: 700;
             padding: 10px 16px;
-            border-radius: 60px;
-            cursor: pointer;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: 0.2s;
-            white-space: nowrap;
-            box-shadow: 0 4px 16px rgba(0, 200, 80, 0.2);
-        }
-        .activation-row .btn-activate:hover {
-            transform: scale(1.03);
-        }
-        .activation-row .btn-clear {
-            background: linear-gradient(90deg, #cc0044, #ff2266);
-            border: none;
             color: #fff;
+            font-size: 13px;
+            outline: none;
+            transition: 0.2s;
+            min-width: 150px;
+        }
+        .search-box input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+        .search-box input::placeholder {
+            color: #444466;
+        }
+        .search-box select {
+            background: #0a0a12;
+            border: 1px solid #2a2a44;
+            border-radius: 60px;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        .search-box select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        .search-box .btn-refresh {
+            background: linear-gradient(90deg, #00aa66, #00dd88);
+            border: none;
+            color: #0a0a0f;
             font-weight: 700;
-            padding: 10px 14px;
+            padding: 10px 18px;
             border-radius: 60px;
             cursor: pointer;
             font-size: 12px;
@@ -339,389 +231,166 @@
             transition: 0.2s;
             white-space: nowrap;
         }
-        .activation-row .btn-clear:hover {
+        .search-box .btn-refresh:hover {
             transform: scale(1.03);
+            box-shadow: 0 6px 24px rgba(0, 200, 100, 0.3);
         }
-        .activation-row .activation-status {
+        .search-box .btn-clipboard {
+            background: linear-gradient(90deg, #00d4ff, #0088cc);
+            border: none;
+            color: #0a0a0f;
+            font-weight: 700;
+            padding: 10px 18px;
+            border-radius: 60px;
+            cursor: pointer;
             font-size: 12px;
-            color: #666699;
-            min-width: 50px;
-            text-align: right;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: 0.2s;
+            white-space: nowrap;
         }
-        .activation-row .activation-status.active {
-            color: #00ff88;
-        }
-        .activation-row .activation-status.error {
-            color: #ff4466;
+        .search-box .btn-clipboard:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 24px rgba(0, 212, 255, 0.3);
         }
 
-        .id-list-section {
-            background: #0f0f18;
-            border-radius: 20px;
-            padding: 14px 16px;
-            margin-bottom: 12px;
+        .key-list {
+            background: #0a0a12;
+            border-radius: 16px;
+            padding: 12px;
             border: 1px solid #1f1f33;
-        }
-        .id-list-section .title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #b0b0d0;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .id-list-section .title .count {
-            font-size: 11px;
-            color: #666699;
-            font-weight: 400;
-        }
-        .id-list-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            max-height: 120px;
+            max-height: 420px;
             overflow-y: auto;
         }
-        .id-list-container::-webkit-scrollbar { width: 3px; }
-        .id-list-container::-webkit-scrollbar-track { background: #0a0a12; }
-        .id-list-container::-webkit-scrollbar-thumb { background: #2a2a44; border-radius: 10px; }
-        .id-item {
-            display: flex;
-            align-items: center;
+        .key-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .key-list::-webkit-scrollbar-track {
             background: #0a0a12;
-            border: 1px solid #1f1f33;
-            border-radius: 60px;
-            padding: 4px 8px 4px 14px;
-            gap: 6px;
-            font-size: 12px;
-            color: #00d4ff;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 0.5px;
-            transition: 0.2s;
         }
-        .id-item .id-text {
-            max-width: 100px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .key-list::-webkit-scrollbar-thumb {
+            background: #2a2a44;
+            border-radius: 10px;
         }
-        .id-item .btn-delete-id {
-            background: rgba(255, 68, 68, 0.1);
-            border: none;
-            color: #ff4466;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-            font-weight: 700;
-        }
-        .id-item .btn-delete-id:hover {
-            background: rgba(255, 68, 68, 0.3);
-        }
-        .id-empty {
-            text-align: center;
-            color: #444466;
-            font-size: 12px;
-            padding: 6px 0;
-            width: 100%;
-        }
-
-        .file-support-row {
-            background: #0f0f18;
-            border-radius: 20px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            border: 1px solid #1f1f33;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .file-support-row label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #b0b0d0;
-            white-space: nowrap;
-        }
-        .file-support-row input[type="file"] {
-            flex: 1;
-            min-width: 80px;
-            background: #0a0a12;
-            border: 1px solid #2a2a44;
-            border-radius: 60px;
-            padding: 8px 14px;
-            color: #b0b0d0;
-            font-size: 12px;
-            outline: none;
-            cursor: pointer;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        .file-support-row input[type="file"]::-webkit-file-upload-button {
-            background: linear-gradient(90deg, #6633aa, #9933cc);
-            border: none;
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 60px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 11px;
-            margin-right: 8px;
-        }
-        .file-support-row .btn-clear-file {
-            background: linear-gradient(90deg, #cc0044, #ff2266);
-            border: none;
-            color: #fff;
-            font-weight: 700;
-            padding: 8px 14px;
-            border-radius: 60px;
-            cursor: pointer;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-        .file-support-row .btn-clear-file:hover {
-            transform: scale(1.03);
-        }
-        .file-support-row .file-status {
-            font-size: 12px;
-            color: #666699;
-            min-width: 50px;
-            text-align: right;
-        }
-        .file-support-row .file-status.active {
-            color: #00ff88;
-        }
-
-        .control-group {
-            background: #0f0f18;
-            border-radius: 20px;
-            padding: 16px 16px 10px;
-            margin-bottom: 12px;
-            border: 1px solid #1f1f33;
-        }
-        .control-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            font-weight: 500;
-            color: #b0b0d0;
-            margin-bottom: 6px;
-        }
-        .control-label .value {
-            color: #00d4ff;
-            font-weight: 700;
-            min-width: 48px;
-            text-align: right;
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 6px;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #1f1f3a, #2a2a50);
-            outline: none;
-            transition: background 0.2s;
-            margin: 4px 0;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #00d4ff, #0066cc);
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 180, 255, 0.4);
-            border: 2px solid #0a0a12;
-            transition: 0.15s;
-        }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.12);
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #00d4ff, #0066cc);
-            cursor: pointer;
-            border: 2px solid #0a0a12;
-        }
-
-        .toggle-row {
+        .key-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 10px 12px;
             border-bottom: 1px solid #1a1a2e;
+            font-size: 13px;
+            transition: 0.2s;
         }
-        .toggle-row:last-child {
+        .key-item:hover {
+            background: #12121e;
+        }
+        .key-item:last-child {
             border-bottom: none;
         }
-        .toggle-row .label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #c0c0e0;
+        .key-item .info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
         }
-        .toggle-row .label small {
-            font-weight: 300;
+        .key-item .info .name {
+            color: #b0b0d0;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .key-item .info .key {
+            font-family: 'Courier New', monospace;
+            color: #00d4ff;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .key-item .info .expiry {
             color: #666699;
             font-size: 11px;
+        }
+        .key-item .info .expiry .valid {
+            color: #00ff88;
+        }
+        .key-item .info .expiry .expired {
+            color: #ff4466;
+        }
+        .key-item .info .expiry .time-left {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .key-item .info .type-badge {
+            display: inline-block;
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .key-item .info .type-badge.vinh-vien {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            border: 1px solid #ffd70044;
+        }
+        .key-item .info .type-badge.ngay {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            border: 1px solid #00d4ff44;
+        }
+        .key-item .info .type-badge.free {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff8844;
+        }
+        .key-item .actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
             margin-left: 8px;
         }
-        .toggle-switch {
-            position: relative;
-            width: 48px;
-            height: 28px;
-            background: #1f1f33;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.25s;
-            border: 1px solid #2f2f4a;
-            flex-shrink: 0;
-        }
-        .toggle-switch.active {
-            background: linear-gradient(90deg, #0066cc, #00d4ff);
-            border-color: #00aaff;
-            box-shadow: 0 0 16px rgba(0, 180, 255, 0.3);
-        }
-        .toggle-switch .knob {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 22px;
-            height: 22px;
-            background: #d0d0ee;
-            border-radius: 50%;
-            transition: 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-        }
-        .toggle-switch.active .knob {
-            left: 22px;
-            background: #ffffff;
-            box-shadow: 0 0 20px rgba(0, 200, 255, 0.5);
-        }
-
-        .footer-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-        }
-        .btn {
-            flex: 1;
-            padding: 12px 10px;
-            border: none;
-            border-radius: 60px;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: #1f1f33;
-            color: #8888bb;
-            cursor: pointer;
-            transition: 0.2s;
+        .key-item .actions .btn-copy {
+            background: rgba(0, 212, 255, 0.1);
             border: 1px solid #2a2a44;
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, #0044aa, #0088ff);
-            color: #fff;
-            border: none;
-            box-shadow: 0 6px 20px rgba(0, 100, 255, 0.25);
-        }
-        .btn-primary:hover {
-            transform: scale(1.02);
-        }
-        .btn-danger {
-            background: linear-gradient(90deg, #880022, #cc0044);
-            color: #fff;
-            border: none;
-            box-shadow: 0 6px 20px rgba(200, 0, 50, 0.25);
-        }
-        .btn-danger:hover {
-            transform: scale(1.02);
-        }
-
-        .game-launch-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-        }
-        .btn-game {
-            flex: 1;
-            padding: 12px 8px;
-            border: none;
-            border-radius: 60px;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: 0.2s;
-            color: #fff;
-            background: linear-gradient(135deg, #1a2a3a, #0d1b2a);
-            border: 1px solid #2a4a6a;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-        .btn-game:hover {
-            transform: scale(1.03);
-        }
-        .btn-game .icon {
-            font-size: 16px;
-            margin-right: 4px;
-        }
-        .btn-game-ff {
-            border-color: #ff6a00;
-            background: linear-gradient(135deg, #2a1a0a, #1a0e00);
-        }
-        .btn-game-ff:hover {
-            border-color: #ff8800;
-            box-shadow: 0 6px 24px rgba(255, 100, 0, 0.25);
-        }
-        .btn-game-ffmax {
-            border-color: #00aaff;
-            background: linear-gradient(135deg, #0a1a2a, #000e1a);
-        }
-        .btn-game-ffmax:hover {
-            border-color: #44ccff;
-            box-shadow: 0 6px 24px rgba(0, 170, 255, 0.25);
-        }
-
-        .status-bar {
-            margin-top: 14px;
-            padding: 10px 14px;
-            background: #0a0a12;
-            border-radius: 14px;
-            font-size: 11px;
-            color: #666699;
-            text-align: center;
-            border: 1px solid #1a1a2e;
-            font-family: monospace;
-        }
-        .status-bar span {
             color: #00d4ff;
+            padding: 4px 12px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .key-item .actions .btn-copy:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        .empty-state {
+            text-align: center;
+            color: #444466;
+            padding: 20px;
+            font-size: 13px;
         }
 
-        .toast-msg {
+        .footer {
+            text-align: center;
+            color: #444466;
+            font-size: 10px;
+            margin-top: 16px;
+        }
+
+        .toast {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             background: #1a1a2e;
-            color: #00d4ff;
-            padding: 14px 28px;
+            color: #00ff88;
+            padding: 12px 28px;
             border-radius: 60px;
             font-size: 14px;
             font-weight: 600;
-            border: 1px solid #2a2a50;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            border: 1px solid #226622;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
             z-index: 999;
             transition: 0.3s;
             backdrop-filter: blur(8px);
@@ -729,1010 +398,607 @@
             max-width: 90%;
             text-align: center;
         }
-        .toast-msg.error {
-            background: #1a0a0a;
-            color: #ff4466;
-            border: 1px solid #662222;
-        }
-        .toast-msg.success {
-            background: #0a1a0a;
-            color: #00ff88;
-            border: 1px solid #226622;
-        }
-        .toast-msg.prem {
-            background: #1a0f0a;
-            color: #ff8800;
-            border: 1px solid #886622;
-        }
-        .toast-msg.vinh {
-            background: #1a1a0a;
-            color: #ffd700;
-            border: 1px solid #886622;
-        }
-        .toast-msg.warning {
-            background: #1a1a0a;
-            color: #ffaa00;
-            border: 1px solid #886622;
-        }
-
-        .music-player {
-            background: #0f0f18;
-            border-radius: 20px;
-            padding: 8px 14px;
-            margin-top: 8px;
-            border: 1px solid #1f1f33;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .music-player .controls {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .music-player .controls button {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid #2a2a44;
-            color: #00d4ff;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 12px;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .music-player .controls button:hover {
-            background: rgba(0, 212, 255, 0.2);
-        }
-        .music-player .controls button.active {
-            background: rgba(0, 212, 255, 0.25);
-            border-color: #00d4ff;
-        }
-        .music-player .controls button.sound-toggle {
-            background: rgba(255, 200, 0, 0.1);
-            border-color: #886622;
-            color: #ffd700;
-            width: 28px;
-            height: 28px;
-            font-size: 14px;
-        }
-        .music-player .controls button.sound-toggle.muted {
-            background: rgba(255, 68, 68, 0.1);
+        .toast.error {
             border-color: #662222;
             color: #ff4466;
         }
-        .music-player .info {
-            flex: 1;
-            min-width: 80px;
+        .toast.key {
+            border-color: #886622;
+            color: #ff8800;
         }
-        .music-player .info .song-name {
-            font-size: 11px;
-            font-weight: 600;
-            color: #b0b0d0;
-        }
-        .music-player .info .song-artist {
-            font-size: 9px;
-            color: #666699;
-        }
-        .music-player .volume {
-            display: flex;
+
+        .clipboard-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
             align-items: center;
-            gap: 4px;
         }
-        .music-player .volume input[type="range"] {
-            width: 50px;
-            height: 4px;
+        .clipboard-modal.active {
+            display: flex;
         }
-        .music-player .volume span {
+        .clipboard-modal .modal-content {
+            background: #1a1a2e;
+            border: 1px solid #2a2a3e;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .clipboard-modal .modal-content h2 {
+            color: #00d4ff;
+            font-size: 18px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .clipboard-modal .modal-content .clip-item {
+            background: #0a0a12;
+            border: 1px solid #1f1f33;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .clipboard-modal .modal-content .clip-item .clip-text {
+            font-family: 'Courier New', monospace;
+            color: #00d4ff;
+            font-size: 13px;
+            word-break: break-all;
+            flex: 1;
+        }
+        .clipboard-modal .modal-content .clip-item .clip-time {
             font-size: 10px;
             color: #666699;
+            white-space: nowrap;
+        }
+        .clipboard-modal .modal-content .clip-item .clip-copy {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #2a2a44;
+            color: #00d4ff;
+            padding: 4px 10px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: 0.3s;
+        }
+        .clipboard-modal .modal-content .clip-item .clip-copy:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        .clipboard-modal .modal-content .clip-empty {
+            text-align: center;
+            color: #444466;
+            padding: 20px;
+        }
+        .clipboard-modal .modal-content .btn-close {
+            width: 100%;
+            background: linear-gradient(90deg, #cc0044, #ff2266);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 12px;
+            transition: 0.2s;
+        }
+        .clipboard-modal .modal-content .btn-close:hover {
+            transform: scale(1.02);
+        }
+        .clipboard-modal .modal-content .btn-clear-clip {
+            width: 100%;
+            background: linear-gradient(90deg, #444466, #666699);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 8px;
+            transition: 0.2s;
+        }
+        .clipboard-modal .modal-content .btn-clear-clip:hover {
+            transform: scale(1.02);
         }
 
         @media (max-width: 460px) {
-            .lock-center { padding: 14px 12px 20px; }
-            .logout-btn { top: 8px; right: 8px; width: 32px; height: 32px; font-size: 16px; }
-            .activation-row { flex-wrap: wrap; }
-            .activation-row input { min-width: 100%; }
-            .file-support-row { flex-wrap: wrap; }
-            .file-support-row input[type="file"] { min-width: 100%; }
-            .header h1 { font-size: 17px; }
-            .id-item .id-text { max-width: 70px; }
-            .game-launch-row { flex-direction: column; }
-            .music-player { flex-direction: row; flex-wrap: wrap; }
-            .music-player .volume input[type="range"] { width: 40px; }
+            .lockcenter-panel {
+                padding: 16px;
+            }
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .search-box {
+                flex-direction: column;
+            }
+            .search-box input,
+            .search-box select,
+            .search-box .btn-refresh,
+            .search-box .btn-clipboard {
+                width: 100%;
+            }
+            .key-item {
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch;
+            }
+            .key-item .actions {
+                justify-content: flex-end;
+            }
+            .free-section .free-key-display {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .free-section .free-key-display .copy-btn {
+                width: 100%;
+                text-align: center;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
-<div id="loginScreen">
-    <div class="login-box">
-        <h2>🔐 LOCK CENTER</h2>
-        <p class="sub" id="loginSub">Nhập key để đăng nhập</p>
-        <div class="key-hint">🔑 Vui lòng nhập key do quản trị viên cung cấp</div>
-        <input type="text" id="loginKey" placeholder="Nhập key..." autofocus>
-        <button class="btn-login" onclick="handleLogin()">Đăng nhập</button>
-        <div class="login-error" id="loginError"></div>
-        <div class="login-success" id="loginSuccess"></div>
-        <div class="date-info" id="dateInfo"></div>
-    </div>
-</div>
-
-<!-- MAIN APP -->
-<div class="lock-center" id="menuScreen" style="display:none;">
-    <div class="logout-btn" onclick="logoutKey()" title="Đăng xuất">
-        ✕
-        <span class="tooltip">Thoát key</span>
-    </div>
-
-    <div class="header">
-        <h1>⚡ LOCK CENTER <small>by hthiet</small></h1>
-        <span class="badge" id="menuBadge">v4.3 • FF</span>
-    </div>
-
-    <!-- Key Timer -->
-    <div class="key-timer" id="keyTimer">
-        <span>⏳ Hiệu lực</span>
-        <span class="time" id="timerDisplay">--:--:--</span>
-        <span class="type-badge free" id="keyTypeBadgeMenu">🆓 FREE</span>
-    </div>
-
-    <!-- Activation -->
-    <div class="activation-row">
-        <label>🔑 ID</label>
-        <input type="text" id="activationId" placeholder="Nhập ID game..." value="">
-        <button class="btn-activate" onclick="activateId()">Kích hoạt</button>
-        <button class="btn-clear" onclick="clearCurrentId()">Xoá</button>
-        <span class="activation-status" id="activationStatus">⚪</span>
-    </div>
-
-    <!-- ID List -->
-    <div class="id-list-section">
-        <div class="title">
-            📋 ID đã nhập
-            <span class="count" id="idCount">0</span>
-        </div>
-        <div class="id-list-container" id="idListContainer">
-            <div class="id-empty">Chưa có ID nào được lưu</div>
-        </div>
-    </div>
-
-    <!-- File Support -->
-    <div class="file-support-row">
-        <label>📁 File</label>
-        <input type="file" id="supportFile" accept=".txt,.json,.cfg,.ini" onchange="handleFileChange()">
-        <button class="btn-clear-file" onclick="clearFile()">Xoá</button>
-        <span class="file-status" id="fileStatus">⚪</span>
-    </div>
-
-    <!-- Controls -->
-    <div class="control-group">
-        <div class="control-label">
-            <span>🎯 Độ nhạy con trỏ trượt</span>
-            <span class="value" id="sensitivityValue">100</span>
-        </div>
-        <input type="range" id="sensitivitySlider" min="100" max="4000" value="100" step="10">
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:#444466;padding:0 4px;">
-            <span>100</span>
-            <span>4000</span>
-        </div>
-    </div>
-
-    <div class="control-group">
-        <div class="control-label">
-            <span>⚡ Tốc độ cảm ứng</span>
-            <span class="value" id="touchSpeedValue">100</span>
-        </div>
-        <input type="range" id="touchSpeedSlider" min="100" max="4000" value="100" step="10">
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:#444466;padding:0 4px;">
-            <span>100</span>
-            <span>4000</span>
-        </div>
-    </div>
-
-    <!-- Toggles -->
-    <div class="control-group" style="padding: 6px 16px;">
-        <div class="toggle-row">
-            <span class="label">📳 Fix Rung <small>(chống giật)</small></span>
-            <div class="toggle-switch" id="toggleRung" onclick="toggleSwitch('toggleRung')">
-                <div class="knob"></div>
+    <div class="lockcenter-panel">
+        <div class="header">
+            <h1>🔒 LOCKCENTER</h1>
+            <div class="sub">Quản lý KEY hệ thống</div>
+            <div class="badge-pro">⚡ KEY MANAGEMENT</div>
+            <div class="sync-status">
+                <span class="dot"></span>
+                Đồng bộ với Admin Pro V3
             </div>
         </div>
-        <div class="toggle-row">
-            <span class="label">🔄 Fix Lỗ <small>(ổn định FPS)</small></span>
-            <div class="toggle-switch" id="toggleLo" onclick="toggleSwitch('toggleLo')">
-                <div class="knob"></div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="number total" id="totalKeys">0</div>
+                <div class="label">📊 Tổng KEY</div>
+            </div>
+            <div class="stat-item">
+                <div class="number free" id="freeCount">0</div>
+                <div class="label">🆓 KEY FREE</div>
+            </div>
+            <div class="stat-item">
+                <div class="number ngay" id="ngayCount">0</div>
+                <div class="label">📅 Theo ngày</div>
+            </div>
+            <div class="stat-item">
+                <div class="number vinh" id="vinhCount">0</div>
+                <div class="label">♾️ Vĩnh viễn</div>
             </div>
         </div>
-        <div class="toggle-row">
-            <span class="label">🎯 LockHead <small>(tự động headshot)</small></span>
-            <div class="toggle-switch" id="toggleLockhead" onclick="toggleSwitch('toggleLockhead')">
-                <div class="knob"></div>
+
+        <div class="free-section">
+            <div class="title">🆓 KEY FREE HÔM NAY</div>
+            <div class="free-key-display">
+                <span class="key" id="freeKeyDisplay">------</span>
+                <button class="copy-btn" onclick="copyFreeKey()">📋 Sao chép</button>
+            </div>
+            <div class="free-expiry">
+                <span>⏳ Hết hạn vào lúc 00:00</span>
+                <span class="time" id="freeTimer">--:--:--</span>
             </div>
         </div>
-    </div>
 
-    <!-- Actions -->
-    <div class="footer-actions">
-        <button class="btn btn-primary" onclick="applySettings()">✔ Áp dụng</button>
-        <button class="btn btn-danger" onclick="resetSettings()">⟲ Reset</button>
-    </div>
-
-    <!-- Game Launch -->
-    <div class="game-launch-row">
-        <button class="btn-game btn-game-ff" onclick="launchGame('freefire')">
-            <span class="icon">🔥</span> Free Fire
-        </button>
-        <button class="btn-game btn-game-ffmax" onclick="launchGame('freefiremax')">
-            <span class="icon">⚡</span> Free Fire Max
-        </button>
-    </div>
-
-    <!-- Music Player -->
-    <div class="music-player">
-        <div class="controls">
-            <button onclick="prevSong()">⏮</button>
-            <button id="musicPlay" onclick="togglePlay()">▶</button>
-            <button onclick="nextSong()">⏭</button>
-            <button id="soundToggle" class="sound-toggle" onclick="toggleSound()">🔊</button>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Tìm kiếm key hoặc tên..." oninput="filterKeys()">
+            <select id="filterType" onchange="filterKeys()">
+                <option value="all">📋 Tất cả</option>
+                <option value="free">🆓 KEY FREE</option>
+                <option value="ngay">📅 Theo ngày</option>
+                <option value="vinh-vien">♾️ Vĩnh viễn</option>
+            </select>
+            <button class="btn-refresh" onclick="refreshAll()">🔄 Làm mới</button>
+            <button class="btn-clipboard" onclick="openClipboard()">📋 Web Clip</button>
         </div>
-        <div class="info">
-            <div class="song-name" id="songName">🎵 Chưa chọn nhạc</div>
-            <div class="song-artist" id="songArtist">Nhấn Play</div>
+
+        <div class="key-list" id="keyListContainer">
+            <div class="empty-state">Đang tải dữ liệu...</div>
         </div>
-        <div class="volume">
-            <input type="range" id="musicVolume" min="0" max="100" value="50" oninput="setVolume(this.value)">
+
+        <div class="footer">
+            LockCenter v3.0 • Đồng bộ với Admin Pro V3 • Dữ liệu được lưu trữ an toàn
         </div>
     </div>
 
-    <!-- Status -->
-    <div class="status-bar" id="statusBar">
-        ▶ Trạng thái: <span id="statusText">Sẵn sàng</span> &nbsp;|&nbsp; Profile: <span id="profileStatus">Mặc định</span>
+    <div class="clipboard-modal" id="clipboardModal">
+        <div class="modal-content">
+            <h2>📋 Web Clipboard</h2>
+            <div id="clipboardList">
+                <div class="clip-empty">Chưa có dữ liệu trong clipboard</div>
+            </div>
+            <button class="btn-clear-clip" onclick="clearClipboard()">🗑️ Xoá tất cả</button>
+            <button class="btn-close" onclick="closeClipboard()">Đóng</button>
+        </div>
     </div>
-</div>
 
-<script>
-    // ============================================================
-    // 1. KEY FREE
-    // ============================================================
-    function generateDailyKey(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const seed = parseInt(year + month + day);
-        let hash = 0;
-        let str = String(seed);
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
+    <script>
+        // ============================================================
+        // 1. KEY FREE
+        // ============================================================
+        function generateDailyKey(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const seed = parseInt(year + month + day);
+            let hash = 0;
+            let str = String(seed);
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            let key = Math.abs(hash).toString(36).toUpperCase();
+            while (key.length < 8) { key = 'X' + key; }
+            key = key.slice(0, 8);
+            const daySuffix = String(date.getDate()).padStart(2, '0');
+            return key + daySuffix;
         }
-        let key = Math.abs(hash).toString(36).toUpperCase();
-        while (key.length < 8) { key = 'X' + key; }
-        key = key.slice(0, 8);
-        const daySuffix = String(date.getDate()).padStart(2, '0');
-        return key + daySuffix;
-    }
 
-    function getTodayFreeKey() { return generateDailyKey(new Date()); }
-
-    function getFreeKeyExpiry() {
-        const now = new Date();
-        const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
-        return tomorrow.getTime();
-    }
-
-    // ============================================================
-    // 2. LẤY KEY TỪ ADMIN
-    // ============================================================
-    function getAdminKeys() {
-        let data = localStorage.getItem('admin_keys_data');
-        if (data) {
-            try { return JSON.parse(data); } catch(e) {}
+        function getTodayFreeKey() {
+            return generateDailyKey(new Date());
         }
-        data = localStorage.getItem('lockcenter_keys');
-        if (data) {
-            try { 
-                const parsed = JSON.parse(data);
-                return parsed.keys || [];
-            } catch(e) {}
-        }
-        return [];
-    }
 
-    function getKeyInfo(key) {
-        if (key === getTodayFreeKey()) {
-            return {
-                valid: true,
+        function getFreeKeyExpiry() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            return tomorrow.getTime();
+        }
+
+        function formatTime(ms) {
+            if (ms <= 0) return 'Hết hạn';
+            const totalSec = Math.floor(ms / 1000);
+            const h = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+            const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+            const s = String(totalSec % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function formatDate(ms) {
+            const date = new Date(ms);
+            return date.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function updateFreeTimer() {
+            const remaining = getFreeKeyExpiry() - Date.now();
+            const timerEl = document.getElementById('freeTimer');
+            if (remaining > 0) {
+                timerEl.textContent = formatTime(remaining);
+                timerEl.style.color = '#00ff88';
+            } else {
+                timerEl.textContent = 'Đã hết hạn';
+                timerEl.style.color = '#ff4466';
+            }
+        }
+
+        // ============================================================
+        // 2. LẤY DỮ LIỆU TỪ ADMIN (ĐỒNG BỘ)
+        // ============================================================
+        function getKeyList() {
+            // Ưu tiên lấy từ Admin Pro V3
+            let data = localStorage.getItem('admin_keys_data');
+            if (!data) {
+                // Nếu chưa có, lấy từ lockcenter_keys
+                data = localStorage.getItem('lockcenter_keys');
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        return parsed.keys || [];
+                    } catch (e) {}
+                }
+                return [];
+            }
+            try {
+                const list = JSON.parse(data);
+                const valid = list.filter(item => {
+                    if (item.type === 'vinh-vien') return true;
+                    return item.expiry > Date.now();
+                });
+                return valid;
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function getAllKeys() {
+            const adminKeys = getKeyList();
+            const freeKey = {
+                id: 'FREE_KEY',
                 name: 'FREE',
-                type: 'free',
+                key: getTodayFreeKey(),
                 expiry: getFreeKeyExpiry(),
-                message: '✅ Key FREE hợp lệ'
+                type: 'free',
+                created: Date.now()
             };
+            const allKeys = [...adminKeys];
+            const hasFree = allKeys.some(k => k.id === 'FREE_KEY');
+            if (!hasFree) {
+                allKeys.unshift(freeKey);
+            }
+            return allKeys;
         }
-        const allKeys = getAdminKeys();
-        const found = allKeys.find(item => item.key === key);
-        if (!found) {
-            return { valid: false, message: '❌ Key không tồn tại' };
+
+        // ============================================================
+        // 3. WEBCLIPBOARD
+        // ============================================================
+        function addToClipboard(text) {
+            let clips = JSON.parse(localStorage.getItem('web_clipboard') || '[]');
+            clips.unshift({ text: text, time: Date.now() });
+            if (clips.length > 100) clips = clips.slice(0, 100);
+            localStorage.setItem('web_clipboard', JSON.stringify(clips));
         }
-        const isValid = found.type === 'vinh-vien' || found.expiry > Date.now();
-        return {
-            valid: isValid,
-            name: found.name || 'Không tên',
-            type: found.type,
-            expiry: found.expiry,
-            message: isValid ? '✅ Key hợp lệ' : '❌ Key đã hết hạn'
-        };
-    }
 
-    // ============================================================
-    // 3. QUẢN LÝ SESSION
-    // ============================================================
-    function getActiveKey() {
-        const saved = localStorage.getItem('lockcenter_active_key');
-        if (!saved) return null;
-        try {
-            const data = JSON.parse(saved);
-            const result = getKeyInfo(data.key);
-            if (result.valid) return data.key;
-            return null;
-        } catch(e) { return null; }
-    }
+        function getClipboard() {
+            return JSON.parse(localStorage.getItem('web_clipboard') || '[]');
+        }
 
-    function getActiveKeyType() {
-        const saved = localStorage.getItem('lockcenter_active_key');
-        if (!saved) return 'free';
-        try {
-            const data = JSON.parse(saved);
-            return data.type || 'free';
-        } catch(e) { return 'free'; }
-    }
+        function clearClipboard() {
+            if (!confirm('Xoá tất cả dữ liệu trong Web Clipboard?')) return;
+            localStorage.removeItem('web_clipboard');
+            renderClipboard();
+            showToast('🗑️ Đã xoá Web Clipboard', 'success');
+        }
 
-    function getActiveKeyExpiry() {
-        const saved = localStorage.getItem('lockcenter_active_key');
-        if (!saved) return getFreeKeyExpiry();
-        try {
-            const data = JSON.parse(saved);
-            return data.expiry || getFreeKeyExpiry();
-        } catch(e) { return getFreeKeyExpiry(); }
-    }
-
-    function getActiveKeyName() {
-        const saved = localStorage.getItem('lockcenter_active_key');
-        if (!saved) return 'FREE';
-        try {
-            const data = JSON.parse(saved);
-            return data.name || 'FREE';
-        } catch(e) { return 'FREE'; }
-    }
-
-    function isKeyValid() {
-        const saved = localStorage.getItem('lockcenter_active_key');
-        if (!saved) return false;
-        try {
-            const data = JSON.parse(saved);
-            const result = getKeyInfo(data.key);
-            return result.valid;
-        } catch(e) { return false; }
-    }
-
-    function getRemainingTime() {
-        const expiry = getActiveKeyExpiry();
-        if (!expiry) return 0;
-        const remaining = expiry - Date.now();
-        return remaining > 0 ? remaining : 0;
-    }
-
-    function formatTime(ms) {
-        if (ms <= 0) return '00:00:00';
-        const totalSec = Math.floor(ms / 1000);
-        const h = String(Math.floor(totalSec / 3600)).padStart(2, '0');
-        const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
-        const s = String(totalSec % 60).padStart(2, '0');
-        return `${h}:${m}:${s}`;
-    }
-
-    // ============================================================
-    // 4. TIMER
-    // ============================================================
-    let timerInterval = null;
-
-    function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        updateTimerDisplay();
-        timerInterval = setInterval(function() {
-            const remaining = getRemainingTime();
-            if (remaining <= 0) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                localStorage.removeItem('lockcenter_active_key');
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('loginError').textContent = '⏰ Key đã hết hạn! Vui lòng nhập key mới.';
-                showToast('⏰ Key đã hết hạn!', 'error');
+        function renderClipboard() {
+            const clips = getClipboard();
+            const container = document.getElementById('clipboardList');
+            if (clips.length === 0) {
+                container.innerHTML = '<div class="clip-empty">Chưa có dữ liệu trong clipboard</div>';
                 return;
             }
-            updateTimerDisplay();
-        }, 1000);
-    }
-
-    function updateTimerDisplay() {
-        const remaining = getRemainingTime();
-        const timerEl = document.getElementById('timerDisplay');
-        const type = getActiveKeyType();
-        
-        if (type === 'vinh-vien') {
-            timerEl.textContent = '♾️ Vĩnh viễn';
-            timerEl.className = 'time';
-            return;
-        }
-        
-        if (remaining > 0) {
-            timerEl.textContent = formatTime(remaining);
-            timerEl.className = 'time';
-        } else {
-            timerEl.textContent = 'Hết hạn';
-            timerEl.className = 'time expired';
-        }
-    }
-
-    // ============================================================
-    // 5. LOGIN / LOGOUT
-    // ============================================================
-    function handleLogin() {
-        const input = document.getElementById('loginKey');
-        const error = document.getElementById('loginError');
-        const success = document.getElementById('loginSuccess');
-        const userKey = input.value.trim().toUpperCase();
-
-        error.textContent = '';
-        success.textContent = '';
-
-        const result = getKeyInfo(userKey);
-
-        if (!result.valid) {
-            playErrorSound();
-            error.textContent = '❌ ' + result.message;
-            input.value = '';
-            input.focus();
-            showToast('❌ ' + result.message, 'error');
-            return;
+            let html = '';
+            clips.forEach((item) => {
+                const time = new Date(item.time).toLocaleString('vi-VN');
+                html += `
+                    <div class="clip-item">
+                        <span class="clip-text">${item.text}</span>
+                        <span class="clip-time">${time}</span>
+                        <button class="clip-copy" onclick="copyFromClipboard('${item.text}')">📋</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
-        localStorage.setItem('lockcenter_active_key', JSON.stringify({
-            key: userKey,
-            name: result.name,
-            type: result.type,
-            expiry: result.expiry,
-            loginTime: Date.now()
-        }));
-
-        playSuccessSound();
-        success.textContent = '✅ ' + result.message + ' - Chào mừng ' + result.name;
-
-        setTimeout(() => {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('menuScreen').style.display = 'block';
-            resetToDefault();
-            startTimer();
-            updateKeyTypeDisplay();
-            renderIdList();
-            loadSavedConfig();
-            showToast('🎉 Đăng nhập thành công!', 'success');
-        }, 600);
-    }
-
-    function logoutKey() {
-        if (confirm('Bạn có chắc muốn thoát key?')) {
-            localStorage.removeItem('lockcenter_active_key');
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = null;
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('menuScreen').style.display = 'none';
-            document.getElementById('loginKey').value = '';
-            document.getElementById('loginKey').focus();
-            document.getElementById('loginError').textContent = '';
-            document.getElementById('loginSuccess').textContent = '';
-            showToast('🚪 Đã thoát key!', 'error');
+        function copyFromClipboard(text) {
+            copyToClipboard(text, '✅ Đã sao chép: ' + text);
         }
-    }
 
-    // ============================================================
-    // 6. KEY TYPE DISPLAY
-    // ============================================================
-    function updateKeyTypeDisplay() {
-        const type = getActiveKeyType();
-        const name = getActiveKeyName();
-        const badge = document.getElementById('keyTypeBadgeMenu');
-        const timerEl = document.getElementById('keyTimer');
-        const menuBadge = document.getElementById('menuBadge');
-
-        if (type === 'vinh-vien') {
-            badge.textContent = '♾️ VĨNH VIỄN';
-            badge.className = 'type-badge vinh-vien';
-            timerEl.style.borderColor = '#886622';
-            menuBadge.textContent = '♾️ VIP • FF';
-        } else if (type === 'prem') {
-            badge.textContent = '⭐ PREM ' + (name !== 'Không tên' ? '(' + name + ')' : '');
-            badge.className = 'type-badge prem';
-            timerEl.style.borderColor = '#886622';
-            menuBadge.textContent = '⭐ PREM • FF';
-        } else {
-            badge.textContent = '🆓 FREE';
-            badge.className = 'type-badge free';
-            timerEl.style.borderColor = '#1f1f33';
-            menuBadge.textContent = 'v4.3 • FF';
+        function openClipboard() {
+            document.getElementById('clipboardModal').classList.add('active');
+            renderClipboard();
         }
-    }
 
-    // ============================================================
-    // 7. ID MANAGEMENT
-    // ============================================================
-    function getSavedIds() {
-        const saved = localStorage.getItem('lockcenter_saved_ids');
-        if (!saved) return [];
-        try { return JSON.parse(saved); }
-        catch(e) { return []; }
-    }
-
-    function saveIds(ids) {
-        localStorage.setItem('lockcenter_saved_ids', JSON.stringify(ids));
-    }
-
-    function addIdToList(id) {
-        if (!id || id.trim() === '') return;
-        const ids = getSavedIds();
-        const trimmedId = id.trim();
-        if (!ids.includes(trimmedId)) {
-            ids.push(trimmedId);
-            saveIds(ids);
-            renderIdList();
+        function closeClipboard() {
+            document.getElementById('clipboardModal').classList.remove('active');
         }
-    }
 
-    function deleteIdFromList(id) {
-        let ids = getSavedIds();
-        ids = ids.filter(item => item !== id);
-        saveIds(ids);
-        renderIdList();
-    }
-
-    function renderIdList() {
-        const container = document.getElementById('idListContainer');
-        const ids = getSavedIds();
-        const countEl = document.getElementById('idCount');
-        countEl.textContent = ids.length;
-
-        if (ids.length === 0) {
-            container.innerHTML = '<div class="id-empty">Chưa có ID nào được lưu</div>';
-            return;
+        // ============================================================
+        // 4. COPY KEY
+        // ============================================================
+        function copyKey(key) {
+            copyToClipboard(key, '✅ Đã sao chép key: ' + key);
+            addToClipboard(key);
         }
-        let html = '';
-        ids.forEach(id => {
-            html += `
-                <div class="id-item">
-                    <span class="id-text" title="${id}">${id}</span>
-                    <button class="btn-delete-id" onclick="deleteIdFromList('${id}')" title="Xoá ID">✕</button>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    }
 
-    // ============================================================
-    // 8. ACTIVATION
-    // ============================================================
-    let isActivated = false;
-
-    function requireActivation() {
-        if (!isActivated) {
-            playWarningSound();
-            showToast('⚠️ Vui lòng nhập ID game để kích hoạt!', 'warning');
-            document.getElementById('activationStatus').textContent = '❌';
-            document.getElementById('activationStatus').className = 'activation-status error';
-            return false;
+        function copyFreeKey() {
+            const key = getTodayFreeKey();
+            copyToClipboard(key, '✅ Đã sao chép key FREE: ' + key);
+            addToClipboard(key);
         }
-        return true;
-    }
 
-    function activateId() {
-        const id = document.getElementById('activationId').value.trim();
-        const status = document.getElementById('activationStatus');
-        if (!id) {
-            playErrorSound();
-            showToast('⚠️ Vui lòng nhập ID', 'error');
-            status.textContent = '❌';
-            status.className = 'activation-status error';
-            return;
+        function copyToClipboard(text, msg) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(msg, 'success');
+                }).catch(() => fallbackCopy(text, msg));
+            } else {
+                fallbackCopy(text, msg);
+            }
         }
-        addIdToList(id);
-        localStorage.setItem('lockcenter_activation_id', id);
-        isActivated = true;
-        status.textContent = '✅';
-        status.className = 'activation-status active';
-        document.getElementById('profileStatus').textContent = 'ID: ' + id;
-        document.getElementById('statusText').textContent = '🔑 Đã kích hoạt ID: ' + id;
-        showToast('✅ Kích hoạt ID: ' + id + ' thành công!', 'success');
-        playSuccessSound();
-    }
 
-    function clearCurrentId() {
-        document.getElementById('activationId').value = '';
-        document.getElementById('activationStatus').textContent = '⚪';
-        document.getElementById('activationStatus').className = 'activation-status';
-        isActivated = false;
-        document.getElementById('profileStatus').textContent = 'Mặc định';
-        document.getElementById('statusText').textContent = '🗑️ Đã xoá ID đang nhập';
-        showToast('🗑️ Đã xoá ID đang nhập', 'success');
-    }
-
-    // ============================================================
-    // 9. FILE HANDLE
-    // ============================================================
-    function handleFileChange() {
-        const input = document.getElementById('supportFile');
-        const status = document.getElementById('fileStatus');
-        if (input.files && input.files.length > 0) {
-            const fileName = input.files[0].name;
-            status.textContent = '✅ ' + fileName;
-            status.className = 'file-status active';
-            showToast('📁 Kích hoạt thành công: ' + fileName, 'success');
-            playSuccessSound();
-        } else {
-            status.textContent = '⚪';
-            status.className = 'file-status';
+        function fallbackCopy(text, msg) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(msg, 'success');
+            } catch (e) {
+                showToast('⚠️ Không thể sao chép', 'error');
+            }
+            document.body.removeChild(textarea);
         }
-    }
 
-    function clearFile() {
-        document.getElementById('supportFile').value = '';
-        document.getElementById('fileStatus').textContent = '⚪';
-        document.getElementById('fileStatus').className = 'file-status';
-        showToast('🗑️ Đã xoá file', 'success');
-    }
+        // ============================================================
+        // 5. HIỂN THỊ DANH SÁCH KEY
+        // ============================================================
+        function renderKeyList() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filterType = document.getElementById('filterType').value;
+            let list = getKeyList();
 
-    // ============================================================
-    // 10. TOGGLES - CẦN KÍCH HOẠT ID
-    // ============================================================
-    function toggleSwitch(id) {
-        if (!requireActivation()) return;
-        const el = document.getElementById(id);
-        el.classList.toggle('active');
-        const isActive = el.classList.contains('active');
-        if (isActive) playBeep(1400, 70, 0.12);
-        else playBeep(800, 80, 0.12);
-        const name = id.replace('toggle', '');
-        document.getElementById('statusText').textContent = name + ' → ' + (isActive ? 'BẬT' : 'TẮT');
-        showToast('✅ Đã ' + (isActive ? 'bật' : 'tắt') + ' ' + name, 'success');
-    }
+            if (filterType !== 'all') {
+                list = list.filter(item => item.type === filterType);
+            }
+            if (searchText) {
+                list = list.filter(item =>
+                    item.key.toLowerCase().includes(searchText) ||
+                    item.name.toLowerCase().includes(searchText)
+                );
+            }
 
-    // ============================================================
-    // 11. SETTINGS - CẦN KÍCH HOẠT ID
-    // ============================================================
-    const sensSlider = document.getElementById('sensitivitySlider');
-    const sensVal = document.getElementById('sensitivityValue');
-    const touchSlider = document.getElementById('touchSpeedSlider');
-    const touchVal = document.getElementById('touchSpeedValue');
+            const container = document.getElementById('keyListContainer');
+            if (list.length === 0) {
+                container.innerHTML = '<div class="empty-state">🔍 Không tìm thấy key nào</div>';
+                return;
+            }
 
-    sensSlider.addEventListener('input', function() { sensVal.textContent = this.value; });
-    touchSlider.addEventListener('input', function() { touchVal.textContent = this.value; });
+            list.sort((a, b) => {
+                if (a.type === 'vinh-vien' && b.type !== 'vinh-vien') return -1;
+                if (a.type !== 'vinh-vien' && b.type === 'vinh-vien') return 1;
+                return a.expiry - b.expiry;
+            });
 
-    function applySettings() {
-        if (!requireActivation()) return;
-        const sens = sensSlider.value;
-        const touch = touchSlider.value;
-        const rung = document.getElementById('toggleRung').classList.contains('active') ? 'ON' : 'OFF';
-        const lo = document.getElementById('toggleLo').classList.contains('active') ? 'ON' : 'OFF';
-        const lock = document.getElementById('toggleLockhead').classList.contains('active') ? 'ON' : 'OFF';
-        const config = { 
-            sensitivity: parseInt(sens), 
-            touchSpeed: parseInt(touch), 
-            fixRung: rung, 
-            fixLo: lo, 
-            lockHead: lock 
-        };
-        localStorage.setItem('lockcenter_config', JSON.stringify(config));
-        document.getElementById('statusText').textContent = '✅ Đã áp dụng!';
-        document.getElementById('profileStatus').textContent = 'S:' + sens + ' T:' + touch + ' R:' + rung + ' L:' + lo + ' H:' + lock;
-        playSuccessSound();
-        showToast('✅ Đã áp dụng cấu hình', 'success');
-    }
-
-    function resetSettings() {
-        if (!requireActivation()) return;
-        sensSlider.value = '100';
-        sensVal.textContent = '100';
-        touchSlider.value = '100';
-        touchVal.textContent = '100';
-        document.getElementById('toggleRung').classList.remove('active');
-        document.getElementById('toggleLo').classList.remove('active');
-        document.getElementById('toggleLockhead').classList.remove('active');
-        localStorage.removeItem('lockcenter_config');
-        document.getElementById('statusText').textContent = '🔄 Reset về mặc định';
-        document.getElementById('profileStatus').textContent = 'Mặc định';
-        showToast('🔄 Đã reset về mặc định', 'success');
-    }
-
-    function resetToDefault() {
-        // Đặt tất cả về 100 và tắt hết toggle
-        sensSlider.value = '100';
-        sensVal.textContent = '100';
-        touchSlider.value = '100';
-        touchVal.textContent = '100';
-        document.getElementById('toggleRung').classList.remove('active');
-        document.getElementById('toggleLo').classList.remove('active');
-        document.getElementById('toggleLockhead').classList.remove('active');
-        document.getElementById('statusText').textContent = '📂 Đã tải mặc định (100)';
-        document.getElementById('profileStatus').textContent = 'Mặc định';
-        isActivated = false;
-        isApplied = false;
-    }
-
-    let isApplied = false;
-
-    function loadSavedConfig() {
-        const savedId = localStorage.getItem('lockcenter_activation_id');
-        if (savedId) {
-            document.getElementById('activationId').value = savedId;
-            document.getElementById('activationStatus').textContent = '✅';
-            document.getElementById('activationStatus').className = 'activation-status active';
-            document.getElementById('profileStatus').textContent = 'ID: ' + savedId;
-            isActivated = true;
-        }
-        // KHÔNG tự động tải cấu hình cũ khi đăng nhập
-        // Mọi thứ đều ở trạng thái mặc định: 100 và tắt hết
-    }
-
-    // ============================================================
-    // 12. GAME LAUNCH - CẦN KÍCH HOẠT ID
-    // ============================================================
-    function launchGame(version) {
-        if (!requireActivation()) return;
-        
-        const gameName = version === 'freefire' ? 'Free Fire' : 'Free Fire Max';
-        const scheme = version === 'freefire' ? 'freefire://' : 'freefiremax://';
-        const storeUrl = version === 'freefire' ? 
-            'https://play.google.com/store/apps/details?id=com.dts.freefireth' :
-            'https://play.google.com/store/apps/details?id=com.dts.freefiremax';
-
-        document.getElementById('statusText').textContent = '🚀 Đang mở ' + gameName + '...';
-        playGameLaunchSound();
-
-        try {
-            window.location.href = scheme;
-            setTimeout(() => {
-                if (document.visibilityState === 'visible') {
-                    window.open(storeUrl, '_blank');
-                    document.getElementById('statusText').textContent = '📲 Mở ' + gameName + ' thất bại, chuyển đến cửa hàng';
+            let html = '';
+            list.forEach(item => {
+                const remaining = item.expiry - Date.now();
+                const isValid = remaining > 0;
+                let timeStr = '',
+                    expiryStr = '';
+                if (item.type === 'vinh-vien') {
+                    timeStr = '♾️ Vĩnh viễn';
+                    expiryStr = 'Không giới hạn';
+                } else if (item.type === 'free') {
+                    timeStr = isValid ? formatTime(remaining) : 'Đã hết hạn';
+                    expiryStr = formatDate(item.expiry);
+                } else {
+                    timeStr = isValid ? formatTime(remaining) : 'Đã hết hạn';
+                    expiryStr = formatDate(item.expiry);
                 }
-            }, 2000);
-            showToast('🚀 Đang mở ' + gameName + '...', 'success');
-        } catch(e) {
-            window.open(storeUrl, '_blank');
-        }
-        document.getElementById('profileStatus').textContent = '🎮 ' + gameName;
-    }
 
-    // ============================================================
-    // 13. MUSIC PLAYER
-    // ============================================================
-    const songs = [
-        { name: 'Blinding Lights', artist: 'The Weeknd' },
-        { name: 'Shape of You', artist: 'Ed Sheeran' },
-        { name: 'Dance Monkey', artist: 'Tones and I' },
-        { name: 'Roses', artist: 'SAINt JHN' },
-        { name: 'Bad Guy', artist: 'Billie Eilish' },
-        { name: 'Old Town Road', artist: 'Lil Nas X' },
-        { name: 'Senorita', artist: 'Camila Cabello' },
-        { name: 'Havana', artist: 'Camila Cabello' },
-        { name: 'Despacito', artist: 'Luis Fonsi' },
-        { name: 'Lean On', artist: 'Major Lazer' }
-    ];
+                let typeLabel = '',
+                    typeClass = '';
+                if (item.type === 'vinh-vien') {
+                    typeLabel = 'VĨNH VIỄN';
+                    typeClass = 'vinh-vien';
+                } else if (item.type === 'free') {
+                    typeLabel = 'FREE';
+                    typeClass = 'free';
+                } else {
+                    typeLabel = 'THEO NGÀY';
+                    typeClass = 'ngay';
+                }
 
-    let currentSong = 0;
-    let isPlaying = false;
-    let isSoundOn = true;
-
-    function updateSongDisplay() {
-        document.getElementById('songName').textContent = '🎵 ' + songs[currentSong].name;
-        document.getElementById('songArtist').textContent = songs[currentSong].artist;
-    }
-
-    function togglePlay() {
-        isPlaying = !isPlaying;
-        const btn = document.getElementById('musicPlay');
-        btn.textContent = isPlaying ? '⏸' : '▶';
-        btn.classList.toggle('active', isPlaying);
-        if (isPlaying) {
-            document.getElementById('statusText').textContent = '🎵 Đang phát: ' + songs[currentSong].name;
-            showToast('🎵 Đang phát: ' + songs[currentSong].name, 'success');
-            playBeep(1000, 100, 0.1);
-        } else {
-            document.getElementById('statusText').textContent = '⏸ Đã dừng nhạc';
-        }
-    }
-
-    function nextSong() {
-        currentSong = (currentSong + 1) % songs.length;
-        updateSongDisplay();
-        if (isPlaying) {
-            document.getElementById('statusText').textContent = '🎵 Đang phát: ' + songs[currentSong].name;
-            showToast('⏭ ' + songs[currentSong].name, 'success');
-        }
-        playBeep(1200, 60, 0.08);
-    }
-
-    function prevSong() {
-        currentSong = (currentSong - 1 + songs.length) % songs.length;
-        updateSongDisplay();
-        if (isPlaying) {
-            document.getElementById('statusText').textContent = '🎵 Đang phát: ' + songs[currentSong].name;
-            showToast('⏮ ' + songs[currentSong].name, 'success');
-        }
-        playBeep(800, 60, 0.08);
-    }
-
-    function toggleSound() {
-        isSoundOn = !isSoundOn;
-        const btn = document.getElementById('soundToggle');
-        btn.textContent = isSoundOn ? '🔊' : '🔇';
-        btn.classList.toggle('muted', !isSoundOn);
-        showToast(isSoundOn ? '🔊 Đã bật âm thanh' : '🔇 Đã tắt âm thanh', 'success');
-        if (isSoundOn) playBeep(1000, 60, 0.1);
-    }
-
-    function setVolume(val) {
-        document.getElementById('statusText').textContent = '🔊 Volume: ' + val + '%';
-    }
-
-    // ============================================================
-    // 14. AUDIO
-    // ============================================================
-    let audioCtx = null;
-
-    function playBeep(freq, duration, volume) {
-        if (!isSoundOn) return;
-        try {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = freq;
-            gain.gain.value = volume;
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration / 1000);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration / 1000);
-        } catch(e) {}
-    }
-
-    function playErrorSound() {
-        if (!isSoundOn) return;
-        playBeep(300, 150, 0.20);
-        setTimeout(() => playBeep(250, 120, 0.18), 160);
-        setTimeout(() => playBeep(200, 100, 0.16), 300);
-    }
-
-    function playSuccessSound() {
-        if (!isSoundOn) return;
-        playBeep(1000, 60, 0.12);
-        setTimeout(() => playBeep(1400, 60, 0.14), 100);
-        setTimeout(() => playBeep(1800, 70, 0.16), 200);
-    }
-
-    function playWarningSound() {
-        if (!isSoundOn) return;
-        playBeep(600, 100, 0.15);
-        setTimeout(() => playBeep(500, 100, 0.15), 120);
-        setTimeout(() => playBeep(400, 150, 0.15), 240);
-    }
-
-    function playGameLaunchSound() {
-        if (!isSoundOn) return;
-        playBeep(1200, 80, 0.15);
-        setTimeout(() => playBeep(1500, 80, 0.15), 100);
-        setTimeout(() => playBeep(1800, 100, 0.18), 200);
-        setTimeout(() => playBeep(2200, 120, 0.20), 320);
-    }
-
-    // ============================================================
-    // 15. TOAST
-    // ============================================================
-    function showToast(msg, type = '') {
-        const old = document.querySelector('.toast-msg');
-        if (old) old.remove();
-        const div = document.createElement('div');
-        div.className = 'toast-msg' + (type ? ' ' + type : '');
-        div.textContent = msg;
-        document.body.appendChild(div);
-        setTimeout(() => { div.style.opacity = '0'; setTimeout(() => div.remove(), 400); }, 2500);
-    }
-
-    // ============================================================
-    // 16. AUTO CHECK
-    // ============================================================
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden && document.getElementById('menuScreen').style.display !== 'none') {
-            if (!isKeyValid()) {
-                localStorage.removeItem('lockcenter_active_key');
-                if (timerInterval) clearInterval(timerInterval);
-                timerInterval = null;
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('loginError').textContent = '⏰ Key đã hết hạn! Vui lòng nhập key mới.';
-                showToast('⏰ Key đã hết hạn!', 'error');
-            } else if (!timerInterval) {
-                startTimer();
-            }
-        }
-    });
-
-    // ============================================================
-    // 17. KHỞI TẠO
-    // ============================================================
-    window.onload = function() {
-        document.getElementById('dateInfo').textContent = '📅 ' + new Date().toLocaleDateString('vi-VN');
-        updateSongDisplay();
-
-        if (isKeyValid()) {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('menuScreen').style.display = 'block';
-            resetToDefault();
-            startTimer();
-            updateKeyTypeDisplay();
-            renderIdList();
-            // KHÔNG tải cấu hình cũ - mọi thứ về mặc định 100
-            // loadSavedConfig(); // Đã comment để không tải cấu hình cũ
-            showToast('✅ Đăng nhập tự động thành công!', 'success');
-        } else {
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('menuScreen').style.display = 'none';
-            document.getElementById('loginKey').focus();
+                html += `
+                    <div class="key-item">
+                        <div class="info">
+                            <span class="name">👤 ${item.name || 'Không tên'}</span>
+                            <span class="key">${item.key}</span>
+                            <span class="expiry">
+                                <span class="type-badge ${typeClass}">${typeLabel}</span>
+                                &nbsp;|&nbsp; 
+                                <span class="${isValid ? 'valid' : 'expired'} time-left">${timeStr}</span>
+                                ${item.type !== 'vinh-vien' ? `&nbsp;|&nbsp; Hết: ${expiryStr}` : ''}
+                            </span>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-copy" onclick="copyKey('${item.key}')">📋</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
-        document.addEventListener('click', function initAudio() {
-            if (!audioCtx) {
-                try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
-            }
-            document.removeEventListener('click', initAudio);
-        }, { once: true });
+        // ============================================================
+        // 6. THỐNG KÊ
+        // ============================================================
+        function updateStats() {
+            const list = getKeyList();
+            const freeCount = list.filter(item => item.type === 'free').length;
+            const ngayCount = list.filter(item => item.type === 'ngay').length;
+            const vinhCount = list.filter(item => item.type === 'vinh-vien').length;
+            document.getElementById('totalKeys').textContent = list.length;
+            document.getElementById('freeCount').textContent = freeCount;
+            document.getElementById('ngayCount').textContent = ngayCount;
+            document.getElementById('vinhCount').textContent = vinhCount;
+        }
 
-        console.log('[LockCenter] Đã sẵn sàng!');
-        console.log('[LockCenter] Key FREE hôm nay:', getTodayFreeKey());
-        console.log('[LockCenter] Số key trong hệ thống:', getAdminKeys().length);
-        console.log('[LockCenter] Tất cả cài đặt đều ở mặc định: 100');
-    };
+        // ============================================================
+        // 7. FILTER
+        // ============================================================
+        function filterKeys() {
+            renderKeyList();
+        }
 
-    // ============================================================
-    // 18. EXPOSE
-    // ============================================================
-    window.handleLogin = handleLogin;
-    window.logoutKey = logoutKey;
-    window.activateId = activateId;
-    window.clearCurrentId = clearCurrentId;
-    window.clearFile = clearFile;
-    window.toggleSwitch = toggleSwitch;
-    window.applySettings = applySettings;
-    window.resetSettings = resetSettings;
-    window.launchGame = launchGame;
-    window.deleteIdFromList = deleteIdFromList;
-    window.togglePlay = togglePlay;
-    window.nextSong = nextSong;
-    window.prevSong = prevSong;
-    window.toggleSound = toggleSound;
-    window.setVolume = setVolume;
-    window.handleFileChange = handleFileChange;
-    window.getTodayFreeKey = getTodayFreeKey;
-    window.getAdminKeys = getAdminKeys;
-    window.getKeyInfo = getKeyInfo;
-</script>
+        // ============================================================
+        // 8. TOAST
+        // ============================================================
+        function showToast(msg, type = '') {
+            const old = document.querySelector('.toast');
+            if (old) old.remove();
+            const div = document.createElement('div');
+            div.className = 'toast' + (type === 'error' ? ' error' : type === 'key' ? ' key' : '');
+            div.textContent = msg;
+            document.body.appendChild(div);
+            setTimeout(() => {
+                div.style.opacity = '0';
+                setTimeout(() => div.remove(), 400);
+            }, 3000);
+        }
+
+        // ============================================================
+        // 9. TỰ ĐỘNG CẬP NHẬT
+        // ============================================================
+        function refreshAll() {
+            document.getElementById('freeKeyDisplay').textContent = getTodayFreeKey();
+            updateFreeTimer();
+            renderKeyList();
+            updateStats();
+            showToast('🔄 Đã làm mới dữ liệu', 'success');
+        }
+
+        // ============================================================
+        // 10. KHỞI TẠO
+        // ============================================================
+        window.onload = function() {
+            refreshAll();
+            setInterval(updateFreeTimer, 1000);
+            setInterval(() => {
+                renderKeyList();
+                updateStats();
+            }, 10000);
+
+            console.log('[LockCenter] Đã sẵn sàng!');
+            console.log('[LockCenter] Key FREE hôm nay:', getTodayFreeKey());
+            console.log('[LockCenter] Số key:', getKeyList().length);
+            console.log('[LockCenter] Đồng bộ với Admin Pro V3!');
+
+            window.lockcenterAPI = {
+                getFreeKey: getTodayFreeKey,
+                getAllKeys: getAllKeys,
+                getKeyList: getKeyList
+            };
+        };
+
+        window.refreshAll = refreshAll;
+        window.filterKeys = filterKeys;
+        window.copyKey = copyKey;
+        window.copyFreeKey = copyFreeKey;
+        window.openClipboard = openClipboard;
+        window.closeClipboard = closeClipboard;
+        window.clearClipboard = clearClipboard;
+        window.copyFromClipboard = copyFromClipboard;
+        window.getKeyList = getKeyList;
+        window.getTodayFreeKey = getTodayFreeKey;
+        window.getAllKeys = getAllKeys;
+        window.addToClipboard = addToClipboard;
+    </script>
 </body>
 </html>
