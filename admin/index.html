@@ -25,7 +25,6 @@
             font-family: 'Segoe UI', 'Roboto', sans-serif;
             padding: 16px;
             color: #fff;
-            /* Ẩn thanh cuộn khi ở chế độ fullscreen */
             overflow: hidden;
             height: 100vh;
             width: 100vw;
@@ -1425,8 +1424,8 @@
             startTimer();
             updateKeyTypeDisplay();
             renderIdList();
-            // Tự động phát nhạc đã lưu
-            autoPlaySavedMP3();
+            // Tự động phát nhạc đã lưu - NGAY KHI VÀO MENU
+            setTimeout(autoPlaySavedMP3, 300);
             showToast('🎉 Đăng nhập thành công!', 'success');
         }, 600);
     }
@@ -1711,14 +1710,16 @@
     }
 
     // ============================================================
-    // 14. MUSIC PLAYER - LƯU VÀ TỰ ĐỘNG PHÁT
+    // 14. MUSIC PLAYER - TỰ ĐỘNG PHÁT KHI VÀO MENU
     // ============================================================
     let mp3Audio = null;
     let mp3Loaded = false;
     let mp3Loop = false;
     let mp3ProgressInterval = null;
     let mp3FileName = '';
+    let isMP3Ready = false;
 
+    // Hàm khởi tạo và lưu file MP3
     function loadMP3File() {
         const input = document.getElementById('mp3FileInput');
         const status = document.getElementById('mp3Status');
@@ -1727,21 +1728,18 @@
             const file = input.files[0];
             mp3FileName = file.name;
             
-            // Đọc file thành Base64 để lưu
             const reader = new FileReader();
             reader.onload = function(e) {
                 const base64Data = e.target.result;
-                // Lưu vào localStorage
                 try {
                     localStorage.setItem('saved_mp3_data', base64Data);
                     localStorage.setItem('saved_mp3_name', mp3FileName);
                     console.log('[MP3] Đã lưu file nhạc vào localStorage');
+                    isMP3Ready = true;
                 } catch(err) {
                     console.warn('[MP3] Không thể lưu file (dung lượng quá lớn):', err);
                     showToast('⚠️ File quá lớn, không thể lưu tự động!', 'warning');
                 }
-                
-                // Phát nhạc
                 playMP3FromData(base64Data, mp3FileName);
             };
             reader.readAsDataURL(file);
@@ -1762,10 +1760,9 @@
         mp3Audio.addEventListener('loadedmetadata', function() {
             status.textContent = '🎵';
             status.className = 'mp3-status';
-            showToast('📁 Đã tải: ' + fileName, 'success');
-            playSuccessSound();
+            console.log('[MP3] Đã tải: ' + fileName);
             
-            // Tự động phát
+            // Tự động phát ngay khi tải xong
             setTimeout(() => {
                 if (mp3Audio) {
                     mp3Audio.play().then(() => {
@@ -1773,12 +1770,14 @@
                         status.textContent = '▶';
                         status.className = 'mp3-status playing';
                         startMP3Progress();
+                        console.log('[MP3] Đang phát: ' + fileName);
                     }).catch(() => {
                         status.textContent = '⏸';
                         status.className = 'mp3-status paused';
+                        console.log('[MP3] Không thể tự động phát (cần tương tác)');
                     });
                 }
-            }, 300);
+            }, 200);
         });
         
         mp3Audio.addEventListener('error', function() {
@@ -1801,20 +1800,22 @@
         });
     }
 
+    // Hàm tự động phát nhạc đã lưu - KHÔNG CẦN CHỜ, PHÁT NGAY
     function autoPlaySavedMP3() {
         const savedData = localStorage.getItem('saved_mp3_data');
         const savedName = localStorage.getItem('saved_mp3_name');
         
         if (savedData && savedName) {
             console.log('[MP3] Tự động phát nhạc đã lưu:', savedName);
-            // Cập nhật tên file trên UI
             document.getElementById('mp3Status').textContent = '🎵 ' + savedName;
             document.getElementById('mp3Status').className = 'mp3-status';
             
-            // Phát nhạc - KHÔNG CHỜ, PHÁT NGAY LẬP TỨC
+            // Phát nhạc NGAY LẬP TỨC không chờ
             playMP3FromData(savedData, savedName);
         } else {
-            console.log('[MP3] Chưa có nhạc được lưu');
+            console.log('[MP3] Chưa có nhạc được lưu, vui lòng chọn file MP3');
+            document.getElementById('mp3Status').textContent = '⏸ Chọn MP3';
+            document.getElementById('mp3Status').className = 'mp3-status';
         }
     }
 
@@ -1972,8 +1973,8 @@
             startTimer();
             updateKeyTypeDisplay();
             renderIdList();
-            // Tự động phát nhạc đã lưu - NGAY LẬP TỨC
-            setTimeout(autoPlaySavedMP3, 300);
+            // Tự động phát nhạc đã lưu - NGAY LẬP TỨC KHI VÀO MENU
+            setTimeout(autoPlaySavedMP3, 400);
             showToast('✅ Đăng nhập tự động thành công!', 'success');
         } else {
             document.getElementById('loginScreen').classList.remove('hidden');
