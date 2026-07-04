@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="LockCenter">
@@ -136,56 +135,6 @@
             color: #444466;
             font-size: 11px;
             margin-top: 12px;
-        }
-        
-        /* Danh sách key gợi ý */
-        .suggest-keys {
-            margin: 10px 0 12px 0;
-            text-align: left;
-        }
-        .suggest-keys .label {
-            font-size: 11px;
-            color: #666699;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .suggest-keys .keys {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-        .suggest-keys .keys .key-tag {
-            background: rgba(0, 212, 255, 0.08);
-            border: 1px solid #1a1a2e;
-            color: #8888bb;
-            padding: 2px 10px;
-            border-radius: 60px;
-            font-size: 10px;
-            font-family: 'Courier New', monospace;
-            cursor: pointer;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-        .suggest-keys .keys .key-tag:hover {
-            background: rgba(0, 212, 255, 0.15);
-            border-color: #00d4ff;
-            color: #00d4ff;
-        }
-        .suggest-keys .keys .key-tag.free {
-            border-color: #00ff8844;
-            color: #00ff88;
-        }
-        .suggest-keys .keys .key-tag.free:hover {
-            border-color: #00ff88;
-            background: rgba(0, 255, 136, 0.1);
-        }
-        .suggest-keys .keys .key-tag.vinh {
-            border-color: #ffd70044;
-            color: #ffd700;
-        }
-        .suggest-keys .keys .key-tag.vinh:hover {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
         }
 
         .lock-center {
@@ -805,81 +754,115 @@
             border: 1px solid #886622;
         }
 
-        .music-player {
-            background: #0f0f18;
-            border-radius: 20px;
-            padding: 8px 14px;
-            margin-top: 8px;
-            border: 1px solid #1f1f33;
+        /* ===== MUSIC PLAYER - THU NHỎ TỐI GIẢN ===== */
+        .mp3-mini {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
+            background: #0f0f18;
+            border-radius: 60px;
+            padding: 4px 10px 4px 6px;
+            border: 1px solid #1f1f33;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
-        .music-player .controls {
+        .mp3-mini .mp3-file {
             display: flex;
-            gap: 4px;
             align-items: center;
+            gap: 4px;
+            flex: 1;
+            min-width: 60px;
         }
-        .music-player .controls button {
+        .mp3-mini .mp3-file label {
+            font-size: 10px;
+            color: #666699;
+            white-space: nowrap;
+        }
+        .mp3-mini .mp3-file input[type="file"] {
+            width: 70px;
+            background: transparent;
+            border: none;
+            color: #666699;
+            font-size: 9px;
+            outline: none;
+            cursor: pointer;
+            padding: 2px 0;
+        }
+        .mp3-mini .mp3-file input[type="file"]::-webkit-file-upload-button {
             background: rgba(0, 212, 255, 0.1);
-            border: 1px solid #2a2a44;
+            border: 1px solid #1f1f33;
             color: #00d4ff;
-            width: 28px;
-            height: 28px;
+            padding: 2px 8px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+        .mp3-mini .mp3-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .mp3-mini .mp3-controls button {
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid #1f1f33;
+            color: #00d4ff;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .music-player .controls button:hover {
+        .mp3-mini .mp3-controls button:hover {
             background: rgba(0, 212, 255, 0.2);
         }
-        .music-player .controls button.active {
+        .mp3-mini .mp3-controls button.active {
             background: rgba(0, 212, 255, 0.25);
             border-color: #00d4ff;
         }
-        .music-player .controls button.sound-toggle {
-            background: rgba(255, 200, 0, 0.1);
-            border-color: #886622;
-            color: #ffd700;
-            width: 28px;
-            height: 28px;
-            font-size: 14px;
-        }
-        .music-player .controls button.sound-toggle.muted {
-            background: rgba(255, 68, 68, 0.1);
-            border-color: #662222;
-            color: #ff4466;
-        }
-        .music-player .info {
-            flex: 1;
-            min-width: 80px;
-        }
-        .music-player .info .song-name {
-            font-size: 11px;
-            font-weight: 600;
-            color: #b0b0d0;
-        }
-        .music-player .info .song-artist {
-            font-size: 9px;
-            color: #666699;
-        }
-        .music-player .volume {
+        .mp3-mini .mp3-controls .mp3-vol {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
         }
-        .music-player .volume input[type="range"] {
-            width: 50px;
-            height: 4px;
-        }
-        .music-player .volume span {
+        .mp3-mini .mp3-controls .mp3-vol span {
             font-size: 10px;
             color: #666699;
+        }
+        .mp3-mini .mp3-controls .mp3-vol input[type="range"] {
+            width: 35px;
+            height: 3px;
+            background: #1a1a2e;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .mp3-mini .mp3-controls .mp3-vol input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00d4ff;
+            cursor: pointer;
+            border: 1px solid #0a0a12;
+        }
+        .mp3-mini .mp3-status {
+            font-size: 8px;
+            color: #444466;
+            white-space: nowrap;
+            min-width: 30px;
+            text-align: right;
+        }
+        .mp3-mini .mp3-status.playing {
+            color: #00ff88;
+        }
+        .mp3-mini .mp3-status.paused {
+            color: #ffaa00;
         }
 
         @media (max-width: 460px) {
@@ -892,9 +875,9 @@
             .header h1 { font-size: 17px; }
             .id-item .id-text { max-width: 70px; }
             .game-launch-row { flex-direction: column; }
-            .music-player { flex-direction: row; flex-wrap: wrap; }
-            .music-player .volume input[type="range"] { width: 40px; }
-            .suggest-keys .keys .key-tag { font-size: 9px; padding: 1px 8px; }
+            .mp3-mini { flex-wrap: wrap; justify-content: center; }
+            .mp3-mini .mp3-file { min-width: 100%; }
+            .mp3-mini .mp3-file input[type="file"] { width: 100%; }
         }
     </style>
 </head>
@@ -907,16 +890,9 @@
         <p class="sub" id="loginSub">Nhập key để đăng nhập</p>
         <div class="key-hint">🔑 Vui lòng nhập key do quản trị viên cung cấp</div>
         
-        <!-- Danh sách key gợi ý -->
-        <div class="suggest-keys">
-            <span class="label">📋 Key gợi ý (bấm để điền):</span>
-            <div class="keys" id="suggestKeys">
-                <!-- Sẽ được tạo bằng JavaScript -->
-            </div>
-        </div>
-        
         <input type="text" id="loginKey" placeholder="Nhập key..." autofocus>
         <button class="btn-login" onclick="handleLogin()">Đăng nhập</button>
+        
         <div class="login-error" id="loginError"></div>
         <div class="login-success" id="loginSuccess"></div>
         <div class="date-info" id="dateInfo"></div>
@@ -1033,21 +1009,22 @@
         </button>
     </div>
 
-    <!-- Music Player -->
-    <div class="music-player">
-        <div class="controls">
-            <button onclick="prevSong()">⏮</button>
-            <button id="musicPlay" onclick="togglePlay()">▶</button>
-            <button onclick="nextSong()">⏭</button>
-            <button id="soundToggle" class="sound-toggle" onclick="toggleSound()">🔊</button>
+    <!-- ===== MUSIC PLAYER - THU NHỎ TỐI GIẢN ===== -->
+    <div class="mp3-mini">
+        <div class="mp3-file">
+            <label>🎵</label>
+            <input type="file" id="mp3FileInput" accept=".mp3,.m4a,.wav" onchange="loadMP3File()" title="Chọn file MP3">
         </div>
-        <div class="info">
-            <div class="song-name" id="songName">🎵 Chưa chọn nhạc</div>
-            <div class="song-artist" id="songArtist">Nhấn Play</div>
+        <div class="mp3-controls">
+            <button id="mp3PlayBtn" onclick="toggleMP3()" title="Phát / Tạm dừng">▶</button>
+            <button onclick="stopMP3()" title="Dừng">⏹</button>
+            <button id="mp3LoopBtn" onclick="loopMP3()" title="Lặp lại">🔁</button>
+            <div class="mp3-vol">
+                <span>🔊</span>
+                <input type="range" id="mp3VolumeSlider" min="0" max="100" value="50" oninput="setMP3Volume(this.value)">
+            </div>
         </div>
-        <div class="volume">
-            <input type="range" id="musicVolume" min="0" max="100" value="50" oninput="setVolume(this.value)">
-        </div>
+        <span class="mp3-status" id="mp3Status">⏸</span>
     </div>
 
     <!-- Status -->
@@ -1058,23 +1035,13 @@
 
 <script>
     // ============================================================
-    // 0. TẠO KEY MẶC ĐỊNH NẾU CHƯA CÓ
+    // 0. TẠO KEY MẶC ĐỊNH
     // ============================================================
     function generateDefaultKeys() {
         const now = Date.now();
         const hundredYears = 100 * 365 * 24 * 60 * 60 * 1000;
         const keys = [];
         
-        const names = [
-            'Nguyễn Văn A', 'Trần Thị B', 'Lê Văn C', 'Phạm Thị D', 'Hoàng Văn E',
-            'Vũ Thị F', 'Đặng Văn G', 'Bùi Thị H', 'Đỗ Văn I', 'Hồ Thị K',
-            'Ngô Văn L', 'Dương Thị M', 'Lý Văn N', 'Trương Thị O', 'Lưu Văn P',
-            'Chu Thị Q', 'Hà Văn R', 'Mai Thị S', 'Phan Văn T', 'Tô Thị U',
-            'Trịnh Văn V', 'Lâm Thị W', 'Tạ Văn X', 'Nguyễn Thị Y', 'Trần Văn Z',
-            'Lê Thị AA', 'Phạm Văn AB', 'Hoàng Thị AC', 'Vũ Văn AD', 'Đặng Thị AE'
-        ];
-
-        // 30 key theo ngày
         for (let i = 0; i < 30; i++) {
             const date = new Date();
             date.setDate(date.getDate() + (i + 1) * 2);
@@ -1083,7 +1050,7 @@
             const day = String(date.getDate()).padStart(2, '0');
             keys.push({
                 id: 'KEY-NGAY-' + String(i + 1).padStart(3, '0'),
-                name: names[i % names.length],
+                name: 'User ' + (i + 1),
                 key: 'DAY-' + year + '-' + month + '-' + day,
                 expiry: date.getTime() + 23 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000,
                 type: 'ngay',
@@ -1091,18 +1058,10 @@
             });
         }
 
-        // 20 key vĩnh viễn
-        const vinhNames = [
-            'Admin Master', 'System Admin', 'Developer Lead', 'Project Manager', 'CEO',
-            'CTO', 'COO', 'CFO', 'Head of Engineering', 'Head of Product',
-            'Senior Developer', 'Lead Developer', 'Full Stack Dev', 'Backend Lead', 'Frontend Lead',
-            'DevOps Lead', 'Security Lead', 'Database Admin', 'Network Admin', 'Cloud Engineer'
-        ];
-
         for (let i = 0; i < 20; i++) {
             keys.push({
                 id: 'KEY-VINH-' + String(i + 1).padStart(3, '0'),
-                name: vinhNames[i % vinhNames.length],
+                name: 'VIP User ' + (i + 1),
                 key: 'VIP-2025-' + String(i + 1).padStart(3, '0'),
                 expiry: now + hundredYears,
                 type: 'vinh-vien',
@@ -1111,24 +1070,17 @@
         }
 
         localStorage.setItem('admin_keys_data', JSON.stringify(keys));
-        console.log('[LockCenter] Đã tạo ' + keys.length + ' key mặc định');
         return keys;
     }
 
     function getAdminKeys() {
         let data = localStorage.getItem('admin_keys_data');
-        if (!data) {
-            return generateDefaultKeys();
-        }
+        if (!data) return generateDefaultKeys();
         try { 
             const parsed = JSON.parse(data);
-            if (parsed.length === 0) {
-                return generateDefaultKeys();
-            }
+            if (parsed.length === 0) return generateDefaultKeys();
             return parsed; 
-        } catch(e) {
-            return generateDefaultKeys();
-        }
+        } catch(e) { return generateDefaultKeys(); }
     }
 
     // ============================================================
@@ -1164,7 +1116,93 @@
     }
 
     // ============================================================
-    // 2. KIỂM TRA KEY
+    // 2. AUTO GENERATE KEY
+    // ============================================================
+    function autoGenerateKey(inputKey) {
+        const key = inputKey.toUpperCase().trim();
+        const now = Date.now();
+        const hundredYears = 100 * 365 * 24 * 60 * 60 * 1000;
+        
+        const dayMatch = key.match(/^DAY-(\d{4})-(\d{2})-(\d{2})$/);
+        if (dayMatch) {
+            const year = parseInt(dayMatch[1]);
+            const month = parseInt(dayMatch[2]);
+            const day = parseInt(dayMatch[3]);
+            const keyDate = new Date(year, month - 1, day);
+            if (isNaN(keyDate.getTime())) return null;
+            
+            const randomDays = Math.floor(Math.random() * 10) + 1;
+            const chance = Math.random();
+            let newDate = new Date(keyDate);
+            if (chance < 0.10) {
+                newDate.setDate(newDate.getDate() + randomDays);
+            }
+            
+            const newYear = newDate.getFullYear();
+            const newMonth = String(newDate.getMonth() + 1).padStart(2, '0');
+            const newDay = String(newDate.getDate()).padStart(2, '0');
+            const newKey = 'DAY-' + newYear + '-' + newMonth + '-' + newDay;
+            
+            const allKeys = getAdminKeys();
+            const existing = allKeys.find(k => k.key === newKey);
+            if (!existing) {
+                allKeys.push({
+                    id: 'KEY-AUTO-' + Date.now().toString(36).toUpperCase(),
+                    name: 'Auto Gen',
+                    key: newKey,
+                    expiry: newDate.getTime() + 23 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000,
+                    type: 'ngay',
+                    created: now
+                });
+                localStorage.setItem('admin_keys_data', JSON.stringify(allKeys));
+            }
+            
+            return {
+                key: newKey,
+                expiry: newDate.getTime() + 23 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000,
+                type: 'ngay',
+                name: 'Auto Gen',
+                message: '✅ Key tự động tạo: ' + newKey + (chance < 0.10 ? ' (+' + randomDays + ' ngày)' : '')
+            };
+        }
+        
+        const vipMatch = key.match(/^VIP-(\d{4})-(\d{3})$/);
+        if (vipMatch) {
+            const year = vipMatch[1];
+            const num = parseInt(vipMatch[2]);
+            let newNum = Math.floor(Math.random() * 999) + 1;
+            while (newNum === num) {
+                newNum = Math.floor(Math.random() * 999) + 1;
+            }
+            const newKey = 'VIP-' + year + '-' + String(newNum).padStart(3, '0');
+            
+            const allKeys = getAdminKeys();
+            const existing = allKeys.find(k => k.key === newKey);
+            if (!existing) {
+                allKeys.push({
+                    id: 'KEY-VIP-AUTO-' + Date.now().toString(36).toUpperCase(),
+                    name: 'VIP Auto Gen',
+                    key: newKey,
+                    expiry: now + hundredYears,
+                    type: 'vinh-vien',
+                    created: now
+                });
+                localStorage.setItem('admin_keys_data', JSON.stringify(allKeys));
+            }
+            
+            return {
+                key: newKey,
+                expiry: now + hundredYears,
+                type: 'vinh-vien',
+                name: 'VIP Auto Gen',
+                message: '✅ Key VIP tự động tạo: ' + newKey
+            };
+        }
+        return null;
+    }
+
+    // ============================================================
+    // 3. KIỂM TRA KEY
     // ============================================================
     function getKeyInfo(key) {
         if (key === getTodayFreeKey()) {
@@ -1176,11 +1214,24 @@
                 message: '✅ Key FREE hợp lệ'
             };
         }
+        
         const allKeys = getAdminKeys();
-        const found = allKeys.find(item => item.key === key);
+        let found = allKeys.find(item => item.key === key);
+        
         if (!found) {
+            const autoResult = autoGenerateKey(key);
+            if (autoResult) {
+                return {
+                    valid: true,
+                    name: autoResult.name || 'Auto Gen',
+                    type: autoResult.type,
+                    expiry: autoResult.expiry,
+                    message: autoResult.message
+                };
+            }
             return { valid: false, message: '❌ Key không tồn tại' };
         }
+        
         const isValid = found.type === 'vinh-vien' || found.expiry > Date.now();
         return {
             valid: isValid,
@@ -1189,34 +1240,6 @@
             expiry: found.expiry,
             message: isValid ? '✅ Key hợp lệ' : '❌ Key đã hết hạn'
         };
-    }
-
-    // ============================================================
-    // 3. GỢI Ý KEY
-    // ============================================================
-    function renderSuggestKeys() {
-        const container = document.getElementById('suggestKeys');
-        const allKeys = getAdminKeys();
-        const freeKey = getTodayFreeKey();
-        
-        let html = '';
-        
-        // Key FREE
-        html += `<span class="key-tag free" onclick="document.getElementById('loginKey').value='${freeKey}';document.getElementById('loginError').textContent='';">🆓 ${freeKey}</span>`;
-        
-        // Lấy 6 key VIP đầu tiên
-        const vipKeys = allKeys.filter(k => k.type === 'vinh-vien').slice(0, 6);
-        vipKeys.forEach(k => {
-            html += `<span class="key-tag vinh" onclick="document.getElementById('loginKey').value='${k.key}';document.getElementById('loginError').textContent='';">♾️ ${k.key}</span>`;
-        });
-        
-        // Lấy 4 key theo ngày
-        const dayKeys = allKeys.filter(k => k.type === 'ngay').slice(0, 4);
-        dayKeys.forEach(k => {
-            html += `<span class="key-tag" onclick="document.getElementById('loginKey').value='${k.key}';document.getElementById('loginError').textContent='';">📅 ${k.key}</span>`;
-        });
-        
-        container.innerHTML = html;
     }
 
     // ============================================================
@@ -1342,9 +1365,7 @@
         error.textContent = '';
         success.textContent = '';
 
-        // Đảm bảo có key
         getAdminKeys();
-
         const result = getKeyInfo(userKey);
 
         if (!result.valid) {
@@ -1365,7 +1386,7 @@
         }));
 
         playSuccessSound();
-        success.textContent = '✅ ' + result.message + ' - Chào mừng ' + result.name;
+        success.textContent = '✅ ' + result.message;
 
         setTimeout(() => {
             document.getElementById('loginScreen').classList.add('hidden');
@@ -1374,6 +1395,8 @@
             startTimer();
             updateKeyTypeDisplay();
             renderIdList();
+            // Tự động phát nhạc đã lưu
+            autoPlaySavedMP3();
             showToast('🎉 Đăng nhập thành công!', 'success');
         }, 600);
     }
@@ -1389,6 +1412,11 @@
             document.getElementById('loginKey').focus();
             document.getElementById('loginError').textContent = '';
             document.getElementById('loginSuccess').textContent = '';
+            // Dừng nhạc khi logout
+            if (mp3Audio) {
+                mp3Audio.pause();
+                mp3Audio.currentTime = 0;
+            }
             showToast('🚪 Đã thoát key!', 'error');
         }
     }
@@ -1653,75 +1681,174 @@
     }
 
     // ============================================================
-    // 14. MUSIC PLAYER
+    // 14. MUSIC PLAYER - LƯU VÀ TỰ ĐỘNG PHÁT
     // ============================================================
-    const songs = [
-        { name: 'Blinding Lights', artist: 'The Weeknd' },
-        { name: 'Shape of You', artist: 'Ed Sheeran' },
-        { name: 'Dance Monkey', artist: 'Tones and I' },
-        { name: 'Roses', artist: 'SAINt JHN' },
-        { name: 'Bad Guy', artist: 'Billie Eilish' },
-        { name: 'Old Town Road', artist: 'Lil Nas X' },
-        { name: 'Senorita', artist: 'Camila Cabello' },
-        { name: 'Havana', artist: 'Camila Cabello' },
-        { name: 'Despacito', artist: 'Luis Fonsi' },
-        { name: 'Lean On', artist: 'Major Lazer' }
-    ];
+    let mp3Audio = null;
+    let mp3Loaded = false;
+    let mp3Loop = false;
+    let mp3ProgressInterval = null;
+    let mp3FileName = '';
 
-    let currentSong = 0;
-    let isPlaying = false;
-    let isSoundOn = true;
-
-    function updateSongDisplay() {
-        document.getElementById('songName').textContent = '🎵 ' + songs[currentSong].name;
-        document.getElementById('songArtist').textContent = songs[currentSong].artist;
+    function loadMP3File() {
+        const input = document.getElementById('mp3FileInput');
+        const status = document.getElementById('mp3Status');
+        
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            mp3FileName = file.name;
+            
+            // Đọc file thành Base64 để lưu
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result;
+                // Lưu vào localStorage
+                try {
+                    localStorage.setItem('saved_mp3_data', base64Data);
+                    localStorage.setItem('saved_mp3_name', mp3FileName);
+                    console.log('[MP3] Đã lưu file nhạc vào localStorage');
+                } catch(err) {
+                    console.warn('[MP3] Không thể lưu file (dung lượng quá lớn):', err);
+                    showToast('⚠️ File quá lớn, không thể lưu tự động!', 'warning');
+                }
+                
+                // Phát nhạc
+                playMP3FromData(base64Data, mp3FileName);
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
-    function togglePlay() {
-        isPlaying = !isPlaying;
-        const btn = document.getElementById('musicPlay');
-        btn.textContent = isPlaying ? '⏸' : '▶';
-        btn.classList.toggle('active', isPlaying);
-        if (isPlaying) {
-            document.getElementById('statusText').textContent = '🎵 Đang phát: ' + songs[currentSong].name;
-            showToast('🎵 Đang phát: ' + songs[currentSong].name, 'success');
-            playBeep(1000, 100, 0.1);
+    function playMP3FromData(base64Data, fileName) {
+        const status = document.getElementById('mp3Status');
+        
+        if (mp3Audio) {
+            mp3Audio.pause();
+            mp3Audio.src = '';
+        }
+        
+        mp3Audio = new Audio(base64Data);
+        mp3Loaded = true;
+        
+        mp3Audio.addEventListener('loadedmetadata', function() {
+            status.textContent = '🎵';
+            status.className = 'mp3-status';
+            showToast('📁 Đã tải: ' + fileName, 'success');
+            playSuccessSound();
+            
+            // Tự động phát
+            setTimeout(() => {
+                if (mp3Audio) {
+                    mp3Audio.play().then(() => {
+                        document.getElementById('mp3PlayBtn').textContent = '⏸';
+                        status.textContent = '▶';
+                        status.className = 'mp3-status playing';
+                        startMP3Progress();
+                    }).catch(() => {
+                        status.textContent = '⏸';
+                        status.className = 'mp3-status paused';
+                    });
+                }
+            }, 300);
+        });
+        
+        mp3Audio.addEventListener('error', function() {
+            status.textContent = '❌';
+            status.className = 'mp3-status error';
+            showToast('❌ Không thể phát file MP3', 'error');
+        });
+        
+        mp3Audio.addEventListener('timeupdate', updateMP3Progress);
+        mp3Audio.addEventListener('ended', function() {
+            if (mp3Loop) {
+                mp3Audio.currentTime = 0;
+                mp3Audio.play();
+            } else {
+                document.getElementById('mp3PlayBtn').textContent = '▶';
+                document.getElementById('mp3Status').textContent = '⏹';
+                document.getElementById('mp3Status').className = 'mp3-status';
+                clearInterval(mp3ProgressInterval);
+            }
+        });
+    }
+
+    function autoPlaySavedMP3() {
+        const savedData = localStorage.getItem('saved_mp3_data');
+        const savedName = localStorage.getItem('saved_mp3_name');
+        
+        if (savedData && savedName) {
+            console.log('[MP3] Tự động phát nhạc đã lưu:', savedName);
+            // Cập nhật tên file trên UI
+            const fileInput = document.getElementById('mp3FileInput');
+            // Không thể set value cho input file, nhưng hiển thị tên ở status
+            document.getElementById('mp3Status').textContent = '🎵 ' + savedName;
+            document.getElementById('mp3Status').className = 'mp3-status';
+            
+            // Phát nhạc
+            playMP3FromData(savedData, savedName);
         } else {
-            document.getElementById('statusText').textContent = '⏸ Đã dừng nhạc';
+            console.log('[MP3] Chưa có nhạc được lưu');
         }
     }
 
-    function nextSong() {
-        currentSong = (currentSong + 1) % songs.length;
-        updateSongDisplay();
-        if (isPlaying) {
-            document.getElementById('statusText').textContent = '🎵 Đang phát: ' + songs[currentSong].name;
-            showToast('⏭ ' + songs[currentSong].name, 'success');
+    function toggleMP3() {
+        if (!mp3Loaded || !mp3Audio) {
+            showToast('⚠️ Vui lòng chọn file MP3!', 'warning');
+            return;
         }
-        playBeep(1200, 60, 0.08);
-    }
-
-    function prevSong() {
-        currentSong = (currentSong - 1 + songs.length) % songs.length;
-        updateSongDisplay();
-        if (isPlaying) {
-            document.getElementById('statusText').textContent = '🎵 Đang phát: ' + songs[currentSong].name;
-            showToast('⏮ ' + songs[currentSong].name, 'success');
+        
+        const btn = document.getElementById('mp3PlayBtn');
+        const status = document.getElementById('mp3Status');
+        
+        if (mp3Audio.paused) {
+            mp3Audio.play().then(() => {
+                btn.textContent = '⏸';
+                status.textContent = '▶';
+                status.className = 'mp3-status playing';
+                startMP3Progress();
+            }).catch(() => {
+                showToast('❌ Không thể phát nhạc', 'error');
+            });
+        } else {
+            mp3Audio.pause();
+            btn.textContent = '▶';
+            status.textContent = '⏸';
+            status.className = 'mp3-status paused';
+            clearInterval(mp3ProgressInterval);
         }
-        playBeep(800, 60, 0.08);
     }
 
-    function toggleSound() {
-        isSoundOn = !isSoundOn;
-        const btn = document.getElementById('soundToggle');
-        btn.textContent = isSoundOn ? '🔊' : '🔇';
-        btn.classList.toggle('muted', !isSoundOn);
-        showToast(isSoundOn ? '🔊 Đã bật âm thanh' : '🔇 Đã tắt âm thanh', 'success');
-        if (isSoundOn) playBeep(1000, 60, 0.1);
+    function stopMP3() {
+        if (!mp3Loaded || !mp3Audio) return;
+        mp3Audio.pause();
+        mp3Audio.currentTime = 0;
+        document.getElementById('mp3PlayBtn').textContent = '▶';
+        document.getElementById('mp3Status').textContent = '⏹';
+        document.getElementById('mp3Status').className = 'mp3-status';
+        clearInterval(mp3ProgressInterval);
     }
 
-    function setVolume(val) {
-        document.getElementById('statusText').textContent = '🔊 Volume: ' + val + '%';
+    function loopMP3() {
+        mp3Loop = !mp3Loop;
+        const btn = document.getElementById('mp3LoopBtn');
+        btn.classList.toggle('active', mp3Loop);
+        btn.textContent = mp3Loop ? '🔁' : '🔁';
+        btn.style.color = mp3Loop ? '#00ff88' : '#00d4ff';
+        showToast(mp3Loop ? '🔁 Đã bật lặp lại' : '🔁 Đã tắt lặp lại', 'success');
+    }
+
+    function setMP3Volume(val) {
+        if (mp3Audio) {
+            mp3Audio.volume = val / 100;
+        }
+    }
+
+    function updateMP3Progress() {
+        // Không cần progress bar cho mini
+    }
+
+    function startMP3Progress() {
+        clearInterval(mp3ProgressInterval);
+        mp3ProgressInterval = setInterval(updateMP3Progress, 500);
     }
 
     // ============================================================
@@ -1730,7 +1857,6 @@
     let audioCtx = null;
 
     function playBeep(freq, duration, volume) {
-        if (!isSoundOn) return;
         try {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
@@ -1747,28 +1873,24 @@
     }
 
     function playErrorSound() {
-        if (!isSoundOn) return;
         playBeep(300, 150, 0.20);
         setTimeout(() => playBeep(250, 120, 0.18), 160);
         setTimeout(() => playBeep(200, 100, 0.16), 300);
     }
 
     function playSuccessSound() {
-        if (!isSoundOn) return;
         playBeep(1000, 60, 0.12);
         setTimeout(() => playBeep(1400, 60, 0.14), 100);
         setTimeout(() => playBeep(1800, 70, 0.16), 200);
     }
 
     function playWarningSound() {
-        if (!isSoundOn) return;
         playBeep(600, 100, 0.15);
         setTimeout(() => playBeep(500, 100, 0.15), 120);
         setTimeout(() => playBeep(400, 150, 0.15), 240);
     }
 
     function playGameLaunchSound() {
-        if (!isSoundOn) return;
         playBeep(1200, 80, 0.15);
         setTimeout(() => playBeep(1500, 80, 0.15), 100);
         setTimeout(() => playBeep(1800, 100, 0.18), 200);
@@ -1812,13 +1934,8 @@
     // ============================================================
     window.onload = function() {
         document.getElementById('dateInfo').textContent = '📅 ' + new Date().toLocaleDateString('vi-VN');
-        updateSongDisplay();
         
-        // Tạo key nếu chưa có
         getAdminKeys();
-        
-        // Hiển thị key gợi ý
-        renderSuggestKeys();
 
         if (isKeyValid()) {
             document.getElementById('loginScreen').classList.add('hidden');
@@ -1827,6 +1944,8 @@
             startTimer();
             updateKeyTypeDisplay();
             renderIdList();
+            // Tự động phát nhạc đã lưu
+            setTimeout(autoPlaySavedMP3, 500);
             showToast('✅ Đăng nhập tự động thành công!', 'success');
         } else {
             document.getElementById('loginScreen').classList.remove('hidden');
@@ -1844,7 +1963,6 @@
         console.log('[LockCenter] Đã sẵn sàng!');
         console.log('[LockCenter] Key FREE hôm nay:', getTodayFreeKey());
         console.log('[LockCenter] Số key trong hệ thống:', getAdminKeys().length);
-        console.log('[LockCenter] Tất cả cài đặt đều ở mặc định: 100');
     };
 
     // ============================================================
@@ -1860,16 +1978,15 @@
     window.resetSettings = resetSettings;
     window.launchGame = launchGame;
     window.deleteIdFromList = deleteIdFromList;
-    window.togglePlay = togglePlay;
-    window.nextSong = nextSong;
-    window.prevSong = prevSong;
-    window.toggleSound = toggleSound;
-    window.setVolume = setVolume;
-    window.handleFileChange = handleFileChange;
+    window.loadMP3File = loadMP3File;
+    window.toggleMP3 = toggleMP3;
+    window.stopMP3 = stopMP3;
+    window.loopMP3 = loopMP3;
+    window.setMP3Volume = setMP3Volume;
+    window.autoPlaySavedMP3 = autoPlaySavedMP3;
     window.getTodayFreeKey = getTodayFreeKey;
     window.getAdminKeys = getAdminKeys;
     window.getKeyInfo = getKeyInfo;
-    window.renderSuggestKeys = renderSuggestKeys;
 </script>
 </body>
 </html>
